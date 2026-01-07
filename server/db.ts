@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, artworks, products, artworkProducts, carts, cartItems, orders, profiles, InsertProfile, InsertOrder } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,96 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// Artwork queries
+export async function getArtworksByUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(artworks).where(eq(artworks.userId, userId));
+}
+
+export async function getArtworkById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(artworks).where(eq(artworks.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+// Product queries
+export async function getProductsByUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(products).where(eq(products.userId, userId));
+}
+
+export async function getProductById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(products).where(eq(products.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getRelatedProducts(artworkId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const relations = await db.select().from(artworkProducts).where(eq(artworkProducts.artworkId, artworkId));
+  const productIds = relations.map(r => r.productId);
+  if (productIds.length === 0) return [];
+  return db.select().from(products).where(sql`id IN (${sql.raw(productIds.join(','))})`);
+}
+
+// Cart queries
+export async function getOrCreateCart(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const existing = await db.select().from(carts).where(eq(carts.userId, userId)).limit(1);
+  if (existing.length > 0) return existing[0];
+  
+  await db.insert(carts).values({ userId });
+  const created = await db.select().from(carts).where(eq(carts.userId, userId)).limit(1);
+  return created.length > 0 ? created[0] : undefined;
+}
+
+export async function getCartItems(cartId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(cartItems).where(eq(cartItems.cartId, cartId));
+}
+
+// Order queries
+export async function createOrder(data: InsertOrder) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.insert(orders).values(data);
+}
+
+export async function getOrdersByUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(orders).where(eq(orders.userId, userId));
+}
+
+export async function getOrderById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+// Profile queries
+export async function getProfileByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(profiles).where(eq(profiles.userId, userId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function upsertProfile(userId: number, data: Partial<InsertProfile>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const existing = await getProfileByUserId(userId);
+  if (existing) {
+    return db.update(profiles).set(data).where(eq(profiles.userId, userId));
+  } else {
+    return db.insert(profiles).values({ userId, ...data });
+  }
+}
