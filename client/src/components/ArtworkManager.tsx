@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Trash2, Edit2, Upload } from "lucide-react";
+import { Trash2, Edit2 } from "lucide-react";
+import ImageUploader from "./ImageUploader";
 
 interface Artwork {
   id: number;
@@ -33,6 +34,7 @@ export default function ArtworkManager({
     title: "",
     description: "",
     category: "illustration" as "illustration" | "manga" | "novel",
+    imageUrl: "",
   });
 
   const handleOpenDialog = (artwork?: Artwork) => {
@@ -42,6 +44,7 @@ export default function ArtworkManager({
         title: artwork.title,
         description: artwork.description || "",
         category: artwork.category,
+        imageUrl: artwork.imageUrl || "",
       });
     } else {
       setEditingId(null);
@@ -49,6 +52,7 @@ export default function ArtworkManager({
         title: "",
         description: "",
         category: "illustration",
+        imageUrl: "",
       });
     }
     setIsDialogOpen(true);
@@ -64,6 +68,7 @@ export default function ArtworkManager({
       title: formData.title,
       description: formData.description,
       category: formData.category,
+      imageUrl: formData.imageUrl,
     };
 
     if (editingId) {
@@ -218,15 +223,11 @@ export default function ArtworkManager({
               <label className="block text-sm font-medium text-foreground mb-2">
                 作品画像
               </label>
-              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  クリックして画像をアップロード
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  JPG, PNG (最大 10MB)
-                </p>
-              </div>
+              <ImageUploader
+                onImageUrl={(url) =>
+                  setFormData({ ...formData, imageUrl: url })
+                }
+              />
             </div>
 
             {/* Buttons */}

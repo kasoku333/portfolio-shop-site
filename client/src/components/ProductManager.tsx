@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Trash2, Edit2, Upload } from "lucide-react";
+import { Trash2, Edit2 } from "lucide-react";
+import ImageUploader from "./ImageUploader";
 
 interface Product {
   id: number;
@@ -37,6 +38,7 @@ export default function ProductManager({
     price: "",
     productType: "digital" as "digital" | "physical",
     stock: "",
+    imageUrl: "",
   });
 
   const handleOpenDialog = (product?: Product) => {
@@ -48,6 +50,7 @@ export default function ProductManager({
         price: product.price.toString(),
         productType: product.productType,
         stock: product.stock?.toString() || "",
+        imageUrl: product.imageUrl || "",
       });
     } else {
       setEditingId(null);
@@ -57,6 +60,7 @@ export default function ProductManager({
         price: "",
         productType: "digital",
         stock: "",
+        imageUrl: "",
       });
     }
     setIsDialogOpen(true);
@@ -74,6 +78,7 @@ export default function ProductManager({
       price: parseFloat(formData.price),
       productType: formData.productType,
       stock: formData.productType === "physical" ? parseInt(formData.stock) : undefined,
+      imageUrl: formData.imageUrl,
     };
 
     if (editingId) {
@@ -266,15 +271,11 @@ export default function ProductManager({
               <label className="block text-sm font-medium text-foreground mb-2">
                 商品画像
               </label>
-              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:bg-muted/50 transition-colors">
-                <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  クリックして画像をアップロード
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  JPG, PNG (最大 10MB)
-                </p>
-              </div>
+              <ImageUploader
+                onImageUrl={(url) =>
+                  setFormData({ ...formData, imageUrl: url })
+                }
+              />
             </div>
 
             {/* Buttons */}
