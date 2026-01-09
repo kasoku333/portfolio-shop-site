@@ -6,6 +6,7 @@ import { z } from "zod";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
 import { uploadRouter } from "./upload";
+import { artworks } from "../drizzle/schema";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -24,9 +25,15 @@ export const appRouter = router({
 
   // Gallery/Artwork routes
   artworks: router({
-    list: publicProcedure.query(async () => {
-      return [];
-    }),
+    list: publicProcedure
+      .input(z.object({ category: z.enum(['all', 'illustration', 'manga', 'novel']).default('all') }).optional())
+      .query(async ({ input }) => {
+        const category = input?.category || 'all';
+        if (category === 'all') {
+          return db.getAllArtworks();
+        }
+        return db.getArtworksByCategory(category);
+      }),
     
     getById: publicProcedure
       .input(z.object({ id: z.number() }))
@@ -36,6 +43,28 @@ export const appRouter = router({
           throw new TRPCError({ code: "NOT_FOUND", message: "Artwork not found" });
         }
         return artwork;
+      }),
+
+    create: protectedProcedure
+      .input(z.object({
+        title: z.string(),
+        description: z.string().optional(),
+        category: z.enum(['illustration', 'manga', 'novel']),
+        imageUrl: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const db_instance = await db.getDb();
+        if (!db_instance) throw new Error("Database not available");
+        await db_instance.insert(artworks).values({
+          userId: ctx.user.id,
+          title: input.title,
+          description: input.description,
+          category: input.category,
+          imageUrl: input.imageUrl,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+        return { success: true };
       }),
   }),
 

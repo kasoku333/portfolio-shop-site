@@ -90,6 +90,18 @@ export async function getUserByOpenId(openId: string) {
 }
 
 // Artwork queries
+export async function getAllArtworks() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(artworks).orderBy(artworks.createdAt);
+}
+
+export async function getArtworksByCategory(category: string) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(artworks).where(sql`${artworks.category} = ${category}`).orderBy(artworks.createdAt);
+}
+
 export async function getArtworksByUser(userId: number) {
   const db = await getDb();
   if (!db) return [];
