@@ -1,0 +1,10 @@
+{
+  "name": "server",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -C .. dev",
+    "build": "pnpm -C .. build",
+    "start": "pnpm -C .. start",
+    "check": "pnpm -C .. check"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "drizzle",
+  "private": true,
+  "scripts": {
+    "db:push": "pnpm -C .. db:push"
+  }
+}
