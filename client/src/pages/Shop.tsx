@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { ShoppingCart, Menu, X } from "lucide-react";
 
 interface Product {
@@ -22,7 +22,7 @@ const mockProducts: Product[] = [
     price: 1500,
     productType: "digital",
     imageUrl: "https://images.unsplash.com/photo-1579783902614-e3fb5141b0cb?w=400&h=400&fit=crop",
-    description: "高解像度デジタルアート素材パック",
+    description: "高解像度チE��タルアート素材パチE��",
   },
   {
     id: 2,
@@ -30,7 +30,7 @@ const mockProducts: Product[] = [
     price: 2800,
     productType: "physical",
     imageUrl: "https://images.unsplash.com/photo-1578926078328-123456789012?w=400&h=400&fit=crop",
-    description: "限定版漫画本（サイン入り）",
+    description: "限定版漫画本�E�サイン入り！E,
     stock: 5,
   },
   {
@@ -39,7 +39,7 @@ const mockProducts: Product[] = [
     price: 980,
     productType: "digital",
     imageUrl: "https://images.unsplash.com/photo-1507842217343-583f20270319?w=400&h=400&fit=crop",
-    description: "完全版電子書籍",
+    description: "完�E版電子書籁E,
   },
   {
     id: 4,
@@ -47,7 +47,7 @@ const mockProducts: Product[] = [
     price: 3500,
     productType: "physical",
     imageUrl: "https://images.unsplash.com/photo-1578926078328-123456789013?w=400&h=400&fit=crop",
-    description: "限定版アートプリント（5枚セット）",
+    description: "限定版アート�Eリント！E枚セチE���E�E,
     stock: 10,
   },
 ];
@@ -58,7 +58,7 @@ export default function Shop() {
 
   const getProductTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      digital: "デジタル",
+      digital: "チE��タル",
       physical: "実物",
     };
     return labels[type] || type;
@@ -74,23 +74,57 @@ export default function Shop() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-foreground hover:text-accent transition-colors">
-              ギャラリー
-            </Link>
-            <Link to="/shop" className="text-foreground hover:text-accent transition-colors font-semibold">
-              ショップ
-            </Link>
-            <Link to="/about" className="text-foreground hover:text-accent transition-colors">
-              自己紹介
-            </Link>
-            <Link to="/history" className="text-foreground hover:text-accent transition-colors">
-              活動履歴
-            </Link>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              カート
-            </Button>
+                    <div className="hidden md:flex items-center gap-8">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �g�b�v
+            </NavLink>
+            <NavLink
+              to="/gallery"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �M�������[
+            </NavLink>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �V���b�v
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              About
+            </NavLink>
+            <NavLink
+              to="/history"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              History
+            </NavLink>
           </div>
 
           {/* Mobile Menu Button */}
@@ -104,23 +138,57 @@ export default function Shop() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            <Link to="/" className="block text-foreground hover:text-accent transition-colors">
-              ギャラリー
-            </Link>
-            <Link to="/shop" className="block text-foreground hover:text-accent transition-colors font-semibold">
-              ショップ
-            </Link>
-            <Link to="/about" className="block text-foreground hover:text-accent transition-colors">
-              自己紹介
-            </Link>
-            <Link to="/history" className="block text-foreground hover:text-accent transition-colors">
-              活動履歴
-            </Link>
-            <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              カート
-            </Button>
+                    <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �g�b�v
+            </NavLink>
+            <NavLink
+              to="/gallery"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �M�������[
+            </NavLink>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �V���b�v
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              About
+            </NavLink>
+            <NavLink
+              to="/history"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              History
+            </NavLink>
           </div>
         )}
       </nav>
@@ -129,10 +197,10 @@ export default function Shop() {
       <section className="py-16 md:py-24 border-b border-border">
         <div className="container text-center">
           <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
-            ショップ
+            ショチE�E
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            デジタルコンテンツから実物商品まで、様々な作品をご購入いただけます。
+            チE��タルコンチE��チE��ら実物啁E��まで、様、E��作品をご購入ぁE��だけます、E
           </p>
         </div>
       </section>
@@ -146,7 +214,7 @@ export default function Shop() {
               すべて
             </Button>
             <Button variant="outline" className="rounded-full">
-              デジタル
+              チE��タル
             </Button>
             <Button variant="outline" className="rounded-full">
               実物
@@ -178,7 +246,7 @@ export default function Shop() {
                   )}
                   {product.productType === "digital" && (
                     <div className="absolute top-2 right-2 bg-accent text-accent-foreground px-2 py-1 rounded text-xs font-semibold">
-                      デジタル
+                      チE��タル
                     </div>
                   )}
                 </div>
@@ -230,7 +298,7 @@ export default function Shop() {
               </div>
               {selectedProduct?.productType === "physical" && selectedProduct?.stock !== undefined && (
                 <p className="text-sm text-muted-foreground mb-4">
-                  在庫: {selectedProduct.stock}個
+                  在庫: {selectedProduct.stock}倁E
                 </p>
               )}
               <p className="text-foreground leading-relaxed">
@@ -242,7 +310,7 @@ export default function Shop() {
                 カートに追加
               </Button>
               <Button className="flex-1" variant="outline">
-                閉じる
+                閉じめE
               </Button>
             </div>
           </div>
@@ -258,3 +326,4 @@ export default function Shop() {
     </div>
   );
 }
+

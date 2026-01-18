@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 
@@ -12,39 +12,39 @@ interface HistoryItem {
 
 const historyItems: HistoryItem[] = [
   {
-    date: "2024年1月",
-    title: "デジタルアート展示会 開催",
-    description: "オンラインギャラリーで新作イラスト30点を展示。多くのファンからの好評を得ました。",
+    date: "2024年1朁E,
+    title: "チE��タルアート展示企E開催",
+    description: "オンラインギャラリーで新作イラスチE0点を展示。多くのファンからの好評を得ました、E,
     category: "exhibition",
   },
   {
-    date: "2023年11月",
-    title: "漫画作品『Urban Tales』出版",
-    description: "初の商業漫画作品を出版。限定版はすぐに完売となりました。",
+    date: "2023年11朁E,
+    title: "漫画作品『Urban Tales』�E牁E,
+    description: "初�E啁E��漫画作品を�E版。限定版はすぐに完売となりました、E,
     category: "publication",
   },
   {
-    date: "2023年9月",
-    title: "クリエイティブアワード受賞",
-    description: "デジタルアート部門で新人賞を受賞。これまでの活動が認められました。",
+    date: "2023年9朁E,
+    title: "クリエイチE��ブアワード受賁E,
+    description: "チE��タルアート部門で新人賞を受賞。これまでの活動が認められました、E,
     category: "award",
   },
   {
-    date: "2023年7月",
-    title: "小説『Whispers of Time』完成",
-    description: "長編小説の執筆を完了。電子書籍として配信開始。",
+    date: "2023年7朁E,
+    title: "小説『Whispers of Time』完�E",
+    description: "長編小説の執筁E��完亁E��電子書籍として配信開始、E,
     category: "publication",
   },
   {
-    date: "2023年5月",
-    title: "SNS フォロワー10万人達成",
-    description: "ソーシャルメディアでの活動が評価され、フォロワー数が10万人を超えました。",
+    date: "2023年5朁E,
+    title: "SNS フォロワー10丁E��達�E",
+    description: "ソーシャルメチE��アでの活動が評価され、フォロワー数ぁE0丁E��を趁E��ました、E,
     category: "other",
   },
   {
-    date: "2023年3月",
-    title: "ポートフォリオサイト開設",
-    description: "作品を展示・販売するためのオンラインストアをオープン。",
+    date: "2023年3朁E,
+    title: "ポ�Eトフォリオサイト開設",
+    description: "作品を展示・販売するためのオンラインストアをオープン、E,
     category: "other",
   },
 ];
@@ -64,10 +64,10 @@ export default function History() {
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      exhibition: "展示会",
-      publication: "出版",
-      award: "受賞",
-      other: "その他",
+      exhibition: "展示企E,
+      publication: "出牁E,
+      award: "受賁E,
+      other: "そ�E仁E,
     };
     return labels[category] || category;
   };
@@ -82,23 +82,57 @@ export default function History() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-foreground hover:text-accent transition-colors">
-              ギャラリー
-            </Link>
-            <Link to="/shop" className="text-foreground hover:text-accent transition-colors">
-              ショップ
-            </Link>
-            <Link to="/about" className="text-foreground hover:text-accent transition-colors">
-              自己紹介
-            </Link>
-            <Link to="/history" className="text-foreground hover:text-accent transition-colors font-semibold">
-              活動履歴
-            </Link>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              カート
-            </Button>
+                    <div className="hidden md:flex items-center gap-8">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �g�b�v
+            </NavLink>
+            <NavLink
+              to="/gallery"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �M�������[
+            </NavLink>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �V���b�v
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              About
+            </NavLink>
+            <NavLink
+              to="/history"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              History
+            </NavLink>
           </div>
 
           {/* Mobile Menu Button */}
@@ -112,23 +146,57 @@ export default function History() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            <Link to="/" className="block text-foreground hover:text-accent transition-colors">
-              ギャラリー
-            </Link>
-            <Link to="/shop" className="block text-foreground hover:text-accent transition-colors">
-              ショップ
-            </Link>
-            <Link to="/about" className="block text-foreground hover:text-accent transition-colors">
-              自己紹介
-            </Link>
-            <Link to="/history" className="block text-foreground hover:text-accent transition-colors font-semibold">
-              活動履歴
-            </Link>
-            <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              カート
-            </Button>
+                    <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �g�b�v
+            </NavLink>
+            <NavLink
+              to="/gallery"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �M�������[
+            </NavLink>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �V���b�v
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              About
+            </NavLink>
+            <NavLink
+              to="/history"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              History
+            </NavLink>
           </div>
         )}
       </nav>
@@ -140,7 +208,7 @@ export default function History() {
             活動履歴
           </h2>
           <p className="text-lg text-muted-foreground">
-            これまでの創作活動と主な実績をご紹介します
+            これまでの創作活動と主な実績をご紹介しまぁE
           </p>
         </div>
       </section>
@@ -183,14 +251,14 @@ export default function History() {
           {/* Call to Action */}
           <div className="mt-16 p-8 rounded-lg border border-border bg-card text-center" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
             <h3 className="text-2xl font-serif font-bold mb-4 text-foreground">
-              最新作品をチェック
+              最新作品をチェチE��
             </h3>
             <p className="text-muted-foreground mb-6">
-              これまでの活動の中で生まれた作品たちをご覧ください
+              これまでの活動�E中で生まれた作品たちをご覧ください
             </p>
             <Link to="/shop">
               <Button className="w-full md:w-auto">
-                ショップへ
+                ショチE�Eへ
               </Button>
             </Link>
           </div>
@@ -206,3 +274,4 @@ export default function History() {
     </div>
   );
 }
+

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 
@@ -16,23 +16,57 @@ export default function About() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-foreground hover:text-accent transition-colors">
-              ギャラリー
-            </Link>
-            <Link to="/shop" className="text-foreground hover:text-accent transition-colors">
-              ショップ
-            </Link>
-            <Link to="/about" className="text-foreground hover:text-accent transition-colors font-semibold">
-              自己紹介
-            </Link>
-            <Link to="/history" className="text-foreground hover:text-accent transition-colors">
-              活動履歴
-            </Link>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              カート
-            </Button>
+                    <div className="hidden md:flex items-center gap-8">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �g�b�v
+            </NavLink>
+            <NavLink
+              to="/gallery"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �M�������[
+            </NavLink>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �V���b�v
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              About
+            </NavLink>
+            <NavLink
+              to="/history"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              History
+            </NavLink>
           </div>
 
           {/* Mobile Menu Button */}
@@ -46,23 +80,57 @@ export default function About() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            <Link to="/" className="block text-foreground hover:text-accent transition-colors">
-              ギャラリー
-            </Link>
-            <Link to="/shop" className="block text-foreground hover:text-accent transition-colors">
-              ショップ
-            </Link>
-            <Link to="/about" className="block text-foreground hover:text-accent transition-colors font-semibold">
-              自己紹介
-            </Link>
-            <Link to="/history" className="block text-foreground hover:text-accent transition-colors">
-              活動履歴
-            </Link>
-            <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              カート
-            </Button>
+                    <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �g�b�v
+            </NavLink>
+            <NavLink
+              to="/gallery"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �M�������[
+            </NavLink>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �V���b�v
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              About
+            </NavLink>
+            <NavLink
+              to="/history"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              History
+            </NavLink>
           </div>
         )}
       </nav>
@@ -71,10 +139,10 @@ export default function About() {
       <section className="py-16 md:py-24 border-b border-border">
         <div className="container text-center">
           <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
-            自己紹介
+            自己紹仁E
           </h2>
           <p className="text-lg text-muted-foreground">
-            クリエイターとしての私についてご紹介します
+            クリエイターとしての私につぁE��ご紹介しまぁE
           </p>
         </div>
       </section>
@@ -88,21 +156,21 @@ export default function About() {
               <div className="rounded-lg overflow-hidden border border-border" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
                 <div className="aspect-square bg-muted flex items-center justify-center">
                   <div className="text-center text-muted-foreground">
-                    <p className="text-lg">プロフィール画像</p>
+                    <p className="text-lg">プロフィール画僁E/p>
                   </div>
                 </div>
               </div>
               <div className="space-y-4">
                 <h3 className="text-3xl font-serif font-bold text-foreground">
-                  クリエイター名
+                  クリエイター吁E
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  イラスト、漫画、小説を制作するクリエイターです。
-                  日々の創作活動を通じて、様々な作品を世界に発信しています。
+                  イラスト、漫画、小説を制作するクリエイターです、E
+                  日、E�E創作活動を通じて、様、E��作品を世界に発信してぁE��す、E
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  デジタルアートから実物商品まで、多岐にわたる作品制作に取り組んでいます。
-                  皆様の支援が、私の創作活動の原動力となっています。
+                  チE��タルアートから実物啁E��まで、多岐にわたる作品制作に取り絁E��でぁE��す、E
+                  皁E���E支援が、私�E創作活動�E原動力となってぁE��す、E
                 </p>
                 <div className="pt-4">
                   <Link to="/shop">
@@ -120,13 +188,13 @@ export default function About() {
             {/* Skills Section */}
             <div>
               <h3 className="text-2xl font-serif font-bold mb-8 text-foreground">
-                スキル・得意分野
+                スキル・得意刁E��
               </h3>
               <div className="grid md:grid-cols-3 gap-6">
                 {[
-                  { title: "デジタルイラスト", description: "高解像度のデジタルアート制作" },
-                  { title: "漫画制作", description: "ストーリー性のある漫画作品" },
-                  { title: "小説執筆", description: "感情豊かな小説・エッセイ" },
+                  { title: "チE��タルイラスチE, description: "高解像度のチE��タルアート制佁E },
+                  { title: "漫画制佁E, description: "スト�Eリー性のある漫画作品" },
+                  { title: "小説執筁E, description: "感情豊かな小説・エチE��イ" },
                 ].map((skill, idx) => (
                   <div
                     key={idx}
@@ -150,16 +218,16 @@ export default function About() {
             {/* Message Section */}
             <div className="bg-card border border-border rounded-lg p-8" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
               <h3 className="text-2xl font-serif font-bold mb-4 text-foreground">
-                メッセージ
+                メチE��ージ
               </h3>
               <p className="text-foreground leading-relaxed mb-4">
-                このサイトは、私の創作活動の集大成です。
-                ここで皆様と作品を通じてつながり、
-                一緒に創造の喜びを分かち合いたいと思っています。
+                こ�Eサイト�E、私�E創作活動�E雁E��成です、E
+                ここで皁E��と作品を通じてつながり、E
+                一緒に創造の喜�Eを�Eかち合いたいと思ってぁE��す、E
               </p>
               <p className="text-foreground leading-relaxed">
-                皆様のご支援とご感想が、私の創作活動の源となります。
-                ぜひ、作品をご覧いただき、ご感想をお聞かせください。
+                皁E���Eご支援とご感想が、私�E創作活動�E源となります、E
+                ぜ�E、作品をご覧ぁE��だき、ご感想をお聞かせください、E
               </p>
             </div>
           </div>
@@ -175,3 +243,4 @@ export default function About() {
     </div>
   );
 }
+

@@ -4,6 +4,7 @@ import { products } from "@/data/products";
 import Shell from "@/components/Shell";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Star } from "lucide-react";
+import NotFound from "@/pages/NotFound";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -12,18 +13,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
 
   if (!product) {
-    return (
-      <Shell>
-        <div className="container py-20">
-          <div className="rounded-3xl border border-border/60 bg-card p-10 text-center shadow-sm">
-            <h1 className="text-2xl font-semibold">商品が見つかりません</h1>
-            <p className="mt-3 text-sm text-muted-foreground">
-              URLが正しいか確認してください。
-            </p>
-          </div>
-        </div>
-      </Shell>
-    );
+    return <NotFound />;
   }
 
   return (

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
@@ -64,7 +64,7 @@ export default function Gallery() {
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      illustration: "イラスト",
+      illustration: "イラスチE,
       manga: "漫画",
       novel: "小説",
     };
@@ -81,22 +81,60 @@ export default function Gallery() {
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link to="/" className="text-foreground hover:text-accent transition-colors">
-              ギャラリー
-            </Link>
-            <Link to="/shop" className="text-foreground hover:text-accent transition-colors">
-              ショップ
-            </Link>
-            <Link to="/about" className="text-foreground hover:text-accent transition-colors">
-              自己紹介
-            </Link>
-            <Link to="/history" className="text-foreground hover:text-accent transition-colors">
-              活動履歴
-            </Link>
+                    <div className="hidden md:flex items-center gap-8">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �g�b�v
+            </NavLink>
+            <NavLink
+              to="/gallery"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �M�������[
+            </NavLink>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              �V���b�v
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              About
+            </NavLink>
+            <NavLink
+              to="/history"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold transition-colors"
+                  : "text-foreground hover:text-accent transition-colors"
+              }
+            >
+              History
+            </NavLink>
             <Button variant="outline" size="sm" className="flex items-center gap-2">
               <ShoppingCart className="w-4 h-4" />
-              カート
+              �J�[�g
             </Button>
           </div>
 
@@ -111,19 +149,57 @@ export default function Gallery() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            <Link to="/" className="block text-foreground hover:text-accent">
-              ギャラリー
-            </Link>
-            <Link to="/shop" className="block text-foreground hover:text-accent">
-              ショップ
-            </Link>
-            <Link to="/about" className="block text-foreground hover:text-accent">
-              自己紹介
-            </Link>
-            <Link to="/history" className="block text-foreground hover:text-accent">
-              活動履歴
-            </Link>
+                    <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �g�b�v
+            </NavLink>
+            <NavLink
+              to="/gallery"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �M�������[
+            </NavLink>
+            <NavLink
+              to="/shop"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              �V���b�v
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              About
+            </NavLink>
+            <NavLink
+              to="/history"
+              className={({ isActive }) =>
+                isActive
+                  ? "text-accent font-semibold"
+                  : "text-foreground hover:text-accent"
+              }
+            >
+              History
+            </NavLink>
           </div>
         )}
       </nav>
@@ -132,12 +208,12 @@ export default function Gallery() {
       <section className="py-16 md:py-24 text-center bg-muted/50">
         <div className="container space-y-4">
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-            ギャラリーへようこそ！
+            ギャラリーへようこそ�E�E
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            イラスト、漫画、小説の作品を展示・販売しています。
+            イラスト、漫画、小説の作品を展示・販売してぁE��す、E
             <br />
-            デジタルコンテンツから実物商品まで、様々な作品をお楽しみください。
+            チE��タルコンチE��チE��ら実物啁E��まで、様、E��作品をお楽しみください、E
           </p>
         </div>
       </section>
@@ -207,7 +283,7 @@ export default function Gallery() {
           {/* Empty State */}
           {!isLoading && artworks.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">作品がまだアップロードされていません</p>
+              <p className="text-muted-foreground">作品がまだアチE�EロードされてぁE��せん</p>
             </div>
           )}
         </div>
@@ -237,7 +313,7 @@ export default function Gallery() {
                 </div>
                 <div className="flex gap-3 pt-4">
                   <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90">
-                    関連商品を見る
+                    関連啁E��を見る
                   </Button>
                   <Button variant="outline" className="flex-1">
                     カートに追加
@@ -251,3 +327,4 @@ export default function Gallery() {
     </div>
   );
 }
+

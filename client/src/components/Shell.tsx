@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -21,21 +21,26 @@ export default function Shell({ children }: ShellProps) {
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm">
-            <Link to="/" className="text-foreground hover:text-accent transition-colors">
-              トップ
-            </Link>
-            <Link to="/gallery" className="text-foreground hover:text-accent transition-colors">
-              ギャラリー
-            </Link>
-            <Link to="/shop" className="text-foreground hover:text-accent transition-colors">
-              ショップ
-            </Link>
-            <Link to="/about" className="text-foreground hover:text-accent transition-colors">
-              自己紹介
-            </Link>
-            <Link to="/history" className="text-foreground hover:text-accent transition-colors">
-              活動履歴
-            </Link>
+            {[
+              { to: "/", label: "トップ" },
+              { to: "/gallery", label: "ギャラリー" },
+              { to: "/shop", label: "ショップ" },
+              { to: "/about", label: "About" },
+              { to: "/history", label: "History" },
+            ].map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  [
+                    "transition-colors",
+                    isActive ? "text-accent font-semibold" : "text-foreground hover:text-accent",
+                  ].join(" ")
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
           </nav>
           <Button size="sm" className="gap-2 rounded-full px-4 shadow-sm">
             <ShoppingBag className="h-4 w-4" />
