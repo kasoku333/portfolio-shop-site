@@ -1,4 +1,5 @@
 name: CI
+
 on:
   push:
     branches: [ main ]
@@ -10,19 +11,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10.15.1
-        
-          
-
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: pnpm
+          node-version: "20"
+
+      - name: Enable pnpm via corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.15.1 --activate
+          pnpm -v
+
+      - name: Get pnpm store path
+        id: pnpm-store
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install
         run: pnpm install --frozen-lockfile
 
-      - name: Build client
-        run: pnpm --filter ./client build
+      - name: Check
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test
