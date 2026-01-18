@@ -1,16 +1,15 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { useLocation } from "wouter";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
 import { LogOut, Home } from "lucide-react";
 import ProductManager from "@/components/ProductManager";
 import ArtworkManager from "@/components/ArtworkManager";
 
 export default function AdminDashboard() {
   const { user, loading, logout } = useAuth();
-  const [, navigate] = useLocation();
+  const navigate = useNavigate();
   const [products, setProducts] = useState<any[]>([]);
   const [artworks, setArtworks] = useState<any[]>([]);
 
@@ -42,7 +41,7 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground mb-6">
             このページは管理者のみがアクセスできます
           </p>
-          <Link href="/">
+          <Link to="/">
             <Button>ホームに戻る</Button>
           </Link>
         </div>
@@ -62,7 +61,7 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Link href="/">
+            <Link to="/">
               <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <Home className="w-4 h-4" />
                 サイトに戻る

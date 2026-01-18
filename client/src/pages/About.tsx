@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { Link } from "react-router-dom";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 
@@ -17,16 +17,16 @@ export default function About() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-foreground hover:text-accent transition-colors">
+            <Link to="/" className="text-foreground hover:text-accent transition-colors">
               ギャラリー
             </Link>
-            <Link href="/shop" className="text-foreground hover:text-accent transition-colors">
+            <Link to="/shop" className="text-foreground hover:text-accent transition-colors">
               ショップ
             </Link>
-            <Link href="/about" className="text-foreground hover:text-accent transition-colors font-semibold">
+            <Link to="/about" className="text-foreground hover:text-accent transition-colors font-semibold">
               自己紹介
             </Link>
-            <Link href="/history" className="text-foreground hover:text-accent transition-colors">
+            <Link to="/history" className="text-foreground hover:text-accent transition-colors">
               活動履歴
             </Link>
             <Button variant="outline" size="sm" className="flex items-center gap-2">
@@ -47,16 +47,16 @@ export default function About() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            <Link href="/" className="block text-foreground hover:text-accent transition-colors">
+            <Link to="/" className="block text-foreground hover:text-accent transition-colors">
               ギャラリー
             </Link>
-            <Link href="/shop" className="block text-foreground hover:text-accent transition-colors">
+            <Link to="/shop" className="block text-foreground hover:text-accent transition-colors">
               ショップ
             </Link>
-            <Link href="/about" className="block text-foreground hover:text-accent transition-colors font-semibold">
+            <Link to="/about" className="block text-foreground hover:text-accent transition-colors font-semibold">
               自己紹介
             </Link>
-            <Link href="/history" className="block text-foreground hover:text-accent transition-colors">
+            <Link to="/history" className="block text-foreground hover:text-accent transition-colors">
               活動履歴
             </Link>
             <Button variant="outline" className="w-full flex items-center justify-center gap-2">
@@ -105,7 +105,7 @@ export default function About() {
                   皆様の支援が、私の創作活動の原動力となっています。
                 </p>
                 <div className="pt-4">
-                  <Link href="/shop">
+                  <Link to="/shop">
                     <Button className="w-full md:w-auto">
                       作品を見る
                     </Button>
