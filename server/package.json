@@ -2,7 +2,7 @@
   "name": "server",
   "private": true,
   "scripts": {
-    "dev": "pnpm -C .. dev",
+    "dev": "NODE_ENV=development pnpm -C .. exec tsx -- watch server/_core/index.ts",
     "build": "pnpm -C .. build",
     "start": "pnpm -C .. start",
     "check": "pnpm -C .. check"
