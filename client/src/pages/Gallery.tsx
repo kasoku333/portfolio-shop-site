@@ -132,7 +132,7 @@ export default function Gallery() {
       <section className="py-16 md:py-24 text-center bg-muted/50">
         <div className="container space-y-4">
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-            Welcome to My Creative Space
+            ギャラリーへようこそ！
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             イラスト、漫画、小説の作品を展示・販売しています。
