@@ -1,7 +1,6 @@
-import { Button } from "@/components/ui/button";
-import { Link, NavLink } from "react-router-dom";
-import { Menu, X, ShoppingCart } from "lucide-react";
-import { useState } from "react";
+﻿import { Button } from "@/components/ui/button";
+import Shell from "@/components/Shell";
+import { Link } from "react-router-dom";
 
 interface HistoryItem {
   date: string;
@@ -12,45 +11,44 @@ interface HistoryItem {
 
 const historyItems: HistoryItem[] = [
   {
-    date: "2024年1朁E,
-    title: "チE��タルアート展示企E開催",
-    description: "オンラインギャラリーで新作イラスチE0点を展示。多くのファンからの好評を得ました、E,
+    date: "2024蟷ｴ1譛・,
+    title: "繝・ず繧ｿ繝ｫ繧｢繝ｼ繝亥ｱ慕､ｺ莨・髢句ぎ",
+    description: "繧ｪ繝ｳ繝ｩ繧､繝ｳ繧ｮ繝｣繝ｩ繝ｪ繝ｼ縺ｧ譁ｰ菴懊う繝ｩ繧ｹ繝・0轤ｹ繧貞ｱ慕､ｺ縲ょ､壹￥縺ｮ繝輔ぃ繝ｳ縺九ｉ縺ｮ螂ｽ隧輔ｒ蠕励∪縺励◆縲・,
     category: "exhibition",
   },
   {
-    date: "2023年11朁E,
-    title: "漫画作品『Urban Tales』�E牁E,
-    description: "初�E啁E��漫画作品を�E版。限定版はすぐに完売となりました、E,
+    date: "2023蟷ｴ11譛・,
+    title: "貍ｫ逕ｻ菴懷刀縲散rban Tales縲丞・迚・,
+    description: "蛻昴・蝠・･ｭ貍ｫ逕ｻ菴懷刀繧貞・迚医る剞螳夂沿縺ｯ縺吶＄縺ｫ螳悟｣ｲ縺ｨ縺ｪ繧翫∪縺励◆縲・,
     category: "publication",
   },
   {
-    date: "2023年9朁E,
-    title: "クリエイチE��ブアワード受賁E,
-    description: "チE��タルアート部門で新人賞を受賞。これまでの活動が認められました、E,
+    date: "2023蟷ｴ9譛・,
+    title: "繧ｯ繝ｪ繧ｨ繧､繝・ぅ繝悶い繝ｯ繝ｼ繝牙女雉・,
+    description: "繝・ず繧ｿ繝ｫ繧｢繝ｼ繝磯Κ髢縺ｧ譁ｰ莠ｺ雉槭ｒ蜿苓ｳ槭ゅ％繧後∪縺ｧ縺ｮ豢ｻ蜍輔′隱阪ａ繧峨ｌ縺ｾ縺励◆縲・,
     category: "award",
   },
   {
-    date: "2023年7朁E,
-    title: "小説『Whispers of Time』完�E",
-    description: "長編小説の執筁E��完亁E��電子書籍として配信開始、E,
+    date: "2023蟷ｴ7譛・,
+    title: "蟆剰ｪｬ縲燦hispers of Time縲丞ｮ梧・",
+    description: "髟ｷ邱ｨ蟆剰ｪｬ縺ｮ蝓ｷ遲・ｒ螳御ｺ・る崕蟄先嶌邀阪→縺励※驟堺ｿ｡髢句ｧ九・,
     category: "publication",
   },
   {
-    date: "2023年5朁E,
-    title: "SNS フォロワー10丁E��達�E",
-    description: "ソーシャルメチE��アでの活動が評価され、フォロワー数ぁE0丁E��を趁E��ました、E,
+    date: "2023蟷ｴ5譛・,
+    title: "SNS 繝輔か繝ｭ繝ｯ繝ｼ10荳・ｺｺ驕疲・",
+    description: "繧ｽ繝ｼ繧ｷ繝｣繝ｫ繝｡繝・ぅ繧｢縺ｧ縺ｮ豢ｻ蜍輔′隧穂ｾ｡縺輔ｌ縲√ヵ繧ｩ繝ｭ繝ｯ繝ｼ謨ｰ縺・0荳・ｺｺ繧定ｶ・∴縺ｾ縺励◆縲・,
     category: "other",
   },
   {
-    date: "2023年3朁E,
-    title: "ポ�Eトフォリオサイト開設",
-    description: "作品を展示・販売するためのオンラインストアをオープン、E,
+    date: "2023蟷ｴ3譛・,
+    title: "繝昴・繝医ヵ繧ｩ繝ｪ繧ｪ繧ｵ繧､繝磯幕險ｭ",
+    description: "菴懷刀繧貞ｱ慕､ｺ繝ｻ雋ｩ螢ｲ縺吶ｋ縺溘ａ縺ｮ繧ｪ繝ｳ繝ｩ繧､繝ｳ繧ｹ繝医い繧偵が繝ｼ繝励Φ縲・,
     category: "other",
   },
 ];
 
 export default function History() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -64,151 +62,25 @@ export default function History() {
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      exhibition: "展示企E,
-      publication: "出牁E,
-      award: "受賁E,
-      other: "そ�E仁E,
+      exhibition: "螻慕､ｺ莨・,
+      publication: "蜃ｺ迚・,
+      award: "蜿苓ｳ・,
+      other: "縺昴・莉・,
     };
     return labels[category] || category;
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-card" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
-        <div className="container flex items-center justify-between py-4">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-serif font-bold text-accent">My Room</h1>
-          </div>
-
-          {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center gap-8">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              �g�b�v
-            </NavLink>
-            <NavLink
-              to="/gallery"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              �M�������[
-            </NavLink>
-            <NavLink
-              to="/shop"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              �V���b�v
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              About
-            </NavLink>
-            <NavLink
-              to="/history"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              History
-            </NavLink>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              �g�b�v
-            </NavLink>
-            <NavLink
-              to="/gallery"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              �M�������[
-            </NavLink>
-            <NavLink
-              to="/shop"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              �V���b�v
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              About
-            </NavLink>
-            <NavLink
-              to="/history"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              History
-            </NavLink>
-          </div>
-        )}
-      </nav>
+    <Shell>
 
       {/* Header Section */}
       <section className="py-16 md:py-24 border-b border-border">
         <div className="container text-center">
           <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
-            活動履歴
+            豢ｻ蜍募ｱ･豁ｴ
           </h2>
           <p className="text-lg text-muted-foreground">
-            これまでの創作活動と主な実績をご紹介しまぁE
+            縺薙ｌ縺ｾ縺ｧ縺ｮ蜑ｵ菴懈ｴｻ蜍輔→荳ｻ縺ｪ螳溽ｸｾ繧偵＃邏ｹ莉九＠縺ｾ縺・
           </p>
         </div>
       </section>
@@ -251,27 +123,26 @@ export default function History() {
           {/* Call to Action */}
           <div className="mt-16 p-8 rounded-lg border border-border bg-card text-center" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
             <h3 className="text-2xl font-serif font-bold mb-4 text-foreground">
-              最新作品をチェチE��
+              譛譁ｰ菴懷刀繧偵メ繧ｧ繝・け
             </h3>
             <p className="text-muted-foreground mb-6">
-              これまでの活動�E中で生まれた作品たちをご覧ください
+              縺薙ｌ縺ｾ縺ｧ縺ｮ豢ｻ蜍輔・荳ｭ縺ｧ逕溘∪繧後◆菴懷刀縺溘■繧偵＃隕ｧ縺上□縺輔＞
             </p>
             <Link to="/shop">
               <Button className="w-full md:w-auto">
-                ショチE�Eへ
+                繧ｷ繝ｧ繝・・縺ｸ
               </Button>
             </Link>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-border bg-card py-12">
-        <div className="container text-center text-muted-foreground">
-          <p>&copy; 2024 My Room Portfolio. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
+    </Shell>
   );
 }
+
+
+
+
+
+
 

@@ -1,148 +1,20 @@
-import { Button } from "@/components/ui/button";
-import { Link, NavLink } from "react-router-dom";
-import { Menu, X, ShoppingCart } from "lucide-react";
-import { useState } from "react";
+﻿import { Button } from "@/components/ui/button";
+import Shell from "@/components/Shell";
+import { Link } from "react-router-dom";
 
 export default function About() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-card" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
-        <div className="container flex items-center justify-between py-4">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-serif font-bold text-accent">My Room</h1>
-          </div>
-
-          {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center gap-8">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              �g�b�v
-            </NavLink>
-            <NavLink
-              to="/gallery"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              �M�������[
-            </NavLink>
-            <NavLink
-              to="/shop"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              �V���b�v
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              About
-            </NavLink>
-            <NavLink
-              to="/history"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              History
-            </NavLink>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              �g�b�v
-            </NavLink>
-            <NavLink
-              to="/gallery"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              �M�������[
-            </NavLink>
-            <NavLink
-              to="/shop"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              �V���b�v
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              About
-            </NavLink>
-            <NavLink
-              to="/history"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              History
-            </NavLink>
-          </div>
-        )}
-      </nav>
+    <Shell>
 
       {/* Header Section */}
       <section className="py-16 md:py-24 border-b border-border">
         <div className="container text-center">
           <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
-            自己紹仁E
+            閾ｪ蟾ｱ邏ｹ莉・
           </h2>
           <p className="text-lg text-muted-foreground">
-            クリエイターとしての私につぁE��ご紹介しまぁE
+            繧ｯ繝ｪ繧ｨ繧､繧ｿ繝ｼ縺ｨ縺励※縺ｮ遘√↓縺､縺・※縺皮ｴｹ莉九＠縺ｾ縺・
           </p>
         </div>
       </section>
@@ -156,26 +28,26 @@ export default function About() {
               <div className="rounded-lg overflow-hidden border border-border" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
                 <div className="aspect-square bg-muted flex items-center justify-center">
                   <div className="text-center text-muted-foreground">
-                    <p className="text-lg">プロフィール画僁E/p>
+                    <p className="text-lg">繝励Ο繝輔ぅ繝ｼ繝ｫ逕ｻ蜒・/p>
                   </div>
                 </div>
               </div>
               <div className="space-y-4">
                 <h3 className="text-3xl font-serif font-bold text-foreground">
-                  クリエイター吁E
+                  繧ｯ繝ｪ繧ｨ繧､繧ｿ繝ｼ蜷・
                 </h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  イラスト、漫画、小説を制作するクリエイターです、E
-                  日、E�E創作活動を通じて、様、E��作品を世界に発信してぁE��す、E
+                  繧､繝ｩ繧ｹ繝医∵ｼｫ逕ｻ縲∝ｰ剰ｪｬ繧貞宛菴懊☆繧九け繝ｪ繧ｨ繧､繧ｿ繝ｼ縺ｧ縺吶・
+                  譌･縲・・蜑ｵ菴懈ｴｻ蜍輔ｒ騾壹§縺ｦ縲∵ｧ倥・↑菴懷刀繧剃ｸ也阜縺ｫ逋ｺ菫｡縺励※縺・∪縺吶・
                 </p>
                 <p className="text-muted-foreground leading-relaxed">
-                  チE��タルアートから実物啁E��まで、多岐にわたる作品制作に取り絁E��でぁE��す、E
-                  皁E���E支援が、私�E創作活動�E原動力となってぁE��す、E
+                  繝・ず繧ｿ繝ｫ繧｢繝ｼ繝医°繧牙ｮ溽黄蝠・刀縺ｾ縺ｧ縲∝､壼ｲ舌↓繧上◆繧倶ｽ懷刀蛻ｶ菴懊↓蜿悶ｊ邨・ｓ縺ｧ縺・∪縺吶・
+                  逧・ｧ倥・謾ｯ謠ｴ縺後∫ｧ√・蜑ｵ菴懈ｴｻ蜍輔・蜴溷虚蜉帙→縺ｪ縺｣縺ｦ縺・∪縺吶・
                 </p>
                 <div className="pt-4">
                   <Link to="/shop">
                     <Button className="w-full md:w-auto">
-                      作品を見る
+                      菴懷刀繧定ｦ九ｋ
                     </Button>
                   </Link>
                 </div>
@@ -188,13 +60,13 @@ export default function About() {
             {/* Skills Section */}
             <div>
               <h3 className="text-2xl font-serif font-bold mb-8 text-foreground">
-                スキル・得意刁E��
+                繧ｹ繧ｭ繝ｫ繝ｻ蠕玲э蛻・㍽
               </h3>
               <div className="grid md:grid-cols-3 gap-6">
                 {[
-                  { title: "チE��タルイラスチE, description: "高解像度のチE��タルアート制佁E },
-                  { title: "漫画制佁E, description: "スト�Eリー性のある漫画作品" },
-                  { title: "小説執筁E, description: "感情豊かな小説・エチE��イ" },
+                  { title: "繝・ず繧ｿ繝ｫ繧､繝ｩ繧ｹ繝・, description: "鬮倩ｧ｣蜒丞ｺｦ縺ｮ繝・ず繧ｿ繝ｫ繧｢繝ｼ繝亥宛菴・ },
+                  { title: "貍ｫ逕ｻ蛻ｶ菴・, description: "繧ｹ繝医・繝ｪ繝ｼ諤ｧ縺ｮ縺ゅｋ貍ｫ逕ｻ菴懷刀" },
+                  { title: "蟆剰ｪｬ蝓ｷ遲・, description: "諢滓ュ雎翫°縺ｪ蟆剰ｪｬ繝ｻ繧ｨ繝・そ繧､" },
                 ].map((skill, idx) => (
                   <div
                     key={idx}
@@ -218,29 +90,29 @@ export default function About() {
             {/* Message Section */}
             <div className="bg-card border border-border rounded-lg p-8" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
               <h3 className="text-2xl font-serif font-bold mb-4 text-foreground">
-                メチE��ージ
+                繝｡繝・そ繝ｼ繧ｸ
               </h3>
               <p className="text-foreground leading-relaxed mb-4">
-                こ�Eサイト�E、私�E創作活動�E雁E��成です、E
-                ここで皁E��と作品を通じてつながり、E
-                一緒に創造の喜�Eを�Eかち合いたいと思ってぁE��す、E
+                縺薙・繧ｵ繧､繝医・縲∫ｧ√・蜑ｵ菴懈ｴｻ蜍輔・髮・､ｧ謌舌〒縺吶・
+                縺薙％縺ｧ逧・ｧ倥→菴懷刀繧帝壹§縺ｦ縺､縺ｪ縺後ｊ縲・
+                荳邱偵↓蜑ｵ騾縺ｮ蝟懊・繧貞・縺九■蜷医＞縺溘＞縺ｨ諤昴▲縺ｦ縺・∪縺吶・
               </p>
               <p className="text-foreground leading-relaxed">
-                皁E���Eご支援とご感想が、私�E創作活動�E源となります、E
-                ぜ�E、作品をご覧ぁE��だき、ご感想をお聞かせください、E
+                逧・ｧ倥・縺疲髪謠ｴ縺ｨ縺疲─諠ｳ縺後∫ｧ√・蜑ｵ菴懈ｴｻ蜍輔・貅舌→縺ｪ繧翫∪縺吶・
+                縺懊・縲∽ｽ懷刀繧偵＃隕ｧ縺・◆縺縺阪√＃諢滓Φ繧偵♀閨槭°縺帙￥縺縺輔＞縲・
               </p>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-border bg-card py-12">
-        <div className="container text-center text-muted-foreground">
-          <p>&copy; 2024 My Room Portfolio. All rights reserved.</p>
-        </div>
-      </footer>
-    </div>
+    </Shell>
   );
 }
+
+
+
+
+
+
+
 

@@ -7,6 +7,14 @@ type ShellProps = {
   children: ReactNode;
 };
 
+const navItems = [
+  { to: "/", label: "トップ" },
+  { to: "/gallery", label: "ギャラリー" },
+  { to: "/shop", label: "ショップ" },
+  { to: "/about", label: "About" },
+  { to: "/history", label: "History" },
+];
+
 export default function Shell({ children }: ShellProps) {
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -21,13 +29,7 @@ export default function Shell({ children }: ShellProps) {
             </span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm">
-            {[
-              { to: "/", label: "トップ" },
-              { to: "/gallery", label: "ギャラリー" },
-              { to: "/shop", label: "ショップ" },
-              { to: "/about", label: "About" },
-              { to: "/history", label: "History" },
-            ].map((item) => (
+            {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}

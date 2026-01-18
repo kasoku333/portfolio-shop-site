@@ -1,9 +1,8 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { NavLink } from "react-router-dom";
-import { ShoppingCart, Menu, X } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import Shell from "@/components/Shell";
 
 interface Artwork {
   id: number;
@@ -51,7 +50,6 @@ const mockArtworks: Artwork[] = [
 
 export default function Gallery() {
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // Fetch artworks from database
@@ -64,156 +62,26 @@ export default function Gallery() {
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      illustration: "イラスチE,
-      manga: "漫画",
-      novel: "小説",
+      illustration: "繧､繝ｩ繧ｹ繝・,
+      manga: "貍ｫ逕ｻ",
+      novel: "蟆剰ｪｬ",
     };
     return labels[category] || category;
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-card" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
-        <div className="container flex items-center justify-between py-4">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-serif font-bold text-accent">My Room</h1>
-          </div>
-
-          {/* Desktop Menu */}
-                    <div className="hidden md:flex items-center gap-8">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              �g�b�v
-            </NavLink>
-            <NavLink
-              to="/gallery"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              �M�������[
-            </NavLink>
-            <NavLink
-              to="/shop"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              �V���b�v
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              About
-            </NavLink>
-            <NavLink
-              to="/history"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold transition-colors"
-                  : "text-foreground hover:text-accent transition-colors"
-              }
-            >
-              History
-            </NavLink>
-            <Button variant="outline" size="sm" className="flex items-center gap-2">
-              <ShoppingCart className="w-4 h-4" />
-              �J�[�g
-            </Button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              �g�b�v
-            </NavLink>
-            <NavLink
-              to="/gallery"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              �M�������[
-            </NavLink>
-            <NavLink
-              to="/shop"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              �V���b�v
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              About
-            </NavLink>
-            <NavLink
-              to="/history"
-              className={({ isActive }) =>
-                isActive
-                  ? "text-accent font-semibold"
-                  : "text-foreground hover:text-accent"
-              }
-            >
-              History
-            </NavLink>
-          </div>
-        )}
-      </nav>
+    <Shell>
 
       {/* Hero Section */}
       <section className="py-16 md:py-24 text-center bg-muted/50">
         <div className="container space-y-4">
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-            ギャラリーへようこそ�E�E
+            繧ｮ繝｣繝ｩ繝ｪ繝ｼ縺ｸ繧医≧縺薙◎・・
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            イラスト、漫画、小説の作品を展示・販売してぁE��す、E
+            繧､繝ｩ繧ｹ繝医∵ｼｫ逕ｻ縲∝ｰ剰ｪｬ縺ｮ菴懷刀繧貞ｱ慕､ｺ繝ｻ雋ｩ螢ｲ縺励※縺・∪縺吶・
             <br />
-            チE��タルコンチE��チE��ら実物啁E��まで、様、E��作品をお楽しみください、E
+            繝・ず繧ｿ繝ｫ繧ｳ繝ｳ繝・Φ繝・°繧牙ｮ溽黄蝠・刀縺ｾ縺ｧ縲∵ｧ倥・↑菴懷刀繧偵♀讌ｽ縺励∩縺上□縺輔＞縲・
           </p>
         </div>
       </section>
@@ -221,7 +89,7 @@ export default function Gallery() {
       {/* Gallery Section */}
       <section className="py-16 md:py-24">
         <div className="container space-y-8">
-          <h3 className="text-3xl font-serif font-bold text-foreground">ギャラリー</h3>
+          <h3 className="text-3xl font-serif font-bold text-foreground">繧ｮ繝｣繝ｩ繝ｪ繝ｼ</h3>
 
           {/* Category Filter */}
           <div className="flex flex-wrap gap-3">
@@ -235,7 +103,7 @@ export default function Gallery() {
                     : "bg-muted text-foreground hover:bg-muted/80"
                 }`}
               >
-                {cat === "all" ? "すべて" : getCategoryLabel(cat)}
+                {cat === "all" ? "縺吶∋縺ｦ" : getCategoryLabel(cat)}
               </button>
             ))}
           </div>
@@ -243,7 +111,7 @@ export default function Gallery() {
           {/* Loading State */}
           {isLoading && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">読み込み中...</p>
+              <p className="text-muted-foreground">隱ｭ縺ｿ霎ｼ縺ｿ荳ｭ...</p>
             </div>
           )}
 
@@ -283,7 +151,7 @@ export default function Gallery() {
           {/* Empty State */}
           {!isLoading && artworks.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">作品がまだアチE�EロードされてぁE��せん</p>
+              <p className="text-muted-foreground">菴懷刀縺後∪縺繧｢繝・・繝ｭ繝ｼ繝峨＆繧後※縺・∪縺帙ｓ</p>
             </div>
           )}
         </div>
@@ -313,10 +181,10 @@ export default function Gallery() {
                 </div>
                 <div className="flex gap-3 pt-4">
                   <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90">
-                    関連啁E��を見る
+                    髢｢騾｣蝠・刀繧定ｦ九ｋ
                   </Button>
                   <Button variant="outline" className="flex-1">
-                    カートに追加
+                    繧ｫ繝ｼ繝医↓霑ｽ蜉
                   </Button>
                 </div>
               </div>
@@ -324,7 +192,11 @@ export default function Gallery() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </Shell>
   );
 }
+
+
+
+
 
