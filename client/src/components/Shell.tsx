@@ -2,6 +2,8 @@ import { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 type ShellProps = {
   children: ReactNode;
@@ -14,6 +16,28 @@ const navItems = [
   { to: "/about", label: "About" },
   { to: "/history", label: "History" },
 ];
+
+function CartButton() {
+  const { user } = useAuth();
+  const { data: count } = trpc.cart.getItemCount.useQuery(undefined, {
+    enabled: !!user,
+    refetchOnWindowFocus: false,
+  });
+
+  return (
+    <Link to="/cart">
+      <Button size="sm" className="gap-2 rounded-full px-4 shadow-sm relative">
+        <ShoppingBag className="h-4 w-4" />
+        カート
+        {count != null && count > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center leading-none">
+            {count > 99 ? "99+" : count}
+          </span>
+        )}
+      </Button>
+    </Link>
+  );
+}
 
 export default function Shell({ children }: ShellProps) {
   return (
@@ -44,10 +68,7 @@ export default function Shell({ children }: ShellProps) {
               </NavLink>
             ))}
           </nav>
-          <Button size="sm" className="gap-2 rounded-full px-4 shadow-sm">
-            <ShoppingBag className="h-4 w-4" />
-            カート
-          </Button>
+          <CartButton />
         </div>
       </header>
 

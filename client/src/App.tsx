@@ -11,9 +11,12 @@ import History from "./pages/History";
 import AdminDashboard from "./pages/AdminDashboard";
 import Gallery from "./pages/Gallery";
 import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
+import OrderHistory from "./pages/OrderHistory";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCancel from "./pages/PaymentCancel";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -22,6 +25,10 @@ function Router() {
       <Route path="/shop" element={<Shop />} />
       <Route path="/about" element={<About />} />
       <Route path="/history" element={<History />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/orders" element={<OrderHistory />} />
+      <Route path="/payment/success" element={<PaymentSuccess />} />
+      <Route path="/payment/cancel" element={<PaymentCancel />} />
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/404" element={<NotFound />} />
       <Route path="*" element={<NotFound />} />

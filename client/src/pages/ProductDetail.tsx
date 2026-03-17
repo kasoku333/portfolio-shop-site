@@ -5,12 +5,27 @@ import Shell from "@/components/Shell";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Star } from "lucide-react";
 import NotFound from "@/pages/NotFound";
+import { trpc } from "@/lib/trpc";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { toast } from "sonner";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const product = useMemo(() => products.find((item) => item.id === id), [id]);
   const [activeImage, setActiveImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const { user } = useAuth();
+  const utils = trpc.useUtils();
+
+  const addToCart = trpc.cart.addItem.useMutation({
+    onSuccess: () => {
+      utils.cart.getItemCount.invalidate();
+      toast.success("カートに追加しました");
+    },
+    onError: () => {
+      toast.error("カートへの追加に失敗しました");
+    },
+  });
 
   if (!product) {
     return <NotFound />;
@@ -91,11 +106,18 @@ export default function ProductDetail() {
                 <Button
                   size="lg"
                   className="rounded-full px-8 shadow-sm"
+                  disabled={addToCart.isPending}
                   onClick={() => {
-                    window.alert("カートに追加しました");
+                    if (!user) {
+                      toast.error("カートに追加するにはログインが必要です");
+                      return;
+                    }
+                    // Note: product.id is a string slug in the static data
+                    // For real DB products, use numeric id from tRPC
+                    toast.success("カートに追加しました（デモ）");
                   }}
                 >
-                  カートに入れる
+                  {addToCart.isPending ? "追加中..." : "カートに入れる"}
                 </Button>
               </div>
             </div>

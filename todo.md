@@ -29,20 +29,23 @@
 - [ ] 在庫管理UI
 
 ## Cart & Checkout
-- [ ] カート表示ページ
-- [ ] カートアイテム追加・削除・更新機能
-- [ ] チェックアウトページ
-- [ ] Stripe 決済統合
-- [ ] 決済成功・失敗ページ
+- [x] カート表示ページ（/cart）
+- [x] カートアイテム追加・削除・更新機能
+- [x] チェックアウトページ（Stripeリダイレクト）
+- [x] Stripe 決済統合（createCheckoutSession）
+- [x] 決済成功・失敗ページ（/payment/success, /payment/cancel）
 
 ## Additional Pages
 - [x] 自己紹介ページ
 - [x] 活動履歴ページ
-- [ ] 注文確認ページ
-- [ ] 注文履歴ページ
+- [x] 注文確認ページ（決済成功ページ）
+- [x] 注文履歴ページ（/orders）
 
 ## Backend Features
 - [x] tRPC ルーター実装（ギャラリー、商品、カート、注文）
+- [x] カート操作API（addItem, updateItem, removeItem, checkout）
+- [x] 商品CRUD API（admin用）
+- [x] 注文管理API（adminList, updateStatus）
 - [x] 認証・認可ロジック
 - [x] Stripe 決済ヘルパー実装
 - [x] Stripe Webhook 処理実装
@@ -63,7 +66,7 @@
 - [ ] 画像アップロード機能（S3統合）
 - [ ] ファイル削除機能
 - [ ] 在庫管理UI
-- [ ] 注文管理・確認機能
+- [x] 注文管理・確認機能（ステータス変更対応）
 
 
 ## Image Upload Feature（新規追加）

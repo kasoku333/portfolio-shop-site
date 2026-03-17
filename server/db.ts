@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, artworks, products, artworkProducts, carts, cartItems, orders, profiles, InsertProfile, InsertOrder } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -138,6 +138,51 @@ export async function getRelatedProducts(artworkId: number) {
   return db.select().from(products).where(sql`id IN (${sql.raw(productIds.join(','))})`);
 }
 
+// Product queries (extended)
+export async function getAllProducts() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(products).orderBy(desc(products.createdAt));
+}
+
+export async function createProduct(data: {
+  userId: number;
+  title: string;
+  description?: string;
+  price: string;
+  productType: "digital" | "physical";
+  stock?: number;
+  imageUrl?: string;
+  imageKey?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(products).values(data);
+  return { success: true };
+}
+
+export async function updateProduct(id: number, data: Partial<{
+  title: string;
+  description: string;
+  price: string;
+  productType: "digital" | "physical";
+  stock: number;
+  imageUrl: string;
+  imageKey: string;
+}>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(products).set(data).where(eq(products.id, id));
+  return { success: true };
+}
+
+export async function deleteProduct(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(products).where(eq(products.id, id));
+  return { success: true };
+}
+
 // Cart queries
 export async function getOrCreateCart(userId: number) {
   const db = await getDb();
@@ -154,6 +199,56 @@ export async function getCartItems(cartId: number) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(cartItems).where(eq(cartItems.cartId, cartId));
+}
+
+export async function getCartItemsWithProducts(cartId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const items = await db.select().from(cartItems).where(eq(cartItems.cartId, cartId));
+  const result = await Promise.all(
+    items.map(async (item) => {
+      const product = await getProductById(item.productId);
+      return { ...item, product };
+    })
+  );
+  return result.filter((item) => item.product != null);
+}
+
+export async function addCartItem(cartId: number, productId: number, quantity: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const existing = await db.select().from(cartItems)
+    .where(sql`${cartItems.cartId} = ${cartId} AND ${cartItems.productId} = ${productId}`)
+    .limit(1);
+  if (existing.length > 0) {
+    await db.update(cartItems)
+      .set({ quantity: existing[0].quantity + quantity })
+      .where(eq(cartItems.id, existing[0].id));
+  } else {
+    await db.insert(cartItems).values({ cartId, productId, quantity });
+  }
+  return { success: true };
+}
+
+export async function updateCartItemQuantity(cartItemId: number, quantity: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(cartItems).set({ quantity }).where(eq(cartItems.id, cartItemId));
+  return { success: true };
+}
+
+export async function removeCartItem(cartItemId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(cartItems).where(eq(cartItems.id, cartItemId));
+  return { success: true };
+}
+
+export async function clearCart(cartId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(cartItems).where(eq(cartItems.cartId, cartId));
+  return { success: true };
 }
 
 // Order queries
@@ -174,6 +269,19 @@ export async function getOrderById(id: number) {
   if (!db) return undefined;
   const result = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
   return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getAllOrders() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(orders).orderBy(desc(orders.createdAt));
+}
+
+export async function updateOrderStatus(id: number, status: "pending" | "completed" | "failed" | "cancelled") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(orders).set({ status }).where(eq(orders.id, id));
+  return { success: true };
 }
 
 // Profile queries

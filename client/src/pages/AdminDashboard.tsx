@@ -3,9 +3,92 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { LogOut, Home } from "lucide-react";
+import { LogOut, Home, Package } from "lucide-react";
 import ProductManager from "@/components/ProductManager";
 import ArtworkManager from "@/components/ArtworkManager";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
+
+const statusLabels: Record<string, { label: string; className: string }> = {
+  pending:   { label: "処理中",    className: "bg-yellow-100 text-yellow-800" },
+  completed: { label: "完了",      className: "bg-green-100 text-green-800" },
+  failed:    { label: "失敗",      className: "bg-red-100 text-red-800" },
+  cancelled: { label: "キャンセル", className: "bg-gray-100 text-gray-600" },
+};
+
+function OrdersTab() {
+  const utils = trpc.useUtils();
+  const { data: orders, isLoading } = trpc.orders.adminList.useQuery();
+  const updateStatus = trpc.orders.updateStatus.useMutation({
+    onSuccess: () => {
+      utils.orders.adminList.invalidate();
+      toast.success("注文ステータスを更新しました");
+    },
+    onError: () => toast.error("更新に失敗しました"),
+  });
+
+  if (isLoading) {
+    return (
+      <div className="py-12 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto" />
+      </div>
+    );
+  }
+
+  if (!orders || orders.length === 0) {
+    return (
+      <div className="rounded-lg border border-border bg-card p-8 text-center">
+        <Package className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+        <p className="text-muted-foreground">まだ注文はありません</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {orders.map((order) => {
+        const statusInfo = statusLabels[order.status] ?? { label: order.status, className: "bg-muted text-muted-foreground" };
+        return (
+          <div key={order.id} className="rounded-xl border border-border bg-card p-5 space-y-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <Package className="h-4 w-4 text-muted-foreground" />
+                <span className="font-semibold">注文 #{order.id}</span>
+                <span className="text-sm text-muted-foreground">— {order.customerName}</span>
+              </div>
+              <span className={`text-xs font-medium px-3 py-1 rounded-full ${statusInfo.className}`}>
+                {statusInfo.label}
+              </span>
+            </div>
+            <div className="flex items-center justify-between flex-wrap gap-3 text-sm text-muted-foreground">
+              <div className="space-y-0.5">
+                <p>{order.customerEmail}</p>
+                <p>{new Date(order.createdAt).toLocaleString("ja-JP")}</p>
+              </div>
+              <span className="text-base font-bold text-accent">
+                ¥{parseFloat(order.totalAmount).toLocaleString()}
+              </span>
+            </div>
+            <div className="flex gap-2 flex-wrap pt-1 border-t border-border">
+              {(["pending", "completed", "cancelled"] as const).map((s) => (
+                <Button
+                  key={s}
+                  size="sm"
+                  variant={order.status === s ? "default" : "outline"}
+                  disabled={order.status === s || updateStatus.isPending}
+                  onClick={() => updateStatus.mutate({ id: order.id, status: s })}
+                  className="text-xs rounded-full"
+                >
+                  {statusLabels[s].label}に変更
+                </Button>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function AdminDashboard() {
   const { user, loading, logout } = useAuth();
@@ -142,14 +225,7 @@ export default function AdminDashboard() {
             <h2 className="text-2xl font-serif font-bold text-foreground">
               注文管理
             </h2>
-            <div className="rounded-lg border border-border bg-card p-8 text-center">
-              <p className="text-muted-foreground mb-4">
-                注文管理機能は実装中です
-              </p>
-              <p className="text-sm text-muted-foreground">
-                ここで顧客からの注文を確認・管理できます
-              </p>
-            </div>
+            <OrdersTab />
           </TabsContent>
 
           {/* Settings Tab */}
