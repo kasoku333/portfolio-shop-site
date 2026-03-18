@@ -94,7 +94,6 @@ export default function AdminDashboard() {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
   const [products, setProducts] = useState<any[]>([]);
-  const [artworks, setArtworks] = useState<any[]>([]);
 
   // アクセス制御：管理者ロールのみ許可
   useEffect(() => {
@@ -203,21 +202,7 @@ export default function AdminDashboard() {
             <h2 className="text-2xl font-serif font-bold text-foreground">
               作品管理
             </h2>
-            <ArtworkManager
-              artworks={artworks}
-              onAdd={(artwork) => {
-                const newArtwork = { id: Date.now(), ...artwork };
-                setArtworks([...artworks, newArtwork]);
-              }}
-              onEdit={(id, updates) => {
-                setArtworks(
-                  artworks.map((a) => (a.id === id ? { ...a, ...updates } : a))
-                );
-              }}
-              onDelete={(id) => {
-                setArtworks(artworks.filter((a) => a.id !== id));
-              }}
-            />
+            <ArtworkManager />
           </TabsContent>
 
           {/* Orders Tab */}

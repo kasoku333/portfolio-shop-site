@@ -4,115 +4,137 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Trash2, Edit2 } from "lucide-react";
+import { Trash2, Edit2, Plus } from "lucide-react";
 import ImageUploader from "./ImageUploader";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
-interface Artwork {
-  id: number;
+type Category = "illustration" | "manga" | "novel";
+
+const categoryLabels: Record<Category, string> = {
+  illustration: "イラスト",
+  manga: "漫画",
+  novel: "小説",
+};
+
+interface FormData {
   title: string;
-  description?: string;
-  category: "illustration" | "manga" | "novel";
-  imageUrl?: string;
+  description: string;
+  category: Category;
+  imageUrl: string;
+  imageKey: string;
 }
 
-interface ArtworkManagerProps {
-  artworks?: Artwork[];
-  onAdd?: (artwork: Omit<Artwork, "id">) => void;
-  onEdit?: (id: number, artwork: Partial<Artwork>) => void;
-  onDelete?: (id: number) => void;
-}
+const emptyForm: FormData = {
+  title: "",
+  description: "",
+  category: "illustration",
+  imageUrl: "",
+  imageKey: "",
+};
 
-export default function ArtworkManager({
-  artworks = [],
-  onAdd,
-  onEdit,
-  onDelete,
-}: ArtworkManagerProps) {
+export default function ArtworkManager() {
+  const utils = trpc.useUtils();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    category: "illustration" as "illustration" | "manga" | "novel",
-    imageUrl: "",
+  const [formData, setFormData] = useState<FormData>(emptyForm);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+
+  const { data: artworks = [], isLoading } = trpc.artworks.list.useQuery({ category: "all" });
+
+  const createArtwork = trpc.artworks.create.useMutation({
+    onSuccess: () => {
+      utils.artworks.list.invalidate();
+      toast.success("作品を追加しました");
+      setIsDialogOpen(false);
+    },
+    onError: (e) => toast.error(e.message),
   });
 
-  const handleOpenDialog = (artwork?: Artwork) => {
-    if (artwork) {
-      setEditingId(artwork.id);
-      setFormData({
-        title: artwork.title,
-        description: artwork.description || "",
-        category: artwork.category,
-        imageUrl: artwork.imageUrl || "",
-      });
-    } else {
-      setEditingId(null);
-      setFormData({
-        title: "",
-        description: "",
-        category: "illustration",
-        imageUrl: "",
-      });
-    }
+  const updateArtwork = trpc.artworks.update.useMutation({
+    onSuccess: () => {
+      utils.artworks.list.invalidate();
+      toast.success("作品を更新しました");
+      setIsDialogOpen(false);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const deleteArtwork = trpc.artworks.delete.useMutation({
+    onSuccess: () => {
+      utils.artworks.list.invalidate();
+      toast.success("作品を削除しました");
+      setDeleteConfirmId(null);
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const openCreate = () => {
+    setEditingId(null);
+    setFormData(emptyForm);
+    setIsDialogOpen(true);
+  };
+
+  const openEdit = (artwork: typeof artworks[number]) => {
+    setEditingId(artwork.id);
+    setFormData({
+      title: artwork.title,
+      description: artwork.description ?? "",
+      category: artwork.category as Category,
+      imageUrl: artwork.imageUrl ?? "",
+      imageKey: artwork.imageKey ?? "",
+    });
     setIsDialogOpen(true);
   };
 
   const handleSubmit = () => {
-    if (!formData.title) {
-      alert("タイトルは必須です");
+    if (!formData.title.trim()) {
+      toast.error("タイトルは必須です");
       return;
     }
-
-    const artworkData = {
-      title: formData.title,
-      description: formData.description,
-      category: formData.category,
-      imageUrl: formData.imageUrl,
-    };
-
     if (editingId) {
-      onEdit?.(editingId, artworkData);
+      updateArtwork.mutate({ id: editingId, ...formData });
     } else {
-      onAdd?.(artworkData);
+      createArtwork.mutate(formData);
     }
-
-    setIsDialogOpen(false);
   };
 
-  const getCategoryLabel = (category: string) => {
-    const labels: Record<string, string> = {
-      illustration: "イラスト",
-      manga: "漫画",
-      novel: "小説",
-    };
-    return labels[category] || category;
-  };
+  const isPending = createArtwork.isPending || updateArtwork.isPending;
 
   return (
     <div className="space-y-6">
-      {/* Artworks Grid */}
-      <div className="gallery-grid">
-        {artworks.length === 0 ? (
-          <div className="col-span-full text-center py-12">
-            <p className="text-muted-foreground mb-4">作品がまだ登録されていません</p>
-          </div>
-        ) : (
-          artworks.map((artwork) => (
+      <div className="flex justify-end">
+        <Button onClick={openCreate} className="flex items-center gap-2 rounded-full">
+          <Plus className="w-4 h-4" />
+          作品を追加
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <div className="py-12 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto" />
+        </div>
+      ) : artworks.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">作品がまだ登録されていません</p>
+        </div>
+      ) : (
+        <div className="gallery-grid">
+          {artworks.map((artwork) => (
             <div
               key={artwork.id}
               className="group relative overflow-hidden rounded-lg border border-border bg-card"
               style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}
             >
-              <div className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105 bg-muted">
+              <div className="aspect-square w-full bg-muted overflow-hidden">
                 {artwork.imageUrl ? (
                   <img
                     src={artwork.imageUrl}
                     alt={artwork.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
                     No Image
                   </div>
                 )}
@@ -123,14 +145,14 @@ export default function ArtworkManager({
                 </h4>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
-                    {getCategoryLabel(artwork.category)}
+                    {categoryLabels[artwork.category as Category] ?? artwork.category}
                   </span>
                 </div>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleOpenDialog(artwork)}
+                    onClick={() => openEdit(artwork)}
                     className="flex-1 flex items-center justify-center gap-1"
                   >
                     <Edit2 className="w-3 h-3" />
@@ -139,7 +161,7 @@ export default function ArtworkManager({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onDelete?.(artwork.id)}
+                    onClick={() => setDeleteConfirmId(artwork.id)}
                     className="flex-1 flex items-center justify-center gap-1 text-destructive hover:text-destructive"
                   >
                     <Trash2 className="w-3 h-3" />
@@ -148,13 +170,13 @@ export default function ArtworkManager({
                 </div>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {/* Artwork Form Dialog */}
+      {/* Create / Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-serif text-2xl">
               {editingId ? "作品を編集" : "新規作品を追加"}
@@ -162,36 +184,26 @@ export default function ArtworkManager({
           </DialogHeader>
 
           <div className="space-y-4">
-            {/* Title */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                作品名 *
+                作品名 <span className="text-destructive">*</span>
               </label>
               <Input
                 value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="作品名を入力"
-                className="w-full"
               />
             </div>
 
-            {/* Category */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                カテゴリ *
+                カテゴリ <span className="text-destructive">*</span>
               </label>
               <Select
                 value={formData.category}
-                onValueChange={(value) =>
-                  setFormData({
-                    ...formData,
-                    category: value as "illustration" | "manga" | "novel",
-                  })
-                }
+                onValueChange={(v) => setFormData({ ...formData, category: v as Category })}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -202,50 +214,75 @@ export default function ArtworkManager({
               </Select>
             </div>
 
-            {/* Description */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 説明
               </label>
               <Textarea
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="作品の説明を入力"
-                className="w-full"
-                rows={4}
+                rows={3}
               />
             </div>
 
-            {/* Image Upload */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                作品画像
+                作品画像（PNG・JPG）
               </label>
               <ImageUploader
-                onImageUrl={(url) =>
-                  setFormData({ ...formData, imageUrl: url })
-                }
+                currentImageUrl={formData.imageUrl || undefined}
+                onImageUrl={(url, key) => setFormData({ ...formData, imageUrl: url, imageKey: key })}
               />
             </div>
 
-            {/* Buttons */}
             <div className="flex gap-3 pt-4 border-t border-border">
-              <Button
-                className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
-                onClick={handleSubmit}
-              >
-                {editingId ? "更新" : "追加"}
+              <Button className="flex-1" onClick={handleSubmit} disabled={isPending}>
+                {isPending ? "保存中..." : editingId ? "更新" : "追加"}
               </Button>
               <Button
                 className="flex-1"
                 variant="outline"
                 onClick={() => setIsDialogOpen(false)}
+                disabled={isPending}
               >
                 キャンセル
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirm Dialog */}
+      <Dialog
+        open={deleteConfirmId !== null}
+        onOpenChange={(open) => !open && setDeleteConfirmId(null)}
+      >
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>削除の確認</DialogTitle>
+          </DialogHeader>
+          <p className="text-muted-foreground text-sm">
+            この作品を削除しますか？この操作は取り消せません。
+          </p>
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="destructive"
+              className="flex-1"
+              disabled={deleteArtwork.isPending}
+              onClick={() =>
+                deleteConfirmId !== null && deleteArtwork.mutate({ id: deleteConfirmId })
+              }
+            >
+              {deleteArtwork.isPending ? "削除中..." : "削除する"}
+            </Button>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setDeleteConfirmId(null)}
+            >
+              キャンセル
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

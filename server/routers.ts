@@ -51,9 +51,13 @@ export const appRouter = router({
         title: z.string(),
         description: z.string().optional(),
         category: z.enum(['illustration', 'manga', 'novel']),
-        imageUrl: z.string(),
+        imageUrl: z.string().optional(),
+        imageKey: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Admin only" });
+        }
         const db_instance = await db.getDb();
         if (!db_instance) throw new Error("Database not available");
         await db_instance.insert(artworks).values({
@@ -62,10 +66,37 @@ export const appRouter = router({
           description: input.description,
           category: input.category,
           imageUrl: input.imageUrl,
+          imageKey: input.imageKey,
           createdAt: new Date(),
           updatedAt: new Date(),
         });
         return { success: true };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+        category: z.enum(['illustration', 'manga', 'novel']).optional(),
+        imageUrl: z.string().optional(),
+        imageKey: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Admin only" });
+        }
+        const { id, ...data } = input;
+        return db.updateArtwork(id, data);
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin") {
+          throw new TRPCError({ code: "FORBIDDEN", message: "Admin only" });
+        }
+        return db.deleteArtwork(input.id);
       }),
   }),
 

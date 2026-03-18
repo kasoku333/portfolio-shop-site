@@ -115,6 +115,27 @@ export async function getArtworkById(id: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+// Artwork mutations (admin)
+export async function updateArtwork(id: number, data: Partial<{
+  title: string;
+  description: string;
+  category: "illustration" | "manga" | "novel";
+  imageUrl: string;
+  imageKey: string;
+}>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(artworks).set(data).where(eq(artworks.id, id));
+  return { success: true };
+}
+
+export async function deleteArtwork(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(artworks).where(eq(artworks.id, id));
+  return { success: true };
+}
+
 // Product queries
 export async function getProductsByUser(userId: number) {
   const db = await getDb();
