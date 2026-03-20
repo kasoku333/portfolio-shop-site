@@ -10,9 +10,9 @@ import ImageUploader from "./ImageUploader";
 interface Artwork {
   id: number;
   title: string;
-  description?: string;
+  description?: string | null;
   category: "illustration" | "manga" | "novel";
-  imageUrl?: string;
+  imageUrl?: string | null;
 }
 
 interface ArtworkManagerProps {
@@ -91,6 +91,14 @@ export default function ArtworkManager({
 
   return (
     <div className="space-y-6">
+      {/* Add Button */}
+      <Button
+        onClick={() => handleOpenDialog()}
+        className="bg-accent text-accent-foreground hover:bg-accent/90"
+      >
+        新規作品を追加
+      </Button>
+
       {/* Artworks Grid */}
       <div className="gallery-grid">
         {artworks.length === 0 ? (
@@ -154,7 +162,7 @@ export default function ArtworkManager({
 
       {/* Artwork Form Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-serif text-2xl">
               {editingId ? "作品を編集" : "新規作品を追加"}

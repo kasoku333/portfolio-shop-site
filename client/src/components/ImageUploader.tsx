@@ -12,7 +12,7 @@ interface ImageUploaderProps {
 export default function ImageUploader({
   onUpload,
   onImageUrl,
-  maxSize = 10,
+  maxSize = 100,
 }: ImageUploaderProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>("");
@@ -82,9 +82,12 @@ export default function ImageUploader({
             setUploadStatus("idle");
           }, 2000);
         } catch (error) {
-          setErrorMessage(
-            error instanceof Error ? error.message : "アップロードエラーが発生しました"
-          );
+          const msg = error instanceof Error ? error.message : "";
+          if (msg.includes("JSON") || msg.includes("fetch") || msg.includes("network")) {
+            setErrorMessage("サーバーに接続できません。バックエンドが起動しているか確認してください。");
+          } else {
+            setErrorMessage(msg || "アップロードエラーが発生しました");
+          }
           setUploadStatus("error");
         } finally {
           setIsUploading(false);
@@ -92,9 +95,7 @@ export default function ImageUploader({
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      setErrorMessage(
-        error instanceof Error ? error.message : "アップロードエラーが発生しました"
-      );
+      setErrorMessage("アップロードエラーが発生しました");
       setUploadStatus("error");
       setIsUploading(false);
     }

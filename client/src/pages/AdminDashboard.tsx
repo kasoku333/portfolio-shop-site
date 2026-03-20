@@ -1,22 +1,46 @@
-import { useAuth } from "@/_core/hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { LogOut, Home } from "lucide-react";
 import ProductManager from "@/components/ProductManager";
 import ArtworkManager from "@/components/ArtworkManager";
+import OrderManager from "@/components/OrderManager";
+import SiteSettingsManager from "@/components/SiteSettingsManager";
+import { trpc } from "@/lib/trpc";
 
 export default function AdminDashboard() {
-  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
-  const [products, setProducts] = useState<any[]>([]);
-  const [artworks, setArtworks] = useState<any[]>([]);
+  const { data: authUser, isLoading: loading } = trpc.auth.me.useQuery(undefined, {
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+  const logoutMutation = trpc.auth.logout.useMutation({
+    onSuccess: () => navigate("/login"),
+  });
+  const user = authUser ? { name: authUser.name || "管理者", role: "admin" as const } : null;
+  const logout = () => logoutMutation.mutate();
 
-  // アクセス制御：管理者ロールのみ許可
+  // tRPC: 商品データ取得
+  const { data: products = [], refetch: refetchProducts } = trpc.products.list.useQuery();
+  const createProduct = trpc.products.create.useMutation({ onSuccess: () => refetchProducts() });
+  const updateProduct = trpc.products.update.useMutation({ onSuccess: () => refetchProducts() });
+  const deleteProduct = trpc.products.delete.useMutation({ onSuccess: () => refetchProducts() });
+
+  // tRPC: 作品データ取得
+  const { data: artworks = [], refetch: refetchArtworks } = trpc.artworks.list.useQuery();
+  const createArtwork = trpc.artworks.create.useMutation({ onSuccess: () => refetchArtworks() });
+  const updateArtwork = trpc.artworks.update.useMutation({ onSuccess: () => refetchArtworks() });
+  const deleteArtwork = trpc.artworks.delete.useMutation({ onSuccess: () => refetchArtworks() });
+
+  // tRPC: 注文データ取得
+  const { data: orders = [], refetch: refetchOrders } = trpc.orders.listAll.useQuery(undefined, { retry: 1, retryDelay: 1000 });
+  const updateOrderStatus = trpc.orders.updateStatus.useMutation({ onSuccess: () => refetchOrders() });
+
+  // アクセス制御：未認証時はログインページへリダイレクト
   useEffect(() => {
-    if (!loading && (!user || user.role !== "admin")) {
-      navigate("/");
+    if (!loading && !user) {
+      navigate("/login");
     }
   }, [user, loading, navigate]);
 
@@ -31,7 +55,7 @@ export default function AdminDashboard() {
     );
   }
 
-  if (!user || user.role !== "admin") {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -41,8 +65,8 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground mb-6">
             このページは管理者のみがアクセスできます
           </p>
-          <Link to="/">
-            <Button>ホームに戻る</Button>
+          <Link to="/login">
+            <Button>ログインページへ</Button>
           </Link>
         </div>
       </div>
@@ -99,18 +123,33 @@ export default function AdminDashboard() {
               商品管理
             </h2>
             <ProductManager
-              products={products}
+              products={products.map(p => ({
+                ...p,
+                price: typeof p.price === 'string' ? parseFloat(p.price) : p.price,
+              }))}
               onAdd={(product) => {
-                const newProduct = { id: Date.now(), ...product };
-                setProducts([...products, newProduct]);
+                createProduct.mutate({
+                  title: product.title,
+                  description: product.description ?? undefined,
+                  price: product.price.toString(),
+                  productType: product.productType,
+                  stock: product.stock ?? undefined,
+                  imageUrl: product.imageUrl ?? undefined,
+                });
               }}
               onEdit={(id, updates) => {
-                setProducts(
-                  products.map((p) => (p.id === id ? { ...p, ...updates } : p))
-                );
+                updateProduct.mutate({
+                  id,
+                  title: updates.title,
+                  description: updates.description ?? undefined,
+                  price: updates.price?.toString(),
+                  productType: updates.productType,
+                  stock: updates.stock ?? undefined,
+                  imageUrl: updates.imageUrl ?? undefined,
+                });
               }}
               onDelete={(id) => {
-                setProducts(products.filter((p) => p.id !== id));
+                deleteProduct.mutate({ id });
               }}
             />
           </TabsContent>
@@ -123,16 +162,24 @@ export default function AdminDashboard() {
             <ArtworkManager
               artworks={artworks}
               onAdd={(artwork) => {
-                const newArtwork = { id: Date.now(), ...artwork };
-                setArtworks([...artworks, newArtwork]);
+                createArtwork.mutate({
+                  title: artwork.title,
+                  description: artwork.description ?? undefined,
+                  category: artwork.category,
+                  imageUrl: artwork.imageUrl ?? undefined,
+                });
               }}
               onEdit={(id, updates) => {
-                setArtworks(
-                  artworks.map((a) => (a.id === id ? { ...a, ...updates } : a))
-                );
+                updateArtwork.mutate({
+                  id,
+                  title: updates.title,
+                  description: updates.description ?? undefined,
+                  category: updates.category,
+                  imageUrl: updates.imageUrl ?? undefined,
+                });
               }}
               onDelete={(id) => {
-                setArtworks(artworks.filter((a) => a.id !== id));
+                deleteArtwork.mutate({ id });
               }}
             />
           </TabsContent>
@@ -142,14 +189,12 @@ export default function AdminDashboard() {
             <h2 className="text-2xl font-serif font-bold text-foreground">
               注文管理
             </h2>
-            <div className="rounded-lg border border-border bg-card p-8 text-center">
-              <p className="text-muted-foreground mb-4">
-                注文管理機能は実装中です
-              </p>
-              <p className="text-sm text-muted-foreground">
-                ここで顧客からの注文を確認・管理できます
-              </p>
-            </div>
+            <OrderManager
+              orders={orders}
+              onStatusChange={(id, status) => {
+                updateOrderStatus.mutate({ id, status });
+              }}
+            />
           </TabsContent>
 
           {/* Settings Tab */}
@@ -157,14 +202,7 @@ export default function AdminDashboard() {
             <h2 className="text-2xl font-serif font-bold text-foreground">
               設定
             </h2>
-            <div className="rounded-lg border border-border bg-card p-8 text-center">
-              <p className="text-muted-foreground mb-4">
-                設定機能は実装中です
-              </p>
-              <p className="text-sm text-muted-foreground">
-                ここでプロフィール、通知設定などを管理できます
-              </p>
-            </div>
+            <SiteSettingsManager />
           </TabsContent>
         </Tabs>
       </div>

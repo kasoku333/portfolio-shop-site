@@ -1,33 +1,42 @@
 import Stripe from "stripe";
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+let _stripe: Stripe | null = null;
 
-if (!stripeSecretKey) {
-  throw new Error("STRIPE_SECRET_KEY is not set");
+function getStripe(): Stripe {
+  if (!_stripe) {
+    const key = process.env.STRIPE_SECRET_KEY;
+    if (!key) {
+      throw new Error("STRIPE_SECRET_KEY is not set. Set it in .env to enable payments.");
+    }
+    _stripe = new Stripe(key);
+  }
+  return _stripe;
 }
 
-export const stripe = new Stripe(stripeSecretKey);
+export function isStripeConfigured(): boolean {
+  return !!process.env.STRIPE_SECRET_KEY;
+}
 
 export async function createCheckoutSession(params: {
-  userId: number;
-  userEmail: string;
-  userName: string;
   items: Array<{
     productId: number;
     name: string;
-    price: number;
+    price: number; // JPY amount (integer)
     quantity: number;
   }>;
   successUrl: string;
   cancelUrl: string;
+  customerEmail?: string;
 }) {
+  const stripe = getStripe();
+
   const lineItems = params.items.map((item) => ({
     price_data: {
       currency: "jpy",
       product_data: {
         name: item.name,
       },
-      unit_amount: Math.round(item.price * 100) / 100,
+      unit_amount: item.price, // JPY is zero-decimal currency
     },
     quantity: item.quantity,
   }));
@@ -38,32 +47,12 @@ export async function createCheckoutSession(params: {
     mode: "payment",
     success_url: params.successUrl,
     cancel_url: params.cancelUrl,
-    customer_email: params.userEmail,
-    client_reference_id: params.userId.toString(),
-    metadata: {
-      user_id: params.userId.toString(),
-      customer_email: params.userEmail,
-      customer_name: params.userName,
-    },
+    ...(params.customerEmail && { customer_email: params.customerEmail }),
   });
 
   return session;
 }
 
 export async function getCheckoutSession(sessionId: string) {
-  return stripe.checkout.sessions.retrieve(sessionId);
-}
-
-export async function createPaymentIntent(params: {
-  amount: number;
-  currency?: string;
-  description?: string;
-  metadata?: Record<string, string>;
-}) {
-  return stripe.paymentIntents.create({
-    amount: Math.round(params.amount * 100),
-    currency: params.currency || "jpy",
-    description: params.description,
-    metadata: params.metadata,
-  });
+  return getStripe().checkout.sessions.retrieve(sessionId);
 }

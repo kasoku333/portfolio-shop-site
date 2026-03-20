@@ -10,11 +10,11 @@ import ImageUploader from "./ImageUploader";
 interface Product {
   id: number;
   title: string;
-  description?: string;
+  description?: string | null;
   price: number;
   productType: "digital" | "physical";
-  imageUrl?: string;
-  stock?: number;
+  imageUrl?: string | null;
+  stock?: number | null;
 }
 
 interface ProductManagerProps {
@@ -92,6 +92,14 @@ export default function ProductManager({
 
   return (
     <div className="space-y-6">
+      {/* Add Button */}
+      <Button
+        onClick={() => handleOpenDialog()}
+        className="bg-accent text-accent-foreground hover:bg-accent/90"
+      >
+        新規商品を追加
+      </Button>
+
       {/* Products Table */}
       <div className="rounded-lg border border-border overflow-hidden">
         <div className="overflow-x-auto">
@@ -169,7 +177,7 @@ export default function ProductManager({
 
       {/* Product Form Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-serif text-2xl">
               {editingId ? "商品を編集" : "新規商品を追加"}

@@ -1,6 +1,6 @@
 import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, artworks, products, artworkProducts, carts, cartItems, orders, profiles, InsertProfile, InsertOrder } from "../drizzle/schema";
+import { InsertUser, users, artworks, products, artworkProducts, carts, cartItems, orders, orderItems, profiles, InsertProfile, InsertOrder } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -115,7 +115,118 @@ export async function getArtworkById(id: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function createArtwork(data: {
+  title: string;
+  description?: string;
+  category: "illustration" | "manga" | "novel";
+  imageUrl?: string;
+  imageKey?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(artworks).values({
+    userId: 1,
+    title: data.title,
+    description: data.description ?? null,
+    category: data.category,
+    imageUrl: data.imageUrl ?? null,
+    imageKey: data.imageKey ?? null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+  const result = await db.select().from(artworks).orderBy(sql`id DESC`).limit(1);
+  return result[0];
+}
+
+export async function updateArtwork(id: number, data: {
+  title?: string;
+  description?: string;
+  category?: "illustration" | "manga" | "novel";
+  imageUrl?: string;
+  imageKey?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updateData: Record<string, unknown> = { updatedAt: new Date() };
+  if (data.title !== undefined) updateData.title = data.title;
+  if (data.description !== undefined) updateData.description = data.description;
+  if (data.category !== undefined) updateData.category = data.category;
+  if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
+  if (data.imageKey !== undefined) updateData.imageKey = data.imageKey;
+  await db.update(artworks).set(updateData).where(eq(artworks.id, id));
+  return getArtworkById(id);
+}
+
+export async function deleteArtwork(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(artworks).where(eq(artworks.id, id));
+}
+
 // Product queries
+export async function getAllProducts() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(products).orderBy(products.createdAt);
+}
+
+export async function createProduct(data: {
+  title: string;
+  description?: string;
+  price: string;
+  productType: "digital" | "physical";
+  stock?: number;
+  imageUrl?: string;
+  imageKey?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(products).values({
+    userId: 1, // 開発用: 管理者ユーザーID
+    title: data.title,
+    description: data.description ?? null,
+    price: data.price,
+    productType: data.productType,
+    stock: data.stock ?? null,
+    imageUrl: data.imageUrl ?? null,
+    imageKey: data.imageKey ?? null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+  // 作成した商品を返す
+  const result = await db.select().from(products).orderBy(sql`id DESC`).limit(1);
+  return result[0];
+}
+
+export async function updateProduct(id: number, data: {
+  title?: string;
+  description?: string;
+  price?: string;
+  productType?: "digital" | "physical";
+  stock?: number;
+  imageUrl?: string;
+  imageKey?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updateData: Record<string, unknown> = { updatedAt: new Date() };
+  if (data.title !== undefined) updateData.title = data.title;
+  if (data.description !== undefined) updateData.description = data.description;
+  if (data.price !== undefined) updateData.price = data.price;
+  if (data.productType !== undefined) updateData.productType = data.productType;
+  if (data.stock !== undefined) updateData.stock = data.stock;
+  if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
+  if (data.imageKey !== undefined) updateData.imageKey = data.imageKey;
+  await db.update(products).set(updateData).where(eq(products.id, id));
+  return getProductById(id);
+}
+
+export async function deleteProduct(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(products).where(eq(products.id, id));
+}
+
 export async function getProductsByUser(userId: number) {
   const db = await getDb();
   if (!db) return [];
@@ -174,6 +285,24 @@ export async function getOrderById(id: number) {
   if (!db) return undefined;
   const result = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
   return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getAllOrders() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(orders).orderBy(sql`${orders.createdAt} DESC`);
+}
+
+export async function getOrderItems(orderId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+}
+
+export async function updateOrderStatus(id: number, status: "pending" | "completed" | "failed" | "cancelled") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(orders).set({ status, updatedAt: new Date() }).where(eq(orders.id, id));
 }
 
 // Profile queries

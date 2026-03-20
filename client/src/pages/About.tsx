@@ -1,8 +1,21 @@
-﻿import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import Shell from "@/components/Shell";
 import { Link } from "react-router-dom";
+import { trpc } from "@/lib/trpc";
 
 export default function About() {
+  const { data: settings } = trpc.siteSettings.get.useQuery(undefined, {
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const creatorName = settings?.creatorName || "クリエイター名";
+  const bio = settings?.bio || "イラスト、漫画、小説を制作するクリエイターです。";
+  const profileImageUrl = settings?.profileImageUrl || "";
+  const twitterUrl = settings?.twitterUrl || "";
+  const pixivUrl = settings?.pixivUrl || "";
+  const otherUrl = settings?.otherUrl || "";
+
+  const hasSnsLinks = twitterUrl || pixivUrl || otherUrl;
 
   return (
     <Shell>
@@ -11,10 +24,10 @@ export default function About() {
       <section className="py-16 md:py-24 border-b border-border">
         <div className="container text-center">
           <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
-            閾ｪ蟾ｱ邏ｹ莉・
+            自己紹介
           </h2>
           <p className="text-lg text-muted-foreground">
-            繧ｯ繝ｪ繧ｨ繧､繧ｿ繝ｼ縺ｨ縺励※縺ｮ遘√↓縺､縺・※縺皮ｴｹ莉九＠縺ｾ縺・
+            クリエイターとしての私についてご紹介します
           </p>
         </div>
       </section>
@@ -26,28 +39,55 @@ export default function About() {
             {/* Profile Section */}
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="rounded-lg overflow-hidden border border-border" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
-                <div className="aspect-square bg-muted flex items-center justify-center">
-                  <div className="text-center text-muted-foreground">
-                    <p className="text-lg">繝励Ο繝輔ぅ繝ｼ繝ｫ逕ｻ蜒・/p>
+                {profileImageUrl ? (
+                  <img
+                    src={profileImageUrl}
+                    alt={creatorName}
+                    className="aspect-square w-full object-cover"
+                  />
+                ) : (
+                  <div className="aspect-square bg-muted flex items-center justify-center">
+                    <div className="text-center text-muted-foreground">
+                      <p className="text-lg">プロフィール画像</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
               <div className="space-y-4">
                 <h3 className="text-3xl font-serif font-bold text-foreground">
-                  繧ｯ繝ｪ繧ｨ繧､繧ｿ繝ｼ蜷・
+                  {creatorName}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  繧､繝ｩ繧ｹ繝医∵ｼｫ逕ｻ縲∝ｰ剰ｪｬ繧貞宛菴懊☆繧九け繝ｪ繧ｨ繧､繧ｿ繝ｼ縺ｧ縺吶・
-                  譌･縲・・蜑ｵ菴懈ｴｻ蜍輔ｒ騾壹§縺ｦ縲∵ｧ倥・↑菴懷刀繧剃ｸ也阜縺ｫ逋ｺ菫｡縺励※縺・∪縺吶・
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {bio}
                 </p>
-                <p className="text-muted-foreground leading-relaxed">
-                  繝・ず繧ｿ繝ｫ繧｢繝ｼ繝医°繧牙ｮ溽黄蝠・刀縺ｾ縺ｧ縲∝､壼ｲ舌↓繧上◆繧倶ｽ懷刀蛻ｶ菴懊↓蜿悶ｊ邨・ｓ縺ｧ縺・∪縺吶・
-                  逧・ｧ倥・謾ｯ謠ｴ縺後∫ｧ√・蜑ｵ菴懈ｴｻ蜍輔・蜴溷虚蜉帙→縺ｪ縺｣縺ｦ縺・∪縺吶・
-                </p>
+
+                {hasSnsLinks && (
+                  <div className="flex gap-3 pt-2">
+                    {twitterUrl && (
+                      <a href={twitterUrl} target="_blank" rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-accent transition-colors underline">
+                        X (Twitter)
+                      </a>
+                    )}
+                    {pixivUrl && (
+                      <a href={pixivUrl} target="_blank" rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-accent transition-colors underline">
+                        Pixiv
+                      </a>
+                    )}
+                    {otherUrl && (
+                      <a href={otherUrl} target="_blank" rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-accent transition-colors underline">
+                        Webサイト
+                      </a>
+                    )}
+                  </div>
+                )}
+
                 <div className="pt-4">
                   <Link to="/shop">
                     <Button className="w-full md:w-auto">
-                      菴懷刀繧定ｦ九ｋ
+                      作品を見る
                     </Button>
                   </Link>
                 </div>
@@ -60,13 +100,13 @@ export default function About() {
             {/* Skills Section */}
             <div>
               <h3 className="text-2xl font-serif font-bold mb-8 text-foreground">
-                繧ｹ繧ｭ繝ｫ繝ｻ蠕玲э蛻・㍽
+                スキル・使用ツール
               </h3>
               <div className="grid md:grid-cols-3 gap-6">
                 {[
-                  { title: "繝・ず繧ｿ繝ｫ繧､繝ｩ繧ｹ繝・, description: "鬮倩ｧ｣蜒丞ｺｦ縺ｮ繝・ず繧ｿ繝ｫ繧｢繝ｼ繝亥宛菴・ },
-                  { title: "貍ｫ逕ｻ蛻ｶ菴・, description: "繧ｹ繝医・繝ｪ繝ｼ諤ｧ縺ｮ縺ゅｋ貍ｫ逕ｻ菴懷刀" },
-                  { title: "蟆剰ｪｬ蝓ｷ遲・, description: "諢滓ュ雎翫°縺ｪ蟆剰ｪｬ繝ｻ繧ｨ繝・そ繧､" },
+                  { title: "デジタルイラスト", description: "高解像度のデジタルアート制作" },
+                  { title: "漫画制作", description: "ストーリー性のある漫画作品" },
+                  { title: "小説執筆", description: "感情豊かな小説・エッセイ" },
                 ].map((skill, idx) => (
                   <div
                     key={idx}
@@ -90,16 +130,16 @@ export default function About() {
             {/* Message Section */}
             <div className="bg-card border border-border rounded-lg p-8" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
               <h3 className="text-2xl font-serif font-bold mb-4 text-foreground">
-                繝｡繝・そ繝ｼ繧ｸ
+                メッセージ
               </h3>
               <p className="text-foreground leading-relaxed mb-4">
-                縺薙・繧ｵ繧､繝医・縲∫ｧ√・蜑ｵ菴懈ｴｻ蜍輔・髮・､ｧ謌舌〒縺吶・
-                縺薙％縺ｧ逧・ｧ倥→菴懷刀繧帝壹§縺ｦ縺､縺ｪ縺後ｊ縲・
-                荳邱偵↓蜑ｵ騾縺ｮ蝟懊・繧貞・縺九■蜷医＞縺溘＞縺ｨ諤昴▲縺ｦ縺・∪縺吶・
+                このサイトは、私の創作活動の集大成です。
+                ここで皆様と作品を通じてつながり、
+                一緒に創造の喜びを分かち合いたいと思っています。
               </p>
               <p className="text-foreground leading-relaxed">
-                逧・ｧ倥・縺疲髪謠ｴ縺ｨ縺疲─諠ｳ縺後∫ｧ√・蜑ｵ菴懈ｴｻ蜍輔・貅舌→縺ｪ繧翫∪縺吶・
-                縺懊・縲∽ｽ懷刀繧偵＃隕ｧ縺・◆縺縺阪√＃諢滓Φ繧偵♀閨槭°縺帙￥縺縺輔＞縲・
+                皆様のご応援とご感想が、私の創作活動の糧となります。
+                ぜひ、作品をご覧いただき、ご感想をお聞かせください。
               </p>
             </div>
           </div>
@@ -108,11 +148,3 @@ export default function About() {
     </Shell>
   );
 }
-
-
-
-
-
-
-
-

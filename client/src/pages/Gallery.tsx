@@ -1,8 +1,9 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc";
 import Shell from "@/components/Shell";
+import { Link } from "react-router-dom";
 
 interface Artwork {
   id: number;
@@ -53,18 +54,19 @@ export default function Gallery() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   // Fetch artworks from database
-  const { data: dbArtworks = [], isLoading } = trpc.artworks.list.useQuery({
+  const { data: dbArtworks = [], isLoading, isError } = trpc.artworks.list.useQuery({
     category: selectedCategory as any,
-  });
+  }, { retry: 1, retryDelay: 1000 });
+  const showLoading = isLoading && !isError;
 
   // Combine database artworks with mock data (fallback)
-  const artworks = dbArtworks.length > 0 ? dbArtworks : mockArtworks;
+  const artworks = (dbArtworks.length > 0 && !isError) ? dbArtworks : mockArtworks;
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
-      illustration: "繧､繝ｩ繧ｹ繝・,
-      manga: "貍ｫ逕ｻ",
-      novel: "蟆剰ｪｬ",
+      illustration: "イラスト",
+      manga: "漫画",
+      novel: "小説",
     };
     return labels[category] || category;
   };
@@ -76,12 +78,12 @@ export default function Gallery() {
       <section className="py-16 md:py-24 text-center bg-muted/50">
         <div className="container space-y-4">
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-            繧ｮ繝｣繝ｩ繝ｪ繝ｼ縺ｸ繧医≧縺薙◎・・
+            ギャラリーへようこそ！
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            繧､繝ｩ繧ｹ繝医∵ｼｫ逕ｻ縲∝ｰ剰ｪｬ縺ｮ菴懷刀繧貞ｱ慕､ｺ繝ｻ雋ｩ螢ｲ縺励※縺・∪縺吶・
+            イラスト、漫画、小説の作品を展示・販売しています。
             <br />
-            繝・ず繧ｿ繝ｫ繧ｳ繝ｳ繝・Φ繝・°繧牙ｮ溽黄蝠・刀縺ｾ縺ｧ縲∵ｧ倥・↑菴懷刀繧偵♀讌ｽ縺励∩縺上□縺輔＞縲・
+            デジタルコンテンツから実物作品まで、様々な作品をお楽しみください。
           </p>
         </div>
       </section>
@@ -89,7 +91,7 @@ export default function Gallery() {
       {/* Gallery Section */}
       <section className="py-16 md:py-24">
         <div className="container space-y-8">
-          <h3 className="text-3xl font-serif font-bold text-foreground">繧ｮ繝｣繝ｩ繝ｪ繝ｼ</h3>
+          <h3 className="text-3xl font-serif font-bold text-foreground">ギャラリー</h3>
 
           {/* Category Filter */}
           <div className="flex flex-wrap gap-3">
@@ -103,20 +105,20 @@ export default function Gallery() {
                     : "bg-muted text-foreground hover:bg-muted/80"
                 }`}
               >
-                {cat === "all" ? "縺吶∋縺ｦ" : getCategoryLabel(cat)}
+                {cat === "all" ? "すべて" : getCategoryLabel(cat)}
               </button>
             ))}
           </div>
 
           {/* Loading State */}
-          {isLoading && (
+          {showLoading && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">隱ｭ縺ｿ霎ｼ縺ｿ荳ｭ...</p>
+              <p className="text-muted-foreground">読み込み中...</p>
             </div>
           )}
 
           {/* Artworks Grid */}
-          {!isLoading && (
+          {!showLoading && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {artworks.map((artwork) => (
                 <div
@@ -149,9 +151,9 @@ export default function Gallery() {
           )}
 
           {/* Empty State */}
-          {!isLoading && artworks.length === 0 && (
+          {!showLoading && artworks.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground">菴懷刀縺後∪縺繧｢繝・・繝ｭ繝ｼ繝峨＆繧後※縺・∪縺帙ｓ</p>
+              <p className="text-muted-foreground">作品がまだアップロードされていません</p>
             </div>
           )}
         </div>
@@ -180,11 +182,17 @@ export default function Gallery() {
                   <p className="text-foreground">{selectedArtwork.description}</p>
                 </div>
                 <div className="flex gap-3 pt-4">
-                  <Button className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90">
-                    髢｢騾｣蝠・刀繧定ｦ九ｋ
-                  </Button>
-                  <Button variant="outline" className="flex-1">
-                    繧ｫ繝ｼ繝医↓霑ｽ蜉
+                  <Link to="/shop" className="flex-1">
+                    <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+                      関連商品を見る
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setSelectedArtwork(null)}
+                  >
+                    閉じる
                   </Button>
                 </div>
               </div>
@@ -195,8 +203,3 @@ export default function Gallery() {
     </Shell>
   );
 }
-
-
-
-
-
