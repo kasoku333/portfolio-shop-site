@@ -1,103 +1,129 @@
 import { Link } from "react-router-dom";
-import ProductCard from "@/components/ProductCard";
 import Shell from "@/components/Shell";
-import { products } from "@/data/products";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { BookOpen, Image, ScrollText } from "lucide-react";
+
+// カテゴリカードの定義。将来カテゴリが増えた場合はここに追記するだけでよい。
+const categoryCards = [
+  {
+    key: "manga",
+    label: "漫画",
+    labelEn: "Manga",
+    description: "ストーリー漫画・読み切り作品",
+    icon: BookOpen,
+    // カード個別の背景色をCSS変数で管理。後からindex.cssで上書き可能。
+    colorVar: "var(--home-card-manga-bg, oklch(0.96 0.01 30))",
+    iconColorVar: "var(--home-card-manga-icon, oklch(0.45 0.18 30))",
+    to: "/gallery?category=manga",
+  },
+  {
+    key: "illustration",
+    label: "イラスト",
+    labelEn: "Illustration",
+    description: "デジタルイラスト・アート作品",
+    icon: Image,
+    colorVar: "var(--home-card-illust-bg, oklch(0.96 0.01 200))",
+    iconColorVar: "var(--home-card-illust-icon, oklch(0.45 0.12 200))",
+    to: "/gallery?category=illustration",
+  },
+  {
+    key: "novel",
+    label: "小説",
+    labelEn: "Novel",
+    description: "短編・長編テキスト作品",
+    icon: ScrollText,
+    colorVar: "var(--home-card-novel-bg, oklch(0.96 0.01 120))",
+    iconColorVar: "var(--home-card-novel-icon, oklch(0.4 0.1 140))",
+    to: "/gallery?category=novel",
+  },
+] as const;
 
 export default function Home() {
-  const featured = products.slice(0, 6);
-
   return (
     <Shell>
+      {/* ---- ヒーローセクション ---- */}
+      {/*
+        背景差し替え用の空コンテナを .hero-bg として用意。
+        後から index.css で background-image を設定するか、
+        CSS変数 --hero-bg-image で画像を差し替えられる。
+      */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-24 left-10 h-64 w-64 rounded-full bg-amber-200/40 blur-3xl" />
-          <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-rose-200/40 blur-3xl" />
-          <div className="absolute inset-0 bg-gradient-to-b from-muted/60 via-background to-background" />
+        {/* 装飾グラデーション（画像なし時の背景） */}
+        <div
+          className="absolute inset-0 -z-10 hero-bg"
+          aria-hidden="true"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-muted/80 via-background to-background" />
+          <div className="absolute -top-20 left-8 h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
+          <div className="absolute bottom-0 right-0 h-56 w-56 rounded-full bg-accent/8 blur-3xl" />
         </div>
 
-        <div className="container grid gap-10 py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-4 py-1 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              <Sparkles className="h-3 w-3 text-accent" />
-              New Collection
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl leading-tight">
-              物語を飾るための
-              <br />
-              小さな作品棚
-            </h1>
-            <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl">
-              イラスト、短編、プリントなど、日常の余白に置きたい作品を丁寧にまとめています。
-              今日の気分に寄り添う一冊を見つけてください。
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                to="/shop"
-                className="inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-accent-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
-              >
-                ショップへ
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                to="/gallery"
-                className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background px-6 py-3 text-sm font-medium text-foreground shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
-              >
-                ギャラリーを見る
-              </Link>
-            </div>
-          </div>
-
-          <div className="relative animate-in fade-in slide-in-from-bottom-6 duration-700 delay-150">
-            <div className="absolute -right-6 top-8 h-24 w-24 rounded-3xl bg-accent/10 blur-xl" />
-            <div className="grid gap-4">
-              <div className="rounded-[32px] border border-border/60 bg-card p-6 shadow-sm">
-                <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                  Highlight
-                </p>
-                <p className="mt-3 text-lg font-semibold">
-                  「Aurora Print」先行予約スタート
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  2日間限定でエディション番号入り。
-                </p>
-              </div>
-              <div className="rounded-[32px] border border-border/60 bg-card p-6 shadow-sm">
-                <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                  Studio Note
-                </p>
-                <p className="mt-3 text-lg font-semibold">
-                  作品の裏側を毎週お届け
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  制作過程や素材選びを記録したメモを公開中。
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="container py-20 md:py-32 text-center animate-in fade-in slide-in-from-bottom-6 duration-700">
+          {/* ブランドロゴ相当の表示 */}
+          <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground mb-4">
+            Portfolio &amp; Shop
+          </p>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl leading-tight mb-6">
+            Atelier Shelf
+          </h1>
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
+            漫画・イラスト・小説。<br />
+            日常の余白に置きたい作品をまとめた、小さな作品棚です。
+          </p>
         </div>
       </section>
 
-      <section className="container pb-20 pt-10">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              Popular Picks
-            </p>
-            <h2 className="text-3xl md:text-4xl">人気のプロダクト</h2>
-          </div>
-          <Link
-            to="/shop"
-            className="text-sm font-medium text-accent hover:text-accent/80"
-          >
-            すべて見る →
-          </Link>
-        </div>
+      {/* ---- カテゴリカードセクション ---- */}
+      <section className="container pb-24 pt-4" aria-label="カテゴリ一覧">
+        <div className="grid gap-5 sm:grid-cols-3">
+          {categoryCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <Link
+                key={card.key}
+                to={card.to}
+                className="group relative flex flex-col items-center gap-5 rounded-2xl border border-border/70 bg-card p-8 text-center shadow-sm
+                           transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:border-border
+                           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                aria-label={`${card.label}の作品を見る`}
+              >
+                {/* アイコン背景サークル */}
+                <span
+                  className="flex h-16 w-16 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110"
+                  style={{ backgroundColor: card.colorVar }}
+                  aria-hidden="true"
+                >
+                  <Icon
+                    className="h-7 w-7"
+                    style={{ color: card.iconColorVar }}
+                    strokeWidth={1.5}
+                  />
+                </span>
 
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+                {/* カテゴリ名 */}
+                <div className="space-y-1">
+                  <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+                    {card.labelEn}
+                  </p>
+                  <h2 className="text-2xl font-serif font-semibold text-foreground">
+                    {card.label}
+                  </h2>
+                </div>
+
+                {/* 説明文 */}
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {card.description}
+                </p>
+
+                {/* 矢印（ホバーで右にスライド） */}
+                <span
+                  className="mt-auto text-xs font-medium text-accent transition-transform duration-300 group-hover:translate-x-1"
+                  aria-hidden="true"
+                >
+                  見る →
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </section>
     </Shell>

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc";
 import Shell from "@/components/Shell";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 interface Artwork {
   id: number;
@@ -50,8 +50,10 @@ const mockArtworks: Artwork[] = [
 ];
 
 export default function Gallery() {
+  const [searchParams] = useSearchParams();
+  const initialCategory = searchParams.get("category") ?? "all";
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
 
   // Fetch artworks from database
   const { data: dbArtworks = [], isLoading, isError } = trpc.artworks.list.useQuery({

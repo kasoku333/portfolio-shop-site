@@ -76,6 +76,16 @@
   --sidebar-accent-foreground: oklch(0.98 0 0);
   --sidebar-border: oklch(0.93 0.003 65);
   --sidebar-ring: oklch(0.4 0.2 30);
+
+  /* ---- ホームカテゴリカード配色 ---- */
+  /* アイコン背景: 各カテゴリの象徴色を淡く乗せる（lightness 0.96） */
+  /* アイコン色: 同じ色相で彩度・明度を落として読みやすく */
+  --home-card-manga-bg: oklch(0.96 0.01 30);       /* 暖色（赤橙） */
+  --home-card-manga-icon: oklch(0.45 0.18 30);
+  --home-card-illust-bg: oklch(0.96 0.01 200);     /* 寒色（青緑） */
+  --home-card-illust-icon: oklch(0.45 0.12 200);
+  --home-card-novel-bg: oklch(0.96 0.01 120);      /* 緑系 */
+  --home-card-novel-icon: oklch(0.4 0.1 140);
 }
 
 .dark {
@@ -111,6 +121,16 @@
   --sidebar-accent-foreground: oklch(0.15 0.01 65);
   --sidebar-border: oklch(0.3 0.01 65);
   --sidebar-ring: oklch(0.65 0.15 30);
+
+  /* ---- ホームカテゴリカード配色（ダーク） ---- */
+  /* アイコン背景: カード面（0.2）より少し浮かせた暗め色（0.25） */
+  /* アイコン色: ライトより明るく、彩度はやや控えめに */
+  --home-card-manga-bg: oklch(0.25 0.03 30);       /* 暖色（赤橙）ダーク */
+  --home-card-manga-icon: oklch(0.7 0.15 30);
+  --home-card-illust-bg: oklch(0.25 0.03 200);     /* 寒色（青緑）ダーク */
+  --home-card-illust-icon: oklch(0.7 0.1 200);
+  --home-card-novel-bg: oklch(0.25 0.03 120);      /* 緑系 ダーク */
+  --home-card-novel-icon: oklch(0.65 0.09 140);
 }
 
 @layer base {
