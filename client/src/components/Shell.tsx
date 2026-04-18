@@ -52,8 +52,11 @@ function useCurrentCategory() {
 
 export default function Shell({ children }: ShellProps) {
   const { totalItems } = useCart();
+  // API 停止時にヘッダー描画が長時間ブロックされないよう retry を抑える。
+  // 失敗時は下の `|| "..."` フォールバックでデフォルト文言を表示する。
   const { data: settings } = trpc.siteSettings.get.useQuery(undefined, {
     staleTime: 1000 * 60 * 5,
+    retry: false,
   });
 
   const siteName = settings?.siteName || "Atelier Shelf";

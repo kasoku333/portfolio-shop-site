@@ -17,52 +17,16 @@ interface Artwork {
   updatedAt?: Date;
 }
 
-// Mock data for demo
-const mockArtworks: Artwork[] = [
-  {
-    id: 1,
-    title: "Moonlight Dreams",
-    category: "illustration",
-    imageUrl: "https://images.unsplash.com/photo-1579783902614-e3fb5141b0cb?w=400&h=400&fit=crop",
-    description: "A serene illustration capturing the essence of a peaceful night.",
-  },
-  {
-    id: 2,
-    title: "Urban Tales",
-    category: "manga",
-    imageUrl: "https://images.unsplash.com/photo-1578926078328-123456789012?w=400&h=400&fit=crop",
-    description: "A manga series exploring modern city life and human connections.",
-  },
-  {
-    id: 3,
-    title: "Whispers of Time",
-    category: "novel",
-    imageUrl: "https://images.unsplash.com/photo-1507842217343-583f20270319?w=400&h=400&fit=crop",
-    description: "A novel about love, loss, and the passage of time.",
-  },
-  {
-    id: 4,
-    title: "Ethereal Visions",
-    category: "illustration",
-    imageUrl: "https://images.unsplash.com/photo-1578926078328-123456789013?w=400&h=400&fit=crop",
-    description: "Digital art exploring abstract concepts and emotions.",
-  },
-];
-
 export default function Gallery() {
   const [searchParams] = useSearchParams();
   const initialCategory = searchParams.get("category") ?? "all";
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
 
-  // Fetch artworks from database
-  const { data: dbArtworks = [], isLoading, isError } = trpc.artworks.list.useQuery({
+  const { data: artworks = [], isLoading, isError } = trpc.artworks.list.useQuery({
     category: selectedCategory as any,
   }, { retry: 1, retryDelay: 1000 });
   const showLoading = isLoading && !isError;
-
-  // Combine database artworks with mock data (fallback)
-  const artworks = (dbArtworks.length > 0 && !isError) ? dbArtworks : mockArtworks;
 
   const getCategoryLabel = (category: string) => {
     const labels: Record<string, string> = {
@@ -119,8 +83,18 @@ export default function Gallery() {
             </div>
           )}
 
+          {/* Error State */}
+          {isError && (
+            <div className="text-center py-12 space-y-2">
+              <p className="text-destructive font-medium">サーバーに接続できませんでした</p>
+              <p className="text-sm text-muted-foreground">
+                時間を置いて再度お試しください。
+              </p>
+            </div>
+          )}
+
           {/* Artworks Grid */}
-          {!showLoading && (
+          {!showLoading && !isError && artworks.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {artworks.map((artwork) => (
                 <div
@@ -153,7 +127,7 @@ export default function Gallery() {
           )}
 
           {/* Empty State */}
-          {!showLoading && artworks.length === 0 && (
+          {!showLoading && !isError && artworks.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">作品がまだアップロードされていません</p>
             </div>

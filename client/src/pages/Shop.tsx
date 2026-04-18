@@ -17,44 +17,6 @@ interface Product {
   stock?: number | null;
 }
 
-// Mock data for demo (fallback)
-const mockProducts: Product[] = [
-  {
-    id: 1,
-    title: "Moonlight Dreams - Digital Edition",
-    price: 1500,
-    productType: "digital",
-    imageUrl: "https://images.unsplash.com/photo-1579783902614-e3fb5141b0cb?w=400&h=400&fit=crop",
-    description: "高解像度デジタルアート完全パック",
-  },
-  {
-    id: 2,
-    title: "Urban Tales - Manga Volume 1",
-    price: 2800,
-    productType: "physical",
-    imageUrl: "https://images.unsplash.com/photo-1578926078328-123456789012?w=400&h=400&fit=crop",
-    description: "限定版漫画本（サイン入り）",
-    stock: 5,
-  },
-  {
-    id: 3,
-    title: "Whispers of Time - eBook",
-    price: 980,
-    productType: "digital",
-    imageUrl: "https://images.unsplash.com/photo-1507842217343-583f20270319?w=400&h=400&fit=crop",
-    description: "完結済み電子書籍版",
-  },
-  {
-    id: 4,
-    title: "Art Print Collection",
-    price: 3500,
-    productType: "physical",
-    imageUrl: "https://images.unsplash.com/photo-1578926078328-123456789013?w=400&h=400&fit=crop",
-    description: "限定版アートプリント（3枚セット）",
-    stock: 10,
-  },
-];
-
 export default function Shop() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedFilter, setSelectedFilter] = useState<"all" | "digital" | "physical">("all");
@@ -71,15 +33,15 @@ export default function Shop() {
     toast.success(`「${product.title}」をカートに追加しました`);
   };
 
-  // DB から商品を取得、なければモックデータを使用
   const { data: dbProducts = [], isLoading, isError } = trpc.products.list.useQuery(undefined, {
     retry: 1,
     retryDelay: 1000,
   });
   const showLoading = isLoading && !isError;
-  const allProducts: Product[] = (dbProducts.length > 0 && !isError)
-    ? dbProducts.map(p => ({ ...p, price: typeof p.price === 'string' ? parseFloat(p.price) : p.price }))
-    : mockProducts;
+  const allProducts: Product[] = dbProducts.map(p => ({
+    ...p,
+    price: typeof p.price === 'string' ? parseFloat(p.price) : p.price,
+  }));
 
   const filteredProducts = selectedFilter === "all"
     ? allProducts
@@ -132,8 +94,18 @@ export default function Shop() {
             </div>
           )}
 
+          {/* Error State */}
+          {isError && (
+            <div className="text-center py-12 space-y-2">
+              <p className="text-destructive font-medium">サーバーに接続できませんでした</p>
+              <p className="text-sm text-muted-foreground">
+                時間を置いて再度お試しください。
+              </p>
+            </div>
+          )}
+
           {/* Products Grid */}
-          {!showLoading && (
+          {!showLoading && !isError && filteredProducts.length > 0 && (
             <div className="gallery-grid">
               {filteredProducts.map((product) => (
                 <div
@@ -183,7 +155,7 @@ export default function Shop() {
           )}
 
           {/* Empty State */}
-          {!isLoading && filteredProducts.length === 0 && (
+          {!showLoading && !isError && filteredProducts.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">該当する商品がありません</p>
             </div>

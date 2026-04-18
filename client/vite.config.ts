@@ -31,6 +31,9 @@ export default defineConfig({
   },
   server: {
     host: true,
+    // start-*.cmd は 5173 を待ち受ける前提なので、ポート退避されると
+    // ブラウザからつながらなくなる。退避せず明示的に失敗させる。
+    strictPort: true,
     allowedHosts: [
       "localhost",
       "127.0.0.1",
