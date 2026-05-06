@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { Save, Globe, User, Mail, Link as LinkIcon } from "lucide-react";
+import { Save, Globe, User, Mail, Link as LinkIcon, ImageIcon } from "lucide-react";
 import ImageUploader from "./ImageUploader";
 
 export default function SiteSettingsManager() {
@@ -27,6 +27,7 @@ export default function SiteSettingsManager() {
     email: "",
     bio: "",
     profileImageUrl: "",
+    heroImageUrl: "",
     twitterUrl: "",
     pixivUrl: "",
     otherUrl: "",
@@ -41,6 +42,7 @@ export default function SiteSettingsManager() {
         email: settings.email || "",
         bio: settings.bio || "",
         profileImageUrl: settings.profileImageUrl || "",
+        heroImageUrl: settings.heroImageUrl || "",
         twitterUrl: settings.twitterUrl || "",
         pixivUrl: settings.pixivUrl || "",
         otherUrl: settings.otherUrl || "",
@@ -80,6 +82,39 @@ export default function SiteSettingsManager() {
             />
           </div>
         </div>
+      </div>
+
+      {/* Hero Image */}
+      <div className="rounded-lg border border-border bg-card p-6 space-y-4" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+        <div className="flex items-center gap-2 mb-2">
+          <ImageIcon className="w-5 h-5 text-accent" />
+          <h3 className="text-lg font-serif font-bold text-foreground">トップページのヒーロー画像</h3>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          トップページ上部の背景に表示される画像です。設定しない場合はデフォルトのグラデーション背景になります。
+        </p>
+        {form.heroImageUrl && (
+          <div className="space-y-2">
+            <div className="relative rounded-lg overflow-hidden border border-border">
+              <img
+                src={form.heroImageUrl}
+                alt="ヒーロー画像プレビュー"
+                className="w-full h-48 object-cover"
+              />
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setForm({ ...form, heroImageUrl: "" })}
+            >
+              画像を削除
+            </Button>
+          </div>
+        )}
+        <ImageUploader
+          onImageUrl={(url) => setForm({ ...form, heroImageUrl: url })}
+          maxSize={20}
+        />
       </div>
 
       {/* Creator Profile */}

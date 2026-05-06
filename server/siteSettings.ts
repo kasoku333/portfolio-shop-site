@@ -12,6 +12,7 @@ export interface SiteSettings {
   email: string;
   bio: string;
   profileImageUrl: string;
+  heroImageUrl: string;
   twitterUrl: string;
   pixivUrl: string;
   otherUrl: string;
@@ -24,6 +25,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   email: "hello@atelier-shelf.example",
   bio: "イラスト、漫画、小説を制作するクリエイターです。",
   profileImageUrl: "",
+  heroImageUrl: "",
   twitterUrl: "",
   pixivUrl: "",
   otherUrl: "",
