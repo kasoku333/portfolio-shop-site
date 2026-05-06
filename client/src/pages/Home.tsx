@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Shell from "@/components/Shell";
 import { BookOpen, Image, ScrollText } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 // カテゴリカードの定義。将来カテゴリが増えた場合はここに追記するだけでよい。
 const categoryCards = [
@@ -38,23 +39,32 @@ const categoryCards = [
 ] as const;
 
 export default function Home() {
+  const { data: settings } = trpc.siteSettings.get.useQuery();
+  const heroImageUrl = settings?.heroImageUrl || "";
+
   return (
     <Shell>
       {/* ---- ヒーローセクション ---- */}
-      {/*
-        背景差し替え用の空コンテナを .hero-bg として用意。
-        後から index.css で background-image を設定するか、
-        CSS変数 --hero-bg-image で画像を差し替えられる。
-      */}
       <section className="relative overflow-hidden">
-        {/* 装飾グラデーション（画像なし時の背景） */}
-        <div
-          className="absolute inset-0 -z-10 hero-bg"
-          aria-hidden="true"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-muted/80 via-background to-background" />
-          <div className="absolute -top-20 left-8 h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
-          <div className="absolute bottom-0 right-0 h-56 w-56 rounded-full bg-accent/8 blur-3xl" />
+        {/* 背景：管理画面で画像が設定されていれば画像、無ければ装飾グラデーション */}
+        <div className="absolute inset-0 -z-10 hero-bg" aria-hidden="true">
+          {heroImageUrl ? (
+            <>
+              <img
+                src={heroImageUrl}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              {/* テキスト可読性のためのオーバーレイ */}
+              <div className="absolute inset-0 bg-background/60" />
+            </>
+          ) : (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-br from-muted/80 via-background to-background" />
+              <div className="absolute -top-20 left-8 h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
+              <div className="absolute bottom-0 right-0 h-56 w-56 rounded-full bg-accent/8 blur-3xl" />
+            </>
+          )}
         </div>
 
         <div className="container py-20 md:py-32 text-center animate-in fade-in slide-in-from-bottom-6 duration-700">

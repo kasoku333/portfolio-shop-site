@@ -79,3 +79,17 @@
 - [x] 作品フィルタリング機能（イラスト・漫画・小説）
 - [x] 作品詳細表示機能
 - [x] 統合テスト
+
+
+## ⚠️ Known Pre-existing CI Failures（要修正・main ブランチに既存）
+
+GitHub Actions の `pnpm check`（TypeScript 型チェック）が main ブランチ時点で既に失敗しています。
+ヒーロー画像 PR (#2) とは無関係。次回セッションで対応すること。
+
+- [ ] `server/webhooks.ts:1` — `import { stripe } from "./stripe"` が壊れている。
+  `server/stripe.ts` は `stripe` を直接 export しておらず、`getStripe()` / `isStripeConfigured()` などしか持たない。
+  → `webhooks.ts` 側で `getStripe()` を呼ぶ形に直すか、`stripe.ts` で `stripe` を export する。
+- [ ] `server/_core/notification.ts` / `server/_core/llm.ts` が `ENV.forgeApiUrl` / `ENV.forgeApiKey` を参照しているが、
+  `server/_core/env.ts` の `ENV` オブジェクトにこれらのキーが存在しない（`TS2339`）。
+  → `env.ts` に `forgeApiUrl: process.env.FORGE_API_URL ?? ""` / `forgeApiKey: process.env.FORGE_API_KEY ?? ""` を追加する。
+- [ ] 上記修正後、`pnpm check && pnpm build && pnpm test` をローカルで通してから push する。

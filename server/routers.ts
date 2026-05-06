@@ -263,6 +263,7 @@ export const appRouter = router({
         email: z.string().optional(),
         bio: z.string().optional(),
         profileImageUrl: z.string().optional(),
+        heroImageUrl: z.string().optional(),
         twitterUrl: z.string().optional(),
         pixivUrl: z.string().optional(),
         otherUrl: z.string().optional(),
