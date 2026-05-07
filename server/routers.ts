@@ -266,6 +266,21 @@ export const appRouter = router({
         twitterUrl: z.string().optional(),
         pixivUrl: z.string().optional(),
         otherUrl: z.string().optional(),
+        message: z.string().optional(),
+        skills: z.array(z.object({
+          id: z.string(),
+          title: z.string(),
+          description: z.string(),
+        })).optional(),
+        historyItems: z.array(z.object({
+          id: z.string(),
+          date: z.string(),
+          category: z.enum(["exhibition", "publication", "award", "other"]),
+          title: z.string(),
+          description: z.string(),
+          sortOrder: z.number(),
+          isPublished: z.boolean(),
+        })).optional(),
       }))
       .mutation(({ input }) => {
         return saveSiteSettings(input);

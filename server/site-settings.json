@@ -7,5 +7,18 @@
   "profileImageUrl": "/uploads/uploads/7yBdLlAoGW8n1SbhJrr7p-アイコン用.png",
   "twitterUrl": "https://x.com/HjOKqjE3XAo1SxY",
   "pixivUrl": "https://www.pixiv.net/users/1366799",
-  "otherUrl": ""
+  "otherUrl": "",
+  "message": "",
+  "skills": [],
+  "historyItems": [
+    {
+      "id": "52c4fe87-f065-479e-8e10-11cd90f054a0",
+      "date": "2024年",
+      "category": "exhibition",
+      "title": "人と某展",
+      "description": "グループ展でイラストを展示。\n原宿にて開催",
+      "sortOrder": 1,
+      "isPublished": true
+    }
+  ]
 }

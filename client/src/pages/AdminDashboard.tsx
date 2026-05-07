@@ -7,6 +7,8 @@ import ProductManager from "@/components/ProductManager";
 import ArtworkManager from "@/components/ArtworkManager";
 import OrderManager from "@/components/OrderManager";
 import SiteSettingsManager from "@/components/SiteSettingsManager";
+import ProfileManager from "@/components/ProfileManager";
+import HistoryManager from "@/components/HistoryManager";
 import { trpc } from "@/lib/trpc";
 
 export default function AdminDashboard() {
@@ -110,10 +112,12 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="container py-8">
         <Tabs defaultValue="products" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="products">商品管理</TabsTrigger>
             <TabsTrigger value="artworks">作品管理</TabsTrigger>
             <TabsTrigger value="orders">注文管理</TabsTrigger>
+            <TabsTrigger value="profile">プロフィール</TabsTrigger>
+            <TabsTrigger value="history">ヒストリー</TabsTrigger>
             <TabsTrigger value="settings">設定</TabsTrigger>
           </TabsList>
 
@@ -195,6 +199,22 @@ export default function AdminDashboard() {
                 updateOrderStatus.mutate({ id, status });
               }}
             />
+          </TabsContent>
+
+          {/* Profile Tab */}
+          <TabsContent value="profile" className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-foreground">
+              プロフィール管理
+            </h2>
+            <ProfileManager />
+          </TabsContent>
+
+          {/* History Tab */}
+          <TabsContent value="history" className="space-y-6">
+            <h2 className="text-2xl font-serif font-bold text-foreground">
+              ヒストリー管理
+            </h2>
+            <HistoryManager />
           </TabsContent>
 
           {/* Settings Tab */}

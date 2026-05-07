@@ -5,6 +5,22 @@ import { fileURLToPath } from "url";
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 const SETTINGS_FILE = path.resolve(currentDir, "site-settings.json");
 
+export interface SkillItem {
+  id: string;
+  title: string;
+  description: string;
+}
+
+export interface HistoryItem {
+  id: string;
+  date: string;
+  category: "exhibition" | "publication" | "award" | "other";
+  title: string;
+  description: string;
+  sortOrder: number;
+  isPublished: boolean;
+}
+
 export interface SiteSettings {
   siteName: string;
   siteSubtitle: string;
@@ -15,6 +31,9 @@ export interface SiteSettings {
   twitterUrl: string;
   pixivUrl: string;
   otherUrl: string;
+  message: string;
+  skills: SkillItem[];
+  historyItems: HistoryItem[];
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
@@ -27,6 +46,9 @@ const DEFAULT_SETTINGS: SiteSettings = {
   twitterUrl: "",
   pixivUrl: "",
   otherUrl: "",
+  message: "",
+  skills: [],
+  historyItems: [],
 };
 
 export function getSiteSettings(): SiteSettings {

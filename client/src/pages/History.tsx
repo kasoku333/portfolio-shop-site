@@ -1,54 +1,16 @@
 import { Button } from "@/components/ui/button";
 import Shell from "@/components/Shell";
 import { Link } from "react-router-dom";
-
-interface HistoryItem {
-  date: string;
-  title: string;
-  description: string;
-  category: "exhibition" | "publication" | "award" | "other";
-}
-
-const historyItems: HistoryItem[] = [
-  {
-    date: "2024年1月",
-    title: "デジタルアート展示会開催",
-    description: "オンラインギャラリーで新作イラスト10点を展示。多くのファンからの好評を得ました。",
-    category: "exhibition",
-  },
-  {
-    date: "2023年11月",
-    title: "漫画作品「Urban Tales」発売",
-    description: "初の長編漫画作品を発売。限定版はすぐに完売となりました。",
-    category: "publication",
-  },
-  {
-    date: "2023年9月",
-    title: "クリエイティブアワード受賞",
-    description: "デジタルアート部門で新人賞を受賞。これまでの活動が認められました。",
-    category: "award",
-  },
-  {
-    date: "2023年7月",
-    title: "小説「Whispers of Time」完結",
-    description: "長編小説の執筆を完了。電子書籍として販売開始。",
-    category: "publication",
-  },
-  {
-    date: "2023年5月",
-    title: "SNS フォロワー10万人達成",
-    description: "ソーシャルメディアでの活動が評価され、フォロワー数が10万人を超えました。",
-    category: "other",
-  },
-  {
-    date: "2023年3月",
-    title: "ポートフォリオサイト開設",
-    description: "作品を展示・販売するためのオンラインストアをオープン。",
-    category: "other",
-  },
-];
+import { trpc } from "@/lib/trpc";
 
 export default function History() {
+  const { data: settings } = trpc.siteSettings.get.useQuery(undefined, {
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const historyItems = (settings?.historyItems || [])
+    .filter((item) => item.isPublished)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -88,37 +50,43 @@ export default function History() {
       {/* Timeline Section */}
       <section className="py-16 md:py-24">
         <div className="container max-w-3xl">
-          <div className="space-y-8">
-            {historyItems.map((item, idx) => (
-              <div key={idx} className="flex gap-6">
-                {/* Timeline dot */}
-                <div className="flex flex-col items-center">
-                  <div className="w-4 h-4 rounded-full bg-accent mt-2"></div>
-                  {idx !== historyItems.length - 1 && (
-                    <div className="w-1 h-24 bg-border mt-2"></div>
-                  )}
-                </div>
-
-                {/* Content */}
-                <div className="pb-8 flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-sm font-semibold text-accent">
-                      {item.date}
-                    </span>
-                    <span className={`text-xs px-2 py-1 rounded font-medium ${getCategoryColor(item.category)}`}>
-                      {getCategoryLabel(item.category)}
-                    </span>
+          {historyItems.length === 0 ? (
+            <p className="text-center text-muted-foreground py-12">
+              活動履歴はまだありません。
+            </p>
+          ) : (
+            <div className="space-y-8">
+              {historyItems.map((item, idx) => (
+                <div key={item.id} className="flex gap-6">
+                  {/* Timeline dot */}
+                  <div className="flex flex-col items-center">
+                    <div className="w-4 h-4 rounded-full bg-accent mt-2"></div>
+                    {idx !== historyItems.length - 1 && (
+                      <div className="w-1 h-24 bg-border mt-2"></div>
+                    )}
                   </div>
-                  <h3 className="text-xl font-serif font-bold text-foreground mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-foreground leading-relaxed">
-                    {item.description}
-                  </p>
+
+                  {/* Content */}
+                  <div className="pb-8 flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-sm font-semibold text-accent">
+                        {item.date}
+                      </span>
+                      <span className={`text-xs px-2 py-1 rounded font-medium ${getCategoryColor(item.category)}`}>
+                        {getCategoryLabel(item.category)}
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-serif font-bold text-foreground mb-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-foreground leading-relaxed">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Call to Action */}
           <div className="mt-16 p-8 rounded-lg border border-border bg-card text-center" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
