@@ -14,7 +14,7 @@ export interface SkillItem {
 export interface HistoryItem {
   id: string;
   date: string;
-  category: "exhibition" | "publication" | "award" | "other";
+  category: "site" | "creation" | "post" | "exhibition" | "publication" | "award" | "other";
   title: string;
   description: string;
   sortOrder: number;
@@ -37,11 +37,11 @@ export interface SiteSettings {
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
-  siteName: "Atelier Shelf",
-  siteSubtitle: "Portfolio Shop",
+  siteName: "木陰の部屋",
+  siteSubtitle: "PORTFOLIO & SHOP",
   creatorName: "クリエイター名",
-  email: "hello@atelier-shelf.example",
-  bio: "イラスト、漫画、小説を制作するクリエイターです。",
+  email: "hello@example.com",
+  bio: "漫画・イラスト・小説を制作しています。\n日常のすき間に、ふっと覗きたくなるような物語や絵を置いています。",
   profileImageUrl: "",
   twitterUrl: "",
   pixivUrl: "",

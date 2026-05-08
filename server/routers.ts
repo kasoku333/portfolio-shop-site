@@ -275,7 +275,7 @@ export const appRouter = router({
         historyItems: z.array(z.object({
           id: z.string(),
           date: z.string(),
-          category: z.enum(["exhibition", "publication", "award", "other"]),
+          category: z.enum(["site", "creation", "post", "exhibition", "publication", "award", "other"]),
           title: z.string(),
           description: z.string(),
           sortOrder: z.number(),

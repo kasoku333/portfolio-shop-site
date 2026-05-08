@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc";
@@ -17,147 +17,152 @@ interface Artwork {
   updatedAt?: Date;
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  illustration: "イラスト",
+  manga: "漫画",
+  novel: "小説",
+};
+
 export default function Gallery() {
   const [searchParams] = useSearchParams();
-  const initialCategory = searchParams.get("category") ?? "all";
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    searchParams.get("category") ?? "all"
+  );
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
+
+  // URLパラメータと同期（ホームページカードからの遷移に対応）
+  useEffect(() => {
+    const cat = searchParams.get("category") ?? "all";
+    setSelectedCategory(cat);
+  }, [searchParams]);
 
   const { data: artworks = [], isLoading, isError } = trpc.artworks.list.useQuery({
     category: selectedCategory as any,
   }, { retry: 1, retryDelay: 1000 });
   const showLoading = isLoading && !isError;
 
-  const getCategoryLabel = (category: string) => {
-    const labels: Record<string, string> = {
-      illustration: "イラスト",
-      manga: "漫画",
-      novel: "小説",
-    };
-    return labels[category] || category;
-  };
-
   return (
     <Shell>
-
-      {/* Hero Section */}
-      <section className="py-16 md:py-24 text-center bg-muted/50">
-        <div className="container space-y-4">
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground">
-            ギャラリーへようこそ！
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            イラスト、漫画、小説の作品を展示・販売しています。
-            <br />
-            デジタルコンテンツから実物作品まで、様々な作品をお楽しみください。
+      {/* ページヘッダー */}
+      <section className="py-10 md:py-14 border-b border-border/60">
+        <div className="container">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-2">
+            ギャラリー
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            漫画・イラスト・小説の作品一覧
           </p>
         </div>
       </section>
 
-      {/* Gallery Section */}
-      <section className="py-16 md:py-24">
+      {/* 作品一覧 */}
+      <section className="py-10 md:py-16">
         <div className="container space-y-8">
-          <h3 className="text-3xl font-serif font-bold text-foreground">ギャラリー</h3>
-
-          {/* Category Filter */}
-          <div className="flex flex-wrap gap-3">
+          {/* カテゴリフィルター */}
+          <div className="flex flex-wrap gap-2">
             {["all", "illustration", "manga", "novel"].map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-full transition-colors ${
+                className={`px-5 py-2 rounded-full text-sm font-medium transition-colors ${
                   selectedCategory === cat
                     ? "bg-accent text-accent-foreground"
                     : "bg-muted text-foreground hover:bg-muted/80"
                 }`}
               >
-                {cat === "all" ? "すべて" : getCategoryLabel(cat)}
+                {cat === "all" ? "すべて" : CATEGORY_LABELS[cat]}
               </button>
             ))}
           </div>
 
-          {/* Loading State */}
+          {/* 読み込み中 */}
           {showLoading && (
-            <div className="text-center py-12">
+            <div className="text-center py-16">
               <p className="text-muted-foreground">読み込み中...</p>
             </div>
           )}
 
-          {/* Error State */}
+          {/* エラー */}
           {isError && (
-            <div className="text-center py-12 space-y-2">
+            <div className="text-center py-16 space-y-2">
               <p className="text-destructive font-medium">サーバーに接続できませんでした</p>
-              <p className="text-sm text-muted-foreground">
-                時間を置いて再度お試しください。
-              </p>
+              <p className="text-sm text-muted-foreground">時間を置いて再度お試しください。</p>
             </div>
           )}
 
-          {/* Artworks Grid */}
+          {/* 作品グリッド */}
           {!showLoading && !isError && artworks.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {artworks.map((artwork) => (
                 <div
                   key={artwork.id}
                   onClick={() => setSelectedArtwork(artwork)}
-                  className="group cursor-pointer"
+                  className="group cursor-pointer rounded-xl border border-border bg-card overflow-hidden shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
                 >
-                  <div className="relative overflow-hidden rounded-lg border border-border bg-muted aspect-square mb-4 transition-transform hover:scale-105">
+                  <div className="aspect-square w-full bg-muted relative overflow-hidden">
                     {artwork.imageUrl ? (
                       <img
                         src={artwork.imageUrl}
                         alt={artwork.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
                         No image
                       </div>
                     )}
                   </div>
-                  <h4 className="font-serif font-semibold text-foreground mb-1">
-                    {artwork.title}
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    {getCategoryLabel(artwork.category)}
-                  </p>
+                  <div className="p-4">
+                    <h3 className="font-serif font-semibold text-foreground mb-1.5 line-clamp-2">
+                      {artwork.title}
+                    </h3>
+                    <span className="inline-block text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                      {CATEGORY_LABELS[artwork.category]}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
           )}
 
-          {/* Empty State */}
+          {/* 空の状態 */}
           {!showLoading && !isError && artworks.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">作品がまだアップロードされていません</p>
+            <div className="text-center py-16">
+              <p className="text-muted-foreground">
+                {selectedCategory === "all"
+                  ? "作品がまだアップロードされていません"
+                  : `${CATEGORY_LABELS[selectedCategory] || selectedCategory}の作品はまだありません`}
+              </p>
             </div>
           )}
         </div>
       </section>
 
-      {/* Artwork Detail Modal */}
+      {/* 作品詳細モーダル */}
       <Dialog open={!!selectedArtwork} onOpenChange={() => setSelectedArtwork(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           {selectedArtwork && (
             <>
               <DialogHeader>
-                <DialogTitle>{selectedArtwork.title}</DialogTitle>
+                <DialogTitle className="font-serif text-xl">{selectedArtwork.title}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 {selectedArtwork.imageUrl && (
                   <img
                     src={selectedArtwork.imageUrl}
                     alt={selectedArtwork.title}
-                    className="w-full rounded-lg"
+                    className="w-full rounded-lg object-cover"
                   />
                 )}
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">
-                    {getCategoryLabel(selectedArtwork.category)}
-                  </p>
-                  <p className="text-foreground">{selectedArtwork.description}</p>
+                  <span className="inline-block text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full mb-3">
+                    {CATEGORY_LABELS[selectedArtwork.category]}
+                  </span>
+                  {selectedArtwork.description && (
+                    <p className="text-foreground leading-relaxed">{selectedArtwork.description}</p>
+                  )}
                 </div>
-                <div className="flex gap-3 pt-4">
+                <div className="flex gap-3 pt-2">
                   <Link to="/shop" className="flex-1">
                     <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
                       関連商品を見る

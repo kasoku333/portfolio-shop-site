@@ -8,8 +8,9 @@ export default function About() {
     staleTime: 1000 * 60 * 5,
   });
 
-  const creatorName = settings?.creatorName || "クリエイター名";
-  const bio = settings?.bio || "イラスト、漫画、小説を制作するクリエイターです。";
+  const creatorName = settings?.creatorName || "けーざ";
+  const bio = settings?.bio ||
+    "漫画・イラスト・小説を制作しています。\n日常のすき間に、ふっと覗きたくなるような物語や絵を置いています。\nこのサイト「木陰の部屋」は、作品をまとめて置いておくための小さな作品棚です。\n気になるものがあれば、ゆっくり見ていってください。";
   const profileImageUrl = settings?.profileImageUrl || "";
   const twitterUrl = settings?.twitterUrl || "";
   const pixivUrl = settings?.pixivUrl || "";
@@ -21,26 +22,25 @@ export default function About() {
 
   return (
     <Shell>
-
-      {/* Header Section */}
-      <section className="py-16 md:py-24 border-b border-border">
-        <div className="container text-center">
-          <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
-            自己紹介
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            クリエイターとしての私についてご紹介します
+      {/* ページヘッダー */}
+      <section className="py-10 md:py-14 border-b border-border/60">
+        <div className="container">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-2">
+            この部屋について
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {creatorName} / 木陰の部屋
           </p>
         </div>
       </section>
 
-      {/* About Content */}
-      <section className="py-16 md:py-24">
+      {/* プロフィール本文 */}
+      <section className="py-10 md:py-16">
         <div className="container max-w-3xl">
           <div className="space-y-12">
-            {/* Profile Section */}
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="rounded-lg overflow-hidden border border-border" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
+            {/* プロフィールセクション */}
+            <div className="grid md:grid-cols-2 gap-10 items-start">
+              <div className="rounded-xl overflow-hidden border border-border shadow-sm">
                 {profileImageUrl ? (
                   <img
                     src={profileImageUrl}
@@ -49,73 +49,83 @@ export default function About() {
                   />
                 ) : (
                   <div className="aspect-square bg-muted flex items-center justify-center">
-                    <div className="text-center text-muted-foreground">
-                      <p className="text-lg">プロフィール画像</p>
-                    </div>
+                    <p className="text-sm text-muted-foreground">プロフィール画像</p>
                   </div>
                 )}
               </div>
               <div className="space-y-4">
-                <h3 className="text-3xl font-serif font-bold text-foreground">
+                <h2 className="text-2xl font-serif font-bold text-foreground">
                   {creatorName}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                </h2>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm md:text-base">
                   {bio}
                 </p>
 
                 {hasSnsLinks && (
-                  <div className="flex gap-3 pt-2">
+                  <div className="flex flex-wrap gap-3 pt-1">
                     {twitterUrl && (
-                      <a href={twitterUrl} target="_blank" rel="noopener noreferrer"
-                        className="text-sm text-muted-foreground hover:text-accent transition-colors underline">
+                      <a
+                        href={twitterUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-accent transition-colors underline"
+                      >
                         X (Twitter)
                       </a>
                     )}
                     {pixivUrl && (
-                      <a href={pixivUrl} target="_blank" rel="noopener noreferrer"
-                        className="text-sm text-muted-foreground hover:text-accent transition-colors underline">
+                      <a
+                        href={pixivUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-accent transition-colors underline"
+                      >
                         Pixiv
                       </a>
                     )}
                     {otherUrl && (
-                      <a href={otherUrl} target="_blank" rel="noopener noreferrer"
-                        className="text-sm text-muted-foreground hover:text-accent transition-colors underline">
+                      <a
+                        href={otherUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-accent transition-colors underline"
+                      >
                         Webサイト
                       </a>
                     )}
                   </div>
                 )}
 
-                <div className="pt-4">
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <Link to="/gallery">
+                    <Button>作品を見る</Button>
+                  </Link>
                   <Link to="/shop">
-                    <Button className="w-full md:w-auto">
-                      作品を見る
-                    </Button>
+                    <Button variant="outline">ショップへ</Button>
                   </Link>
                 </div>
               </div>
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+            {/* 区切り線 */}
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-            {/* Skills Section */}
+            {/* 制作ジャンル */}
             {skills.length > 0 && (
               <div>
-                <h3 className="text-2xl font-serif font-bold mb-8 text-foreground">
-                  スキル・使用ツール
-                </h3>
-                <div className="grid md:grid-cols-3 gap-6">
+                <h2 className="text-xl font-serif font-bold mb-6 text-foreground">
+                  制作ジャンル
+                </h2>
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {skills.map((skill) => (
                     <div
                       key={skill.id}
-                      className="p-6 rounded-lg border border-border bg-card transition-all duration-300 hover:shadow-lg"
-                      style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}
+                      className="p-5 rounded-xl border border-border bg-card shadow-sm"
                     >
-                      <h4 className="font-serif font-semibold text-foreground mb-2">
+                      <h3 className="font-serif font-semibold text-foreground mb-1.5 text-sm">
                         {skill.title}
-                      </h4>
-                      <p className="text-sm text-muted-foreground">
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
                         {skill.description}
                       </p>
                     </div>
@@ -124,19 +134,16 @@ export default function About() {
               </div>
             )}
 
-            {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
-
-            {/* Message Section */}
+            {/* メッセージ */}
             {message && (
-              <div className="bg-card border border-border rounded-lg p-8" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
-                <h3 className="text-2xl font-serif font-bold mb-4 text-foreground">
-                  メッセージ
-                </h3>
-                <p className="text-foreground leading-relaxed whitespace-pre-line">
-                  {message}
-                </p>
-              </div>
+              <>
+                <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                <div className="bg-muted/40 border border-border rounded-xl p-6">
+                  <p className="text-foreground leading-relaxed whitespace-pre-line text-sm md:text-base">
+                    {message}
+                  </p>
+                </div>
+              </>
             )}
           </div>
         </div>
