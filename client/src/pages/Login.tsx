@@ -51,6 +51,7 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loginMutation.isPending}
+              className="bg-white"
               autoFocus
             />
           </div>
