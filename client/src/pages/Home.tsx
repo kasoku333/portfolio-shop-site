@@ -64,14 +64,15 @@ export default function Home() {
           </p>
 
           {/* スクロール導線 */}
-          <a
-            href="#categories"
-            className="mt-12 inline-flex flex-col items-center gap-1 text-xs tracking-[0.2em] text-muted-foreground hover:text-accent transition-colors"
+          <button
+            type="button"
+            onClick={() => document.getElementById("categories")?.scrollIntoView({ behavior: "smooth" })}
+            className="mt-12 inline-flex flex-col items-center gap-1 text-xs tracking-[0.2em] text-muted-foreground hover:text-accent transition-colors cursor-pointer"
             aria-label="作品を見る"
           >
             <span>作品を見る</span>
             <ChevronDown className="h-4 w-4 animate-bounce" strokeWidth={1.5} />
-          </a>
+          </button>
         </div>
       </section>
 
