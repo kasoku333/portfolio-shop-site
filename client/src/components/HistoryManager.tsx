@@ -22,27 +22,35 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Save, Plus, Pencil, Trash2, Clock, Eye, EyeOff, ArrowUpDown } from "lucide-react";
 
+type HistoryCategory = "site" | "creation" | "post" | "exhibition" | "publication" | "award" | "other";
+
 interface HistoryItem {
   id: string;
   date: string;
-  category: "exhibition" | "publication" | "award" | "other";
+  category: HistoryCategory;
   title: string;
   description: string;
   sortOrder: number;
   isPublished: boolean;
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  exhibition: "展示会",
+const CATEGORY_LABELS: Record<HistoryCategory, string> = {
+  site: "サイト",
+  creation: "制作",
+  post: "投稿",
+  exhibition: "イベント",
   publication: "出版",
   award: "受賞",
   other: "その他",
 };
 
-const CATEGORY_COLORS: Record<string, string> = {
-  exhibition: "bg-blue-100 text-blue-800",
-  publication: "bg-purple-100 text-purple-800",
-  award: "bg-amber-100 text-amber-800",
+const CATEGORY_COLORS: Record<HistoryCategory, string> = {
+  site: "bg-emerald-100 text-emerald-800",
+  creation: "bg-blue-100 text-blue-800",
+  post: "bg-purple-100 text-purple-800",
+  exhibition: "bg-amber-100 text-amber-800",
+  publication: "bg-teal-100 text-teal-800",
+  award: "bg-orange-100 text-orange-800",
   other: "bg-gray-100 text-gray-800",
 };
 
@@ -75,7 +83,7 @@ export default function HistoryManager() {
 
   useEffect(() => {
     if (settings?.historyItems) {
-      setItems(settings.historyItems);
+      setItems(settings.historyItems as HistoryItem[]);
     }
   }, [settings]);
 
@@ -126,12 +134,12 @@ export default function HistoryManager() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
+      {/* ヘッダー */}
       <div className="rounded-lg border border-border bg-card p-6" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Clock className="w-5 h-5 text-accent" />
-            <h3 className="text-lg font-serif font-bold text-foreground">活動履歴一覧</h3>
+            <h3 className="text-lg font-serif font-bold text-foreground">制作記録一覧</h3>
             <span className="text-sm text-muted-foreground">({items.length}件)</span>
           </div>
           <Button onClick={openAddDialog} className="flex items-center gap-1">
@@ -142,7 +150,7 @@ export default function HistoryManager() {
 
         {sortedItems.length === 0 ? (
           <p className="text-sm text-muted-foreground py-8 text-center">
-            履歴がありません。「新規追加」ボタンで追加してください。
+            記録がありません。「新規追加」ボタンで追加してください。
           </p>
         ) : (
           <div className="space-y-3">
@@ -159,10 +167,10 @@ export default function HistoryManager() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className="text-sm font-semibold text-accent">{item.date}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded font-medium ${CATEGORY_COLORS[item.category]}`}>
-                      {CATEGORY_LABELS[item.category]}
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CATEGORY_COLORS[item.category] || CATEGORY_COLORS.other}`}>
+                      {CATEGORY_LABELS[item.category] || item.category}
                     </span>
                     {!item.isPublished && (
                       <span className="text-xs px-2 py-0.5 rounded bg-red-100 text-red-700 font-medium">非公開</span>
@@ -174,7 +182,7 @@ export default function HistoryManager() {
                   )}
                 </div>
 
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 shrink-0">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -205,7 +213,7 @@ export default function HistoryManager() {
         )}
       </div>
 
-      {/* Save Button */}
+      {/* 保存ボタン */}
       <div className="flex justify-end">
         <Button
           onClick={handleSaveAll}
@@ -217,11 +225,11 @@ export default function HistoryManager() {
         </Button>
       </div>
 
-      {/* Add/Edit Dialog */}
+      {/* 追加・編集ダイアログ */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editingItem ? "履歴を編集" : "履歴を追加"}</DialogTitle>
+            <DialogTitle>{editingItem ? "記録を編集" : "記録を追加"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
@@ -230,7 +238,7 @@ export default function HistoryManager() {
                 <Input
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  placeholder="2024年1月"
+                  placeholder="2026年5月"
                 />
               </div>
               <div className="space-y-2">
@@ -238,14 +246,17 @@ export default function HistoryManager() {
                 <Select
                   value={formData.category}
                   onValueChange={(val) =>
-                    setFormData({ ...formData, category: val as HistoryItem["category"] })
+                    setFormData({ ...formData, category: val as HistoryCategory })
                   }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="exhibition">展示会</SelectItem>
+                    <SelectItem value="site">サイト</SelectItem>
+                    <SelectItem value="creation">制作</SelectItem>
+                    <SelectItem value="post">投稿</SelectItem>
+                    <SelectItem value="exhibition">イベント</SelectItem>
                     <SelectItem value="publication">出版</SelectItem>
                     <SelectItem value="award">受賞</SelectItem>
                     <SelectItem value="other">その他</SelectItem>

@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import Shell from "@/components/Shell";
 import { BookOpen, Image, ScrollText } from "lucide-react";
 
-// カテゴリカードの定義。将来カテゴリが増えた場合はここに追記するだけでよい。
 const categoryCards = [
   {
     key: "manga",
@@ -10,7 +9,6 @@ const categoryCards = [
     labelEn: "Manga",
     description: "ストーリー漫画・読み切り作品",
     icon: BookOpen,
-    // カード個別の背景色をCSS変数で管理。後からindex.cssで上書き可能。
     colorVar: "var(--home-card-manga-bg, oklch(0.96 0.01 30))",
     iconColorVar: "var(--home-card-manga-icon, oklch(0.45 0.18 30))",
     to: "/gallery?category=manga",
@@ -41,13 +39,7 @@ export default function Home() {
   return (
     <Shell>
       {/* ---- ヒーローセクション ---- */}
-      {/*
-        背景差し替え用の空コンテナを .hero-bg として用意。
-        後から index.css で background-image を設定するか、
-        CSS変数 --hero-bg-image で画像を差し替えられる。
-      */}
       <section className="relative overflow-hidden">
-        {/* 装飾グラデーション（画像なし時の背景） */}
         <div
           className="absolute inset-0 -z-10 hero-bg"
           aria-hidden="true"
@@ -58,22 +50,29 @@ export default function Home() {
         </div>
 
         <div className="container py-20 md:py-32 text-center animate-in fade-in slide-in-from-bottom-6 duration-700">
-          {/* ブランドロゴ相当の表示 */}
           <p className="text-xs uppercase tracking-[0.4em] text-muted-foreground mb-4">
-            Portfolio &amp; Shop
+            PORTFOLIO &amp; SHOP
           </p>
           <h1 className="text-5xl md:text-6xl lg:text-7xl leading-tight mb-6">
-            Atelier Shelf
+            木陰の作品棚
           </h1>
           <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
             漫画・イラスト・小説。<br />
             日常の余白に置きたい作品をまとめた、小さな作品棚です。
           </p>
+          <div className="mt-10">
+            <Link
+              to="/gallery"
+              className="inline-flex items-center gap-2 text-sm text-accent hover:text-accent/80 transition-colors border-b border-accent/40 pb-0.5"
+            >
+              作品を見る ↓
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* ---- カテゴリカードセクション ---- */}
-      <section className="container pb-24 pt-4" aria-label="カテゴリ一覧">
+      <section id="gallery-section" className="container pb-24 pt-4" aria-label="カテゴリ一覧">
         <div className="grid gap-5 sm:grid-cols-3">
           {categoryCards.map((card) => {
             const Icon = card.icon;
@@ -86,7 +85,6 @@ export default function Home() {
                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 aria-label={`${card.label}の作品を見る`}
               >
-                {/* アイコン背景サークル */}
                 <span
                   className="flex h-16 w-16 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110"
                   style={{ backgroundColor: card.colorVar }}
@@ -99,7 +97,6 @@ export default function Home() {
                   />
                 </span>
 
-                {/* カテゴリ名 */}
                 <div className="space-y-1">
                   <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
                     {card.labelEn}
@@ -109,12 +106,10 @@ export default function Home() {
                   </h2>
                 </div>
 
-                {/* 説明文 */}
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {card.description}
                 </p>
 
-                {/* 矢印（ホバーで右にスライド） */}
                 <span
                   className="mt-auto text-xs font-medium text-accent transition-transform duration-300 group-hover:translate-x-1"
                   aria-hidden="true"

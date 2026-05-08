@@ -1,15 +1,31 @@
 {
   "siteName": "木陰の部屋",
-  "siteSubtitle": "Portfolio Shop",
+  "siteSubtitle": "PORTFOLIO & SHOP",
   "creatorName": "けーざ",
   "email": "yasukeza@gmail.com",
-  "bio": "イラスト、漫画、小説を制作するクリエイターです。\nAIを使ったシステム作成も最近やっています。",
+  "bio": "漫画・イラスト・小説を制作しています。\n人外、異世界、ファンタジー、少し甘くて少し不穏な関係性が好きです。\n日常のすき間に、ふっと覗きたくなるような物語や絵を置いています。\nこのサイト「木陰の部屋」は、作品をまとめて置いておくための小さな作品棚です。\n気になるものがあれば、ゆっくり見ていってください。\n\n制作やサイト運営の補助として、AIや自動化ツールも活用しています。",
   "profileImageUrl": "/uploads/uploads/7yBdLlAoGW8n1SbhJrr7p-アイコン用.png",
   "twitterUrl": "https://x.com/HjOKqjE3XAo1SxY",
   "pixivUrl": "https://www.pixiv.net/users/1366799",
   "otherUrl": "",
   "message": "",
-  "skills": [],
+  "skills": [
+    {
+      "id": "skill-1",
+      "title": "イラスト制作",
+      "description": "キャラクターイラスト、表紙、挿絵など"
+    },
+    {
+      "id": "skill-2",
+      "title": "漫画制作",
+      "description": "短編漫画、創作漫画、読み切り作品"
+    },
+    {
+      "id": "skill-3",
+      "title": "小説執筆",
+      "description": "短編、掌編、恋愛・ファンタジー作品"
+    }
+  ],
   "historyItems": [
     {
       "id": "52c4fe87-f065-479e-8e10-11cd90f054a0",
@@ -18,6 +34,33 @@
       "title": "人と某展",
       "description": "グループ展でイラストを展示。\n原宿にて開催",
       "sortOrder": 1,
+      "isPublished": true
+    },
+    {
+      "id": "history-site-2026",
+      "date": "2026年5月",
+      "category": "site",
+      "title": "ポートフォリオサイト「木陰の部屋」開設",
+      "description": "漫画・イラスト・小説をまとめて見られる場所として公開準備を開始。",
+      "sortOrder": 2,
+      "isPublished": true
+    },
+    {
+      "id": "history-creation-2026",
+      "date": "2026年",
+      "category": "creation",
+      "title": "創作漫画・小説の制作を継続",
+      "description": "イベント頒布やWeb公開に向けて、作品制作を進行中。",
+      "sortOrder": 3,
+      "isPublished": true
+    },
+    {
+      "id": "history-post-2025",
+      "date": "2025年",
+      "category": "post",
+      "title": "イラスト・小説作品の公開を開始",
+      "description": "X、pixivなどで作品投稿を継続。",
+      "sortOrder": 4,
       "isPublished": true
     }
   ]
