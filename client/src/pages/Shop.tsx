@@ -17,6 +17,18 @@ interface Product {
   stock?: number | null;
 }
 
+const FILTERS = [
+  { value: "all", label: "すべて" },
+  { value: "digital", label: "デジタル" },
+  { value: "physical", label: "実物" },
+] as const;
+
+// 価格を「¥1,000」形式で必ず3桁区切り表示する。
+function formatPrice(value: number | undefined | null) {
+  if (value == null || Number.isNaN(value)) return "¥0";
+  return `¥${Math.round(value).toLocaleString("ja-JP")}`;
+}
+
 export default function Shop() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedFilter, setSelectedFilter] = useState<"all" | "digital" | "physical">("all");
@@ -38,14 +50,13 @@ export default function Shop() {
     retryDelay: 1000,
   });
   const showLoading = isLoading && !isError;
-  const allProducts: Product[] = dbProducts.map(p => ({
+  const allProducts: Product[] = dbProducts.map((p) => ({
     ...p,
-    price: typeof p.price === 'string' ? parseFloat(p.price) : p.price,
+    price: typeof p.price === "string" ? parseFloat(p.price) : p.price,
   }));
 
-  const filteredProducts = selectedFilter === "all"
-    ? allProducts
-    : allProducts.filter(p => p.productType === selectedFilter);
+  const filteredProducts =
+    selectedFilter === "all" ? allProducts : allProducts.filter((p) => p.productType === selectedFilter);
 
   const getProductTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -57,34 +68,42 @@ export default function Shop() {
 
   return (
     <Shell>
-
       {/* Header Section */}
-      <section className="py-16 md:py-24 border-b border-border">
-        <div className="container text-center">
-          <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
-            ショップ
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            デジタルコンテンツから実物作品まで、様々な作品をご購入いただけます。
+      <section className="py-14 md:py-20 border-b border-border/60 bg-muted/40">
+        <div className="container text-center space-y-3">
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Shop</p>
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">ショップ</h2>
+          <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            デジタル作品と実物作品をお届けします。
           </p>
         </div>
       </section>
 
       {/* Products Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-12 md:py-16">
         <div className="container">
           {/* Filter Tabs */}
-          <div className="flex gap-2 mb-12 flex-wrap">
-            {(["all", "digital", "physical"] as const).map((filter) => (
-              <Button
-                key={filter}
-                variant="outline"
-                className={`rounded-full ${selectedFilter === filter ? "bg-accent text-accent-foreground" : ""}`}
-                onClick={() => setSelectedFilter(filter)}
-              >
-                {filter === "all" ? "すべて" : filter === "digital" ? "デジタル" : "実物"}
-              </Button>
-            ))}
+          <div className="flex flex-wrap gap-2 sm:gap-3 mb-10" role="tablist" aria-label="商品タイプで絞り込む">
+            {FILTERS.map((filter) => {
+              const isActive = selectedFilter === filter.value;
+              return (
+                <button
+                  key={filter.value}
+                  type="button"
+                  onClick={() => setSelectedFilter(filter.value)}
+                  role="tab"
+                  aria-selected={isActive}
+                  className={[
+                    "px-4 py-2 rounded-full text-sm border transition-colors",
+                    isActive
+                      ? "bg-accent text-accent-foreground border-accent"
+                      : "bg-card text-foreground border-border hover:border-accent/40 hover:text-accent",
+                  ].join(" ")}
+                >
+                  {filter.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Loading State */}
@@ -106,46 +125,54 @@ export default function Shop() {
 
           {/* Products Grid */}
           {!showLoading && !isError && filteredProducts.length > 0 && (
-            <div className="gallery-grid">
+            <div
+              className={
+                filteredProducts.length === 1
+                  ? "grid grid-cols-1 sm:grid-cols-[minmax(0,18rem)] gap-6"
+                  : "gallery-grid"
+              }
+            >
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="group relative overflow-hidden rounded-lg border border-border bg-card cursor-pointer transition-all duration-300 hover:shadow-lg"
+                  className="group relative overflow-hidden rounded-lg border border-border bg-card cursor-pointer transition-all duration-300 hover:shadow-lg flex flex-col"
                   onClick={() => setSelectedProduct(product)}
-                  style={{
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-                  }}
+                  style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}
                 >
-                  <div className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105 bg-muted relative">
+                  <div className="aspect-square w-full bg-muted relative overflow-hidden">
                     {product.imageUrl ? (
                       <img
                         src={product.imageUrl}
                         alt={product.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                         No Image
                       </div>
                     )}
-                    {product.productType === "digital" && (
-                      <div className="absolute top-2 right-2 bg-accent text-accent-foreground px-2 py-1 rounded text-xs font-semibold">
-                        デジタル
-                      </div>
-                    )}
+                    <div
+                      className={[
+                        "absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold",
+                        product.productType === "digital"
+                          ? "bg-accent text-accent-foreground"
+                          : "bg-background/90 text-foreground border border-border",
+                      ].join(" ")}
+                    >
+                      {getProductTypeLabel(product.productType)}
+                    </div>
                   </div>
-                  <div className="p-4">
+                  <div className="p-4 flex-1 flex flex-col">
                     <h4 className="font-serif font-semibold text-foreground mb-2 line-clamp-2">
                       {product.title}
                     </h4>
-                    <div className="flex items-center justify-between">
+                    <div className="mt-auto flex items-center justify-between">
                       <span className="text-lg font-bold text-accent">
-                        ¥{product.price.toLocaleString()}
+                        {formatPrice(product.price)}
                       </span>
                       {product.productType === "physical" && product.stock != null && (
-                        <span className="text-xs text-muted-foreground">
-                          在庫: {product.stock}
-                        </span>
+                        <span className="text-xs text-muted-foreground">在庫: {product.stock}</span>
                       )}
                     </div>
                   </div>
@@ -165,39 +192,45 @@ export default function Shop() {
 
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="font-serif text-2xl">
+            <DialogTitle className="font-serif text-xl md:text-2xl">
               {selectedProduct?.title}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-6">
+          <div className="space-y-5">
             {selectedProduct?.imageUrl && (
               <img
                 src={selectedProduct.imageUrl}
                 alt={selectedProduct.title}
-                className="w-full rounded-lg object-cover max-h-96"
+                className="w-full rounded-lg object-contain bg-muted max-h-[55vh]"
               />
             )}
-            <div>
-              <div className="flex items-center justify-between mb-4">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <span className="text-3xl font-bold text-accent">
-                  ¥{selectedProduct?.price.toLocaleString()}
+                  {formatPrice(selectedProduct?.price ?? 0)}
                 </span>
-                <span className="text-sm bg-muted text-muted-foreground px-3 py-1 rounded">
+                <span className="text-xs bg-muted text-muted-foreground px-3 py-1 rounded uppercase tracking-wider">
                   {getProductTypeLabel(selectedProduct?.productType || "")}
                 </span>
               </div>
               {selectedProduct?.productType === "physical" && selectedProduct?.stock != null && (
-                <p className="text-sm text-muted-foreground mb-4">
-                  在庫: {selectedProduct.stock}個
+                <p className="text-sm text-muted-foreground">在庫: {selectedProduct.stock}個</p>
+              )}
+              {selectedProduct?.description ? (
+                <p className="text-foreground leading-relaxed whitespace-pre-line">
+                  {selectedProduct.description}
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {selectedProduct?.productType === "digital"
+                    ? "PDF形式で読めるデジタル作品です。購入後、ダウンロードできます。"
+                    : "実物作品です。発送までしばらくお待ちください。"}
                 </p>
               )}
-              <p className="text-foreground leading-relaxed">
-                {selectedProduct?.description}
-              </p>
             </div>
-            <div className="flex gap-3 pt-4 border-t border-border">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
               <Button
                 className="flex-1"
                 variant="default"
