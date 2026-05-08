@@ -1,4 +1,4 @@
-import { stripe } from "./stripe";
+import { getStripe } from "./stripe";
 import * as db from "./db";
 import { notifyOwner } from "./_core/notification";
 import type Stripe from "stripe";
@@ -17,7 +17,7 @@ export async function handleCheckoutSessionCompleted(
 
   try {
     // Get line items from session
-    const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+    const lineItems = await getStripe().checkout.sessions.listLineItems(session.id);
 
     // Calculate total amount
     const totalAmount = (session.amount_total || 0) / 100;
