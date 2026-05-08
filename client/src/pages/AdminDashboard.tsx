@@ -36,8 +36,13 @@ export default function AdminDashboard() {
   const deleteArtwork = trpc.artworks.delete.useMutation({ onSuccess: () => refetchArtworks() });
 
   // tRPC: 注文データ取得
-  const { data: orders = [], refetch: refetchOrders } = trpc.orders.listAll.useQuery(undefined, { retry: 1, retryDelay: 1000 });
-  const updateOrderStatus = trpc.orders.updateStatus.useMutation({ onSuccess: () => refetchOrders() });
+  const { data: orders = [], refetch: refetchOrders } = trpc.orders.listAll.useQuery(undefined, {
+    retry: 1,
+    retryDelay: 1000,
+  });
+  const updateOrderStatus = trpc.orders.updateStatus.useMutation({
+    onSuccess: () => refetchOrders(),
+  });
 
   // アクセス制御：未認証時はログインページへリダイレクト
   useEffect(() => {
@@ -59,13 +64,13 @@ export default function AdminDashboard() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="text-center">
           <h1 className="text-2xl font-serif font-bold text-foreground mb-4">
             アクセス権限がありません
           </h1>
           <p className="text-muted-foreground mb-6">
-            このページは管理者のみがアクセスできます
+            このページは管理者のみがアクセスできます。
           </p>
           <Link to="/login">
             <Button>ログインページへ</Button>
@@ -78,19 +83,24 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-50 border-b border-border bg-card" style={{boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'}}>
-        <div className="container flex items-center justify-between py-4">
-          <div>
-            <h1 className="text-2xl font-serif font-bold text-accent">管理ダッシュボード</h1>
-            <p className="text-sm text-muted-foreground">
+      <div
+        className="sticky top-0 z-50 border-b border-border bg-card"
+        style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}
+      >
+        <div className="container flex flex-wrap items-center justify-between gap-3 py-3 md:py-4">
+          <div className="min-w-0">
+            <h1 className="text-lg md:text-2xl font-serif font-bold text-accent truncate">
+              管理ダッシュボード
+            </h1>
+            <p className="text-xs md:text-sm text-muted-foreground">
               ようこそ、{user.name}さん
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <Link to="/">
               <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <Home className="w-4 h-4" />
-                サイトに戻る
+                <span className="hidden sm:inline">サイトに戻る</span>
               </Button>
             </Link>
             <Button
@@ -103,33 +113,34 @@ export default function AdminDashboard() {
               className="flex items-center gap-2"
             >
               <LogOut className="w-4 h-4" />
-              ログアウト
+              <span className="hidden sm:inline">ログアウト</span>
             </Button>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container py-8">
+      <div className="container py-6 md:py-8">
         <Tabs defaultValue="products" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="products">商品管理</TabsTrigger>
-            <TabsTrigger value="artworks">作品管理</TabsTrigger>
-            <TabsTrigger value="orders">注文管理</TabsTrigger>
-            <TabsTrigger value="profile">プロフィール</TabsTrigger>
-            <TabsTrigger value="history">ヒストリー</TabsTrigger>
-            <TabsTrigger value="settings">設定</TabsTrigger>
-          </TabsList>
+          {/* スマホでは横スクロールで全タブを表示。PCでは6等分グリッド。 */}
+          <div className="-mx-4 px-4 overflow-x-auto md:mx-0 md:px-0 md:overflow-visible">
+            <TabsList className="inline-flex md:grid md:w-full md:grid-cols-6 whitespace-nowrap">
+              <TabsTrigger value="products">商品管理</TabsTrigger>
+              <TabsTrigger value="artworks">作品管理</TabsTrigger>
+              <TabsTrigger value="orders">注文管理</TabsTrigger>
+              <TabsTrigger value="profile">プロフィール</TabsTrigger>
+              <TabsTrigger value="history">ヒストリー</TabsTrigger>
+              <TabsTrigger value="settings">サイト設定</TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Products Tab */}
           <TabsContent value="products" className="space-y-6">
-            <h2 className="text-2xl font-serif font-bold text-foreground">
-              商品管理
-            </h2>
+            <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">商品管理</h2>
             <ProductManager
-              products={products.map(p => ({
+              products={products.map((p) => ({
                 ...p,
-                price: typeof p.price === 'string' ? parseFloat(p.price) : p.price,
+                price: typeof p.price === "string" ? parseFloat(p.price) : p.price,
               }))}
               onAdd={(product) => {
                 createProduct.mutate({
@@ -160,9 +171,7 @@ export default function AdminDashboard() {
 
           {/* Artworks Tab */}
           <TabsContent value="artworks" className="space-y-6">
-            <h2 className="text-2xl font-serif font-bold text-foreground">
-              作品管理
-            </h2>
+            <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">作品管理</h2>
             <ArtworkManager
               artworks={artworks}
               onAdd={(artwork) => {
@@ -190,9 +199,7 @@ export default function AdminDashboard() {
 
           {/* Orders Tab */}
           <TabsContent value="orders" className="space-y-6">
-            <h2 className="text-2xl font-serif font-bold text-foreground">
-              注文管理
-            </h2>
+            <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">注文管理</h2>
             <OrderManager
               orders={orders}
               onStatusChange={(id, status) => {
@@ -203,7 +210,7 @@ export default function AdminDashboard() {
 
           {/* Profile Tab */}
           <TabsContent value="profile" className="space-y-6">
-            <h2 className="text-2xl font-serif font-bold text-foreground">
+            <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">
               プロフィール管理
             </h2>
             <ProfileManager />
@@ -211,7 +218,7 @@ export default function AdminDashboard() {
 
           {/* History Tab */}
           <TabsContent value="history" className="space-y-6">
-            <h2 className="text-2xl font-serif font-bold text-foreground">
+            <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">
               ヒストリー管理
             </h2>
             <HistoryManager />
@@ -219,8 +226,8 @@ export default function AdminDashboard() {
 
           {/* Settings Tab */}
           <TabsContent value="settings" className="space-y-6">
-            <h2 className="text-2xl font-serif font-bold text-foreground">
-              設定
+            <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">
+              サイト設定
             </h2>
             <SiteSettingsManager />
           </TabsContent>
