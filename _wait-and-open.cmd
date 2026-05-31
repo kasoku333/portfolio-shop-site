@@ -1,9 +1,15 @@
 @echo off
-:: Vite(5173) ã¨ Express/tRPC(3000) ã®ä¸¡æ–¹ãŒ LISTENING ã«ãªã‚‹ã¾ã§æœ€å¤§30ç§’ãƒãƒ¼ãƒªãƒ³ã‚°ã—ã€
-:: æƒã£ãŸã‚‰ç¬¬1å¼•æ•°ã§æŒ‡å®šã•ã‚ŒãŸ HashRouter ãƒ‘ã‚¹ï¼ˆä¾‹: /#/adminã€/#/ï¼‰ã‚’ãƒ–ãƒ©ã‚¦ã‚¶ã§é–‹ãã€‚
-:: start-admin.cmd / start-home.cmd ã‹ã‚‰å‘¼ã°ã‚Œã‚‹å†…éƒ¨ãƒ˜ãƒ«ãƒ‘ãƒ¼ã€‚
+:: Vite(5173) ‚Æ Express/tRPC(3000) ‚Ì—¼•û‚ª LISTENING ‚É‚È‚é‚Ü‚ÅÅ‘å30•bƒ|[ƒŠƒ“ƒO‚µA
+:: ‘µ‚Á‚½‚ç‘æ1ˆø”‚Åw’è‚³‚ê‚½ HashRouter ƒpƒXi—á: /#/adminA/#/j‚ğƒuƒ‰ƒEƒU‚ÅŠJ‚­B
+:: start-admin.cmd / start-home.cmd ‚©‚çŒÄ‚Î‚ê‚é“à•”ƒwƒ‹ƒp[B
 set HASH_PATH=%~1
 if "%HASH_PATH%"=="" set HASH_PATH=/
+
+:: Chrome ‚ğ --new-window ‚ÅŠJ‚­i–³‚¯‚ê‚Î start ‚ÉƒtƒH[ƒ‹ƒoƒbƒNjB——R‚Í start-admin.cmd QÆB
+set "CHROME="
+if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" set "CHROME=%ProgramFiles%\Google\Chrome\Application\chrome.exe"
+if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" set "CHROME=%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"
+if exist "%LocalAppData%\Google\Chrome\Application\chrome.exe" set "CHROME=%LocalAppData%\Google\Chrome\Application\chrome.exe"
 
 set /a cnt=0
 :wait_loop
@@ -18,7 +24,11 @@ timeout /t 2 /nobreak >nul
 set /a cnt+=1
 if %cnt% lss 15 goto wait_loop
 
-:: 30ç§’çµŒã£ã¦ã‚‚ä¸¡æ–¹æƒã‚ãªã‹ã£ãŸå ´åˆã‚‚ã€ä¸€å¿œ Vite ã®ç”»é¢ã ã‘ã¯é–‹ãã€‚
+:: 30•bŒo‚Á‚Ä‚à—¼•û‘µ‚í‚È‚©‚Á‚½ê‡‚àAˆê‰ Vite ‚Ì‰æ–Ê‚¾‚¯‚ÍŠJ‚­B
 :open
-start "" http://localhost:5173%HASH_PATH%
+if defined CHROME (
+  start "" "%CHROME%" --new-window "http://localhost:5173%HASH_PATH%"
+) else (
+  start "" "http://localhost:5173%HASH_PATH%"
+)
 exit /b 0

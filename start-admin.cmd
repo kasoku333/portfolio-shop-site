@@ -2,19 +2,31 @@
 cd /d "%~dp0"
 set PATH=%PATH%;C:\Users\81904\AppData\Roaming\npm
 
-:: ã“ã®ã‚¢ãƒ—ãƒªã¯ HashRouter ã‚’ä½¿ã£ã¦ã„ã‚‹ãŸã‚ URL ã¯ /#/xxx å½¢å¼ã€‚
-:: Vite(5173) ã¨ Express/tRPC(3000) ã®ä¸¡æ–¹ãŒ LISTENING ã—ã¦ã„ãªã„ã¨
-:: /api ã¨ /uploads ã®ãƒ—ãƒ­ã‚­ã‚·ãŒæ©Ÿèƒ½ã—ãªã„ã®ã§ã€ä¸¡æ–¹ã‚’å¾…ã£ã¦ã‹ã‚‰ãƒ–ãƒ©ã‚¦ã‚¶ã‚’é–‹ãã€‚
+:: ‚±‚ÌƒAƒvƒŠ‚Í HashRouter ‚ğg—p‚µ‚Ä‚¢‚é‚½‚ß URL ‚Í /#/xxx Œ`®B
+:: Šù’è‚Ì "start URL" ‚Å‚ÍAƒTƒCƒg–{‘Ì(/)‚ğŠJ‚¢‚Ä‚¢‚éÅ’†‚ÉŠÇ—‰æ–Ê(/#/admin)‚ğŠJ‚±‚¤‚Æ‚µ‚Ä‚à
+:: uƒnƒbƒVƒ…ˆá‚¢‚Ì“¯‚¶ƒy[ƒWv‚ÆŒ©‚È‚³‚êAŠù‘¶ƒ^ƒu‚ÉƒtƒH[ƒJƒX‚·‚é‚¾‚¯‚ÅV‚µ‚¢‰æ–Ê‚ªo‚È‚¢B
+:: ‚»‚±‚Å Chrome ‚ğ --new-window ‚Å‹N“®‚µA•K‚¸•ÊƒEƒBƒ“ƒhƒE‚ÅŠJ‚­i–³‚¯‚ê‚Î start ‚ÉƒtƒH[ƒ‹ƒoƒbƒNjB
+set "CHROME="
+if exist "%ProgramFiles%\Google\Chrome\Application\chrome.exe" set "CHROME=%ProgramFiles%\Google\Chrome\Application\chrome.exe"
+if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" set "CHROME=%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"
+if exist "%LocalAppData%\Google\Chrome\Application\chrome.exe" set "CHROME=%LocalAppData%\Google\Chrome\Application\chrome.exe"
 
-:: ä¸¡æ–¹èµ·å‹•æ¸ˆã¿ãªã‚‰ã€ãƒ–ãƒ©ã‚¦ã‚¶ã ã‘é–‹ã„ã¦çµ‚ã‚ã‚‹ã€‚
+:: Vite(5173) ‚Æ Express/tRPC(3000) ‚Ì—¼•û‚ª LISTENING ‚µ‚Ä‚¢‚È‚¢‚Æ
+:: /api ‚Æ /uploads ‚ÌƒvƒƒLƒV‚ª‹@”\‚µ‚È‚¢‚Ì‚ÅA—¼•û‚ğ‘Ò‚Á‚Ä‚©‚çƒuƒ‰ƒEƒU‚ğŠJ‚­B
+
+:: —¼•û‹N“®Ï‚İ‚È‚çAƒuƒ‰ƒEƒU‚¾‚¯ŠJ‚¢‚ÄI‚í‚éB
 netstat -ano | findstr ":5173 " | findstr "LISTENING" >nul
 if errorlevel 1 goto boot
 netstat -ano | findstr ":3000 " | findstr "LISTENING" >nul
 if errorlevel 1 goto boot
-start "" http://localhost:5173/#/admin
+if defined CHROME (
+  start "" "%CHROME%" --new-window "http://localhost:5173/#/admin"
+) else (
+  start "" "http://localhost:5173/#/admin"
+)
 goto :eof
 
 :boot
-:: æœªèµ·å‹•ï¼šãƒãƒ¼ãƒªãƒ³ã‚°ç”¨ãƒ˜ãƒ«ãƒ‘ãƒ¼ã‚’åˆ¥çª“ã§å‹•ã‹ã—ã¤ã¤ã€æœ¬ãƒ—ãƒ­ã‚»ã‚¹ã§ pnpm dev ã‚’å®Ÿè¡Œã€‚
+:: –¢‹N“®Fƒ|[ƒŠƒ“ƒO—pƒwƒ‹ƒp[‚ğ•Ê‘‹‚Å“®‚©‚µ‚Â‚ÂA–{ƒvƒƒZƒX‚Å pnpm dev ‚ğÀsB
 start "" /min cmd /c "%~dp0_wait-and-open.cmd /#/admin"
 pnpm dev
