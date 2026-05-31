@@ -179,6 +179,7 @@ export default function AdminDashboard() {
                   title: artwork.title,
                   description: artwork.description ?? undefined,
                   category: artwork.category,
+                  content: artwork.content ?? undefined,
                   imageUrl: artwork.imageUrl ?? undefined,
                 });
               }}
@@ -188,6 +189,7 @@ export default function AdminDashboard() {
                   title: updates.title,
                   description: updates.description ?? undefined,
                   category: updates.category,
+                  content: updates.content ?? undefined,
                   imageUrl: updates.imageUrl ?? undefined,
                 });
               }}

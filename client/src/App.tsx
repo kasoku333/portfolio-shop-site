@@ -11,6 +11,7 @@ import About from "./pages/About";
 import History from "./pages/History";
 import AdminDashboard from "./pages/AdminDashboard";
 import Gallery from "./pages/Gallery";
+import NovelReader from "./pages/NovelReader";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
@@ -25,6 +26,7 @@ function Router() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/gallery" element={<Gallery />} />
+      <Route path="/novel/:id" element={<NovelReader />} />
       <Route path="/products/:id" element={<ProductDetail />} />
       <Route path="/shop" element={<Shop />} />
       <Route path="/about" element={<About />} />

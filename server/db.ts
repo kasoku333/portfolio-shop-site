@@ -119,6 +119,7 @@ export async function createArtwork(data: {
   title: string;
   description?: string;
   category: "illustration" | "manga" | "novel";
+  content?: string;
   imageUrl?: string;
   imageKey?: string;
 }) {
@@ -129,6 +130,7 @@ export async function createArtwork(data: {
     title: data.title,
     description: data.description ?? null,
     category: data.category,
+    content: data.content ?? null,
     imageUrl: data.imageUrl ?? null,
     imageKey: data.imageKey ?? null,
     createdAt: new Date(),
@@ -142,6 +144,7 @@ export async function updateArtwork(id: number, data: {
   title?: string;
   description?: string;
   category?: "illustration" | "manga" | "novel";
+  content?: string;
   imageUrl?: string;
   imageKey?: string;
 }) {
@@ -151,6 +154,7 @@ export async function updateArtwork(id: number, data: {
   if (data.title !== undefined) updateData.title = data.title;
   if (data.description !== undefined) updateData.description = data.description;
   if (data.category !== undefined) updateData.category = data.category;
+  if (data.content !== undefined) updateData.content = data.content;
   if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
   if (data.imageKey !== undefined) updateData.imageKey = data.imageKey;
   await db.update(artworks).set(updateData).where(eq(artworks.id, id));

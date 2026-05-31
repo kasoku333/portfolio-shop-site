@@ -15,6 +15,13 @@
       "when": 1767790665661,
       "tag": "0001_brave_rage",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1780204086575,
+      "tag": "0002_cooing_umar",
+      "breakpoints": true
     }
   ]
 }

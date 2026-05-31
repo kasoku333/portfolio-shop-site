@@ -12,6 +12,7 @@ interface Artwork {
   title: string;
   description?: string | null;
   category: "illustration" | "manga" | "novel";
+  content?: string | null;
   imageUrl?: string | null;
 }
 
@@ -34,6 +35,7 @@ export default function ArtworkManager({
     title: "",
     description: "",
     category: "illustration" as "illustration" | "manga" | "novel",
+    content: "",
     imageUrl: "",
   });
 
@@ -44,6 +46,7 @@ export default function ArtworkManager({
         title: artwork.title,
         description: artwork.description || "",
         category: artwork.category,
+        content: artwork.content || "",
         imageUrl: artwork.imageUrl || "",
       });
     } else {
@@ -52,6 +55,7 @@ export default function ArtworkManager({
         title: "",
         description: "",
         category: "illustration",
+        content: "",
         imageUrl: "",
       });
     }
@@ -64,10 +68,16 @@ export default function ArtworkManager({
       return;
     }
 
+    if (formData.category === "novel" && !formData.content.trim()) {
+      alert("小説の本文を入力してください");
+      return;
+    }
+
     const artworkData = {
       title: formData.title,
       description: formData.description,
       category: formData.category,
+      content: formData.content,
       imageUrl: formData.imageUrl,
     };
 
@@ -210,26 +220,51 @@ export default function ArtworkManager({
               </Select>
             </div>
 
-            {/* Description */}
+            {/* Description（小説では前書き・キャプション扱い） */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                説明
+                {formData.category === "novel" ? "前書き・キャプション" : "説明"}
               </label>
               <Textarea
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                placeholder="作品の説明を入力"
+                placeholder={
+                  formData.category === "novel"
+                    ? "作品の前書きや紹介文を入力（任意）"
+                    : "作品の説明を入力"
+                }
                 className="w-full"
                 rows={4}
               />
             </div>
 
-            {/* Image Upload */}
+            {/* 小説本文（カテゴリが小説のときだけ表示） */}
+            {formData.category === "novel" && (
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  本文 *
+                </label>
+                <Textarea
+                  value={formData.content}
+                  onChange={(e) =>
+                    setFormData({ ...formData, content: e.target.value })
+                  }
+                  placeholder="ここに小説の本文を入力（改行はそのまま反映されます）"
+                  className="w-full font-serif leading-relaxed"
+                  rows={16}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  pixivのように、テキストで小説を投稿できます。改行・空行はそのまま表示されます。
+                </p>
+              </div>
+            )}
+
+            {/* Image Upload（小説では任意の表紙画像） */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                作品画像
+                {formData.category === "novel" ? "表紙画像（任意）" : "作品画像"}
               </label>
               <ImageUploader
                 onImageUrl={(url) =>

@@ -11,6 +11,7 @@ interface Artwork {
   category: "illustration" | "manga" | "novel";
   imageUrl?: string | null;
   description?: string | null;
+  content?: string | null;
   userId?: number;
   imageKey?: string | null;
   createdAt?: Date;
@@ -117,35 +118,59 @@ export default function Gallery() {
                   : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
               }
             >
-              {artworks.map((artwork) => (
-                <button
-                  key={artwork.id}
-                  type="button"
-                  onClick={() => setSelectedArtwork(artwork)}
-                  className="group text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-lg"
-                >
-                  <div className="relative overflow-hidden rounded-lg border border-border bg-muted aspect-square mb-3 transition-transform group-hover:scale-[1.02]">
-                    {artwork.imageUrl ? (
-                      <img
-                        src={artwork.imageUrl}
-                        alt={artwork.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
-                        No image
-                      </div>
-                    )}
-                  </div>
-                  <h4 className="font-serif font-semibold text-foreground mb-1 line-clamp-2">
-                    {artwork.title}
-                  </h4>
-                  <p className="text-xs text-muted-foreground">
-                    {getCategoryLabel(artwork.category)}
-                  </p>
-                </button>
-              ))}
+              {artworks.map((artwork) => {
+                const cardInner = (
+                  <>
+                    <div className="relative overflow-hidden rounded-lg border border-border bg-muted aspect-square mb-3 transition-transform group-hover:scale-[1.02]">
+                      {artwork.imageUrl ? (
+                        <img
+                          src={artwork.imageUrl}
+                          alt={artwork.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : artwork.category === "novel" ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-2 p-4 bg-gradient-to-br from-muted to-muted/50">
+                          <span className="text-3xl">📖</span>
+                          <span className="font-serif text-sm text-foreground text-center line-clamp-3">
+                            {artwork.title}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
+                          No image
+                        </div>
+                      )}
+                    </div>
+                    <h4 className="font-serif font-semibold text-foreground mb-1 line-clamp-2">
+                      {artwork.title}
+                    </h4>
+                    <p className="text-xs text-muted-foreground">
+                      {getCategoryLabel(artwork.category)}
+                    </p>
+                  </>
+                );
+
+                // 小説は専用の読書ページへ、イラスト・漫画は画像モーダルを開く。
+                return artwork.category === "novel" ? (
+                  <Link
+                    key={artwork.id}
+                    to={`/novel/${artwork.id}`}
+                    className="group text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-lg block"
+                  >
+                    {cardInner}
+                  </Link>
+                ) : (
+                  <button
+                    key={artwork.id}
+                    type="button"
+                    onClick={() => setSelectedArtwork(artwork)}
+                    className="group text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-lg"
+                  >
+                    {cardInner}
+                  </button>
+                );
+              })}
             </div>
           )}
 

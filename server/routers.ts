@@ -90,6 +90,7 @@ export const appRouter = router({
         title: z.string().min(1),
         description: z.string().optional(),
         category: z.enum(['illustration', 'manga', 'novel']),
+        content: z.string().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
       }))
@@ -103,6 +104,7 @@ export const appRouter = router({
         title: z.string().min(1).optional(),
         description: z.string().optional(),
         category: z.enum(['illustration', 'manga', 'novel']).optional(),
+        content: z.string().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
       }))

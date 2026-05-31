@@ -32,6 +32,8 @@ export const artworks = mysqlTable("artworks", {
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   category: mysqlEnum("category", ["illustration", "manga", "novel"]).notNull(),
+  // 小説本文。pixivのようにテキストで投稿された小説の本体を保持する（イラスト/漫画ではnull）。
+  content: text("content"),
   imageUrl: varchar("imageUrl", { length: 512 }),
   imageKey: varchar("imageKey", { length: 512 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
