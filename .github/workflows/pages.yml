@@ -35,12 +35,12 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build client
-        run: pnpm exec vite -- --config client/vite.config.ts --outDir client/dist
+        run: pnpm exec vite build --config client/vite.config.ts --base=/portfolio-shop-site/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: client/dist
+          path: dist/public
 
   deploy:
     runs-on: ubuntu-latest
