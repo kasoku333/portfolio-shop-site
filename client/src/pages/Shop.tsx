@@ -1,11 +1,7 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import Shell from "@/components/Shell";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { useCart } from "@/contexts/CartContext";
-import { toast } from "sonner";
 
 interface Product {
   id: number;
@@ -14,7 +10,7 @@ interface Product {
   productType: "digital" | "physical";
   imageUrl?: string | null;
   description?: string | null;
-  stock?: number | null;
+  boothUrl?: string | null;
 }
 
 const FILTERS = [
@@ -30,20 +26,7 @@ function formatPrice(value: number | undefined | null) {
 }
 
 export default function Shop() {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedFilter, setSelectedFilter] = useState<"all" | "digital" | "physical">("all");
-  const { addItem } = useCart();
-
-  const handleAddToCart = (product: Product) => {
-    addItem({
-      productId: product.id,
-      title: product.title,
-      price: product.price,
-      imageUrl: product.imageUrl,
-      productType: product.productType,
-    });
-    toast.success(`「${product.title}」をカートに追加しました`);
-  };
 
   const { data: dbProducts = [], isLoading, isError } = trpc.products.list.useQuery(undefined, {
     retry: 1,
@@ -74,7 +57,7 @@ export default function Shop() {
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Shop</p>
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">ショップ</h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            デジタル作品と実物作品をお届けします。
+            作品はBOOTHにて頒布しています。気になる作品を選ぶと、BOOTHの商品ページが開きます。
           </p>
         </div>
       </section>
@@ -132,52 +115,83 @@ export default function Shop() {
                   : "gallery-grid"
               }
             >
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="group relative overflow-hidden rounded-lg border border-border bg-card cursor-pointer transition-all duration-300 hover:shadow-lg flex flex-col"
-                  onClick={() => setSelectedProduct(product)}
-                  style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}
-                >
-                  <div className="aspect-square w-full bg-muted relative overflow-hidden">
-                    {product.imageUrl ? (
-                      <img
-                        src={product.imageUrl}
-                        alt={product.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                        No Image
-                      </div>
-                    )}
-                    <div
-                      className={[
-                        "absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold",
-                        product.productType === "digital"
-                          ? "bg-accent text-accent-foreground"
-                          : "bg-background/90 text-foreground border border-border",
-                      ].join(" ")}
-                    >
-                      {getProductTypeLabel(product.productType)}
-                    </div>
-                  </div>
-                  <div className="p-4 flex-1 flex flex-col">
-                    <h4 className="font-serif font-semibold text-foreground mb-2 line-clamp-2">
-                      {product.title}
-                    </h4>
-                    <div className="mt-auto flex items-center justify-between">
-                      <span className="text-lg font-bold text-accent">
-                        {formatPrice(product.price)}
-                      </span>
-                      {product.productType === "physical" && product.stock != null && (
-                        <span className="text-xs text-muted-foreground">在庫: {product.stock}</span>
+              {filteredProducts.map((product) => {
+                // BOOTHのURLが未設定の商品は遷移先がないため、リンクにせず「準備中」として出す。
+                const boothUrl = product.boothUrl?.trim();
+
+                const cardClassName = [
+                  "group relative overflow-hidden rounded-lg border border-border bg-card transition-all duration-300 flex flex-col",
+                  boothUrl ? "cursor-pointer hover:shadow-lg" : "opacity-70",
+                ].join(" ");
+
+                const cardBody = (
+                  <>
+                    <div className="aspect-square w-full bg-muted relative overflow-hidden">
+                      {product.imageUrl ? (
+                        <img
+                          src={product.imageUrl}
+                          alt={product.title}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                          No Image
+                        </div>
                       )}
+                      <div
+                        className={[
+                          "absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold",
+                          product.productType === "digital"
+                            ? "bg-accent text-accent-foreground"
+                            : "bg-background/90 text-foreground border border-border",
+                        ].join(" ")}
+                      >
+                        {getProductTypeLabel(product.productType)}
+                      </div>
                     </div>
+                    <div className="p-4 flex-1 flex flex-col">
+                      <h4 className="font-serif font-semibold text-foreground mb-2 line-clamp-2">
+                        {product.title}
+                      </h4>
+                      <div className="mt-auto flex items-center justify-between gap-2">
+                        <span className="text-lg font-bold text-accent">
+                          {formatPrice(product.price)}
+                        </span>
+                        {boothUrl ? (
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground transition-colors group-hover:text-accent">
+                            BOOTHで見る
+                            <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">準備中</span>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                );
+
+                return boothUrl ? (
+                  <a
+                    key={product.id}
+                    href={boothUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={cardClassName}
+                    style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}
+                  >
+                    {cardBody}
+                  </a>
+                ) : (
+                  <div
+                    key={product.id}
+                    className={cardClassName}
+                    style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}
+                  >
+                    {cardBody}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -189,67 +203,6 @@ export default function Shop() {
           )}
         </div>
       </section>
-
-      {/* Product Detail Modal */}
-      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent className="max-w-2xl w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="font-serif text-xl md:text-2xl">
-              {selectedProduct?.title}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-5">
-            {selectedProduct?.imageUrl && (
-              <img
-                src={selectedProduct.imageUrl}
-                alt={selectedProduct.title}
-                className="w-full rounded-lg object-contain bg-muted max-h-[55vh]"
-              />
-            )}
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="text-3xl font-bold text-accent">
-                  {formatPrice(selectedProduct?.price ?? 0)}
-                </span>
-                <span className="text-xs bg-muted text-muted-foreground px-3 py-1 rounded uppercase tracking-wider">
-                  {getProductTypeLabel(selectedProduct?.productType || "")}
-                </span>
-              </div>
-              {selectedProduct?.productType === "physical" && selectedProduct?.stock != null && (
-                <p className="text-sm text-muted-foreground">在庫: {selectedProduct.stock}個</p>
-              )}
-              {selectedProduct?.description ? (
-                <p className="text-foreground leading-relaxed whitespace-pre-line">
-                  {selectedProduct.description}
-                </p>
-              ) : (
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {selectedProduct?.productType === "digital"
-                    ? "PDF形式で読めるデジタル作品です。購入後、ダウンロードできます。"
-                    : "実物作品です。発送までしばらくお待ちください。"}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
-              <Button
-                className="flex-1"
-                variant="default"
-                onClick={() => {
-                  if (selectedProduct) {
-                    handleAddToCart(selectedProduct);
-                    setSelectedProduct(null);
-                  }
-                }}
-              >
-                カートに追加
-              </Button>
-              <Button className="flex-1" variant="outline" onClick={() => setSelectedProduct(null)}>
-                閉じる
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </Shell>
   );
 }

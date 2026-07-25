@@ -10,6 +10,7 @@ import SiteSettingsManager from "@/components/SiteSettingsManager";
 import ProfileManager from "@/components/ProfileManager";
 import HistoryManager from "@/components/HistoryManager";
 import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -23,26 +24,37 @@ export default function AdminDashboard() {
   const user = authUser ? { name: authUser.name || "管理者", role: "admin" as const } : null;
   const logout = () => logoutMutation.mutate();
 
+  // 保存に失敗しても画面に何も出ないと原因が追えないため、成否を必ずトーストで知らせる。
+  const notifySaved = (label: string, refetch: () => void) => ({
+    onSuccess: () => {
+      refetch();
+      toast.success(`${label}しました`);
+    },
+    onError: (error: { message: string }) => {
+      toast.error(`${label}できませんでした: ${error.message}`);
+    },
+  });
+
   // tRPC: 商品データ取得
   const { data: products = [], refetch: refetchProducts } = trpc.products.list.useQuery();
-  const createProduct = trpc.products.create.useMutation({ onSuccess: () => refetchProducts() });
-  const updateProduct = trpc.products.update.useMutation({ onSuccess: () => refetchProducts() });
-  const deleteProduct = trpc.products.delete.useMutation({ onSuccess: () => refetchProducts() });
+  const createProduct = trpc.products.create.useMutation(notifySaved("商品を追加", refetchProducts));
+  const updateProduct = trpc.products.update.useMutation(notifySaved("商品を更新", refetchProducts));
+  const deleteProduct = trpc.products.delete.useMutation(notifySaved("商品を削除", refetchProducts));
 
   // tRPC: 作品データ取得
   const { data: artworks = [], refetch: refetchArtworks } = trpc.artworks.list.useQuery();
-  const createArtwork = trpc.artworks.create.useMutation({ onSuccess: () => refetchArtworks() });
-  const updateArtwork = trpc.artworks.update.useMutation({ onSuccess: () => refetchArtworks() });
-  const deleteArtwork = trpc.artworks.delete.useMutation({ onSuccess: () => refetchArtworks() });
+  const createArtwork = trpc.artworks.create.useMutation(notifySaved("作品を追加", refetchArtworks));
+  const updateArtwork = trpc.artworks.update.useMutation(notifySaved("作品を更新", refetchArtworks));
+  const deleteArtwork = trpc.artworks.delete.useMutation(notifySaved("作品を削除", refetchArtworks));
 
   // tRPC: 注文データ取得
   const { data: orders = [], refetch: refetchOrders } = trpc.orders.listAll.useQuery(undefined, {
     retry: 1,
     retryDelay: 1000,
   });
-  const updateOrderStatus = trpc.orders.updateStatus.useMutation({
-    onSuccess: () => refetchOrders(),
-  });
+  const updateOrderStatus = trpc.orders.updateStatus.useMutation(
+    notifySaved("注文状態を更新", refetchOrders)
+  );
 
   // アクセス制御：未認証時はログインページへリダイレクト
   useEffect(() => {
@@ -150,6 +162,7 @@ export default function AdminDashboard() {
                   productType: product.productType,
                   stock: product.stock ?? undefined,
                   imageUrl: product.imageUrl ?? undefined,
+                  boothUrl: product.boothUrl ?? undefined,
                 });
               }}
               onEdit={(id, updates) => {
@@ -161,6 +174,7 @@ export default function AdminDashboard() {
                   productType: updates.productType,
                   stock: updates.stock ?? undefined,
                   imageUrl: updates.imageUrl ?? undefined,
+                  boothUrl: updates.boothUrl ?? undefined,
                 });
               }}
               onDelete={(id) => {

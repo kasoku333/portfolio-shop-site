@@ -56,6 +56,8 @@ export const products = mysqlTable("products", {
   imageKey: varchar("imageKey", { length: 512 }),
   fileUrl: varchar("fileUrl", { length: 512 }),
   fileKey: varchar("fileKey", { length: 512 }),
+  // 販売はBOOTHへ委譲しているため、購入導線の遷移先。未設定の商品は一覧で「準備中」表示になる。
+  boothUrl: varchar("boothUrl", { length: 512 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

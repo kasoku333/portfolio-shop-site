@@ -4,7 +4,6 @@ import NotFound from "@/pages/NotFound";
 import { Route, Routes } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { CartProvider } from "./contexts/CartContext";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import About from "./pages/About";
@@ -12,14 +11,12 @@ import History from "./pages/History";
 import AdminDashboard from "./pages/AdminDashboard";
 import Gallery from "./pages/Gallery";
 import NovelReader from "./pages/NovelReader";
-import ProductDetail from "./pages/ProductDetail";
-import Cart from "./pages/Cart";
-import CheckoutSuccess from "./pages/CheckoutSuccess";
-import CheckoutCancel from "./pages/CheckoutCancel";
 import Login from "./pages/Login";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-import Tokushoho from "./pages/Tokushoho";
 
+// 販売はBOOTHへ委譲したため、カート・決済・特商法のルートは外している。
+// ページ本体（Cart / CheckoutSuccess / CheckoutCancel / Tokushoho）は
+// 自作販売を再開する場合に備えて残してあるが、ここに登録しない限り読み込まれない。
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
@@ -27,15 +24,10 @@ function Router() {
       <Route path="/" element={<Home />} />
       <Route path="/gallery" element={<Gallery />} />
       <Route path="/novel/:id" element={<NovelReader />} />
-      <Route path="/products/:id" element={<ProductDetail />} />
       <Route path="/shop" element={<Shop />} />
       <Route path="/about" element={<About />} />
       <Route path="/history" element={<History />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/checkout/success" element={<CheckoutSuccess />} />
-      <Route path="/checkout/cancel" element={<CheckoutCancel />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
-      <Route path="/tokushoho" element={<Tokushoho />} />
       <Route path="/login" element={<Login />} />
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/404" element={<NotFound />} />
@@ -56,12 +48,10 @@ function App() {
         defaultTheme="light"
         // switchable
       >
-        <CartProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
-        </CartProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

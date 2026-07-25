@@ -15,6 +15,24 @@ interface Product {
   productType: "digital" | "physical";
   imageUrl?: string | null;
   stock?: number | null;
+  boothUrl?: string | null;
+}
+
+// 「xxx.booth.pm/items/123」のようにスキーマ無しで貼られることが多いため、https:// を補う。
+// サーバー側の検証はURL形式を要求するので、ここで整えないと保存が弾かれる。
+function normalizeUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
+function isValidUrl(value: string) {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 interface ProductManagerProps {
@@ -39,6 +57,7 @@ export default function ProductManager({
     productType: "digital" as "digital" | "physical",
     stock: "",
     imageUrl: "",
+    boothUrl: "",
   });
 
   const handleOpenDialog = (product?: Product) => {
@@ -51,6 +70,7 @@ export default function ProductManager({
         productType: product.productType,
         stock: product.stock?.toString() || "",
         imageUrl: product.imageUrl || "",
+        boothUrl: product.boothUrl || "",
       });
     } else {
       setEditingId(null);
@@ -61,6 +81,7 @@ export default function ProductManager({
         productType: "digital",
         stock: "",
         imageUrl: "",
+        boothUrl: "",
       });
     }
     setIsDialogOpen(true);
@@ -72,13 +93,24 @@ export default function ProductManager({
       return;
     }
 
+    const boothUrl = normalizeUrl(formData.boothUrl);
+    if (boothUrl && !isValidUrl(boothUrl)) {
+      alert("BOOTHのURLの形式が正しくないようです。商品ページのURLをそのまま貼り付けてください。");
+      return;
+    }
+
     const productData = {
       title: formData.title,
       description: formData.description,
       price: parseFloat(formData.price),
       productType: formData.productType,
-      stock: formData.productType === "physical" ? parseInt(formData.stock) : undefined,
+      // 空欄のまま parseInt すると NaN になり、サーバー側の検証で弾かれる
+      stock:
+        formData.productType === "physical" && formData.stock.trim()
+          ? parseInt(formData.stock)
+          : undefined,
       imageUrl: formData.imageUrl,
+      boothUrl,
     };
 
     if (editingId) {
@@ -254,6 +286,25 @@ export default function ProductManager({
                 placeholder="1000"
                 className="w-full"
               />
+            </div>
+
+            {/* BOOTH URL */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                BOOTH商品ページURL
+              </label>
+              <Input
+                type="url"
+                value={formData.boothUrl}
+                onChange={(e) =>
+                  setFormData({ ...formData, boothUrl: e.target.value })
+                }
+                placeholder="https://xxxxx.booth.pm/items/1234567"
+                className="w-full"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                未入力の場合、ショップ一覧では「準備中」と表示され、クリックできません。
+              </p>
             </div>
 
             {/* Stock (for physical products) */}

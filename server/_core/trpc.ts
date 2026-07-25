@@ -27,19 +27,17 @@ const requireUser = t.middleware(async opts => {
 
 export const protectedProcedure = t.procedure.use(requireUser);
 
+// 管理者判定は2経路ある。ADMIN_PASSWORD によるログインは context 側で adminSession に入り、
+// その場合 user は null のままになる（createContext が OAuth 認証をスキップするため）。
+// user だけを見ると、パスワードでログインした管理者本人が締め出される。
 export const adminProcedure = t.procedure.use(
   t.middleware(async opts => {
     const { ctx, next } = opts;
 
-    if (!ctx.user || ctx.user.role !== 'admin') {
+    if (!ctx.adminSession && ctx.user?.role !== 'admin') {
       throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
     }
 
-    return next({
-      ctx: {
-        ...ctx,
-        user: ctx.user,
-      },
-    });
+    return next({ ctx });
   }),
 );

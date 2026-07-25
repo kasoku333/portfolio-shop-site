@@ -1,7 +1,7 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { publicProcedure, protectedProcedure, adminProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
@@ -85,7 +85,7 @@ export const appRouter = router({
         return artwork;
       }),
 
-    create: publicProcedure
+    create: adminProcedure
       .input(z.object({
         title: z.string().min(1),
         description: z.string().optional(),
@@ -98,7 +98,7 @@ export const appRouter = router({
         return db.createArtwork(input);
       }),
 
-    update: publicProcedure
+    update: adminProcedure
       .input(z.object({
         id: z.number(),
         title: z.string().min(1).optional(),
@@ -113,7 +113,7 @@ export const appRouter = router({
         return db.updateArtwork(id, data);
       }),
 
-    delete: publicProcedure
+    delete: adminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await db.deleteArtwork(input.id);
@@ -137,7 +137,7 @@ export const appRouter = router({
         return product;
       }),
 
-    create: publicProcedure
+    create: adminProcedure
       .input(z.object({
         title: z.string().min(1),
         description: z.string().optional(),
@@ -146,12 +146,14 @@ export const appRouter = router({
         stock: z.number().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
+        // 販売はBOOTHへ委譲しているため、商品カードの遷移先URL。未設定なら一覧で「準備中」表示になる。
+        boothUrl: z.string().url().or(z.literal("")).optional(),
       }))
       .mutation(async ({ input }) => {
         return db.createProduct(input);
       }),
 
-    update: publicProcedure
+    update: adminProcedure
       .input(z.object({
         id: z.number(),
         title: z.string().min(1).optional(),
@@ -161,13 +163,14 @@ export const appRouter = router({
         stock: z.number().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
+        boothUrl: z.string().url().or(z.literal("")).optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
         return db.updateProduct(id, data);
       }),
 
-    delete: publicProcedure
+    delete: adminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await db.deleteProduct(input.id);
@@ -196,8 +199,8 @@ export const appRouter = router({
 
   // Order routes
   orders: router({
-    // 管理者用: 全注文一覧
-    listAll: publicProcedure.query(async () => {
+    // 管理者用: 全注文一覧。購入者の氏名・住所を含むため adminProcedure 必須。
+    listAll: adminProcedure.query(async () => {
       return db.getAllOrders();
     }),
 
@@ -205,7 +208,7 @@ export const appRouter = router({
       return db.getOrdersByUser(ctx.user.id);
     }),
 
-    getById: publicProcedure
+    getById: adminProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
         const order = await db.getOrderById(input.id);
@@ -215,13 +218,13 @@ export const appRouter = router({
         return order;
       }),
 
-    getItems: publicProcedure
+    getItems: adminProcedure
       .input(z.object({ orderId: z.number() }))
       .query(async ({ input }) => {
         return db.getOrderItems(input.orderId);
       }),
 
-    updateStatus: publicProcedure
+    updateStatus: adminProcedure
       .input(z.object({
         id: z.number(),
         status: z.enum(["pending", "completed", "failed", "cancelled"]),
@@ -257,7 +260,7 @@ export const appRouter = router({
     get: publicProcedure.query(() => {
       return getSiteSettings();
     }),
-    update: publicProcedure
+    update: adminProcedure
       .input(z.object({
         siteName: z.string().optional(),
         siteSubtitle: z.string().optional(),
@@ -295,7 +298,11 @@ export const appRouter = router({
       return { available: isStripeConfigured() };
     }),
 
-    createSession: publicProcedure
+    // 販売はBOOTHへ委譲したため、この経路は封鎖している。
+    // ブラウザから渡された price をそのまま Stripe へ流す実装のままなので、
+    // 自作決済を再開する際は「productId から価格と在庫をサーバー側で引き直す」修正が先に必要。
+    // それを済ませるまで publicProcedure に戻さないこと。
+    createSession: adminProcedure
       .input(z.object({
         items: z.array(z.object({
           productId: z.number(),

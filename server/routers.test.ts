@@ -19,6 +19,7 @@ function createAuthContext(role: "admin" | "user" = "user"): TrpcContext {
 
   return {
     user,
+    adminSession: null,
     req: {
       protocol: "https",
       headers: {},
@@ -30,6 +31,21 @@ function createAuthContext(role: "admin" | "user" = "user"): TrpcContext {
 function createPublicContext(): TrpcContext {
   return {
     user: null,
+    adminSession: null,
+    req: {
+      protocol: "https",
+      headers: {},
+    } as TrpcContext["req"],
+    res: {} as TrpcContext["res"],
+  };
+}
+
+// ADMIN_PASSWORD でログインした管理者。createContext の仕様上、
+// この経路では user は null のままで adminSession だけが立つ。
+function createAdminSessionContext(): TrpcContext {
+  return {
+    user: null,
+    adminSession: { name: "Admin" },
     req: {
       protocol: "https",
       headers: {},
@@ -161,6 +177,73 @@ describe("routers", () => {
         // Expected to fail due to database not being available in test
         expect(error.message).toBeDefined();
       }
+    });
+  });
+
+  // 変更系APIと注文情報が無認証で叩けた問題の回帰テスト。
+  // ここで扱うのは権限判定のみなので、いずれも middleware で弾かれてDBには到達しない。
+  describe("管理APIの保護", () => {
+    const sampleProduct = {
+      title: "テスト商品",
+      price: "1000",
+      productType: "digital" as const,
+    };
+
+    it("無認証では商品を作成できない", async () => {
+      const caller = appRouter.createCaller(createPublicContext());
+      await expect(caller.products.create(sampleProduct)).rejects.toMatchObject({
+        code: "FORBIDDEN",
+      });
+    });
+
+    it("一般ユーザーでは商品を作成できない", async () => {
+      const caller = appRouter.createCaller(createAuthContext("user"));
+      await expect(caller.products.create(sampleProduct)).rejects.toMatchObject({
+        code: "FORBIDDEN",
+      });
+    });
+
+    it("無認証では作品を作成できない", async () => {
+      const caller = appRouter.createCaller(createPublicContext());
+      await expect(
+        caller.artworks.create({ title: "テスト作品", category: "illustration" })
+      ).rejects.toMatchObject({ code: "FORBIDDEN" });
+    });
+
+    it("無認証では注文一覧を取得できない", async () => {
+      const caller = appRouter.createCaller(createPublicContext());
+      await expect(caller.orders.listAll()).rejects.toMatchObject({
+        code: "FORBIDDEN",
+      });
+    });
+
+    it("無認証では注文明細を取得できない", async () => {
+      const caller = appRouter.createCaller(createPublicContext());
+      await expect(caller.orders.getItems({ orderId: 1 })).rejects.toMatchObject({
+        code: "FORBIDDEN",
+      });
+    });
+
+    it("無認証ではサイト設定を更新できない", async () => {
+      const caller = appRouter.createCaller(createPublicContext());
+      await expect(
+        caller.siteSettings.update({ siteName: "書き換えテスト" })
+      ).rejects.toMatchObject({ code: "FORBIDDEN" });
+    });
+
+    it("無認証では画像をアップロードできない", async () => {
+      const caller = appRouter.createCaller(createPublicContext());
+      await expect(
+        caller.upload.image({ fileName: "x.png", fileData: "", contentType: "image/png" })
+      ).rejects.toMatchObject({ code: "FORBIDDEN" });
+    });
+
+    // パスワードログインでは user が null のまま adminSession だけが立つ。
+    // adminProcedure が user だけを見ていると管理者本人が締め出されるため、その回帰を防ぐ。
+    it("パスワードログインした管理者は権限で弾かれない", async () => {
+      const caller = appRouter.createCaller(createAdminSessionContext());
+      const result = await caller.orders.listAll().catch((error) => error);
+      expect(result?.code).not.toBe("FORBIDDEN");
     });
   });
 });
