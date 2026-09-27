@@ -111,6 +111,15 @@ Google OAuth は `ADMIN_EMAIL` 本人しか通さず、通ったユーザーは 
 `JWT_SECRET` が空だとセッションの署名も検証もしない（ログインできなくなる）。
 決済（`checkout.createSession`）の価格は DB から取る。クライアントが送る値を信用しないこと。
 
+### ショップの販売は BOOTH
+
+販売は BOOTH に任せている。ショップの各商品は `products.boothUrl` の BOOTH 商品ページへ
+「BOOTH で見る」で飛ばす（未設定なら「準備中」）。価格はサイトにも表示する。
+自前のカート・Stripe 決済は **`shared/const.ts` の `CHECKOUT_ENABLED = false` で画面から隠しているだけ**で、
+コード（`Cart.tsx`・`checkout` ルーター・`stripe.ts`）は残してある。消さないこと。
+`boothUrl` は `href` にそのまま入るので、`shared/booth.ts` の `isBoothUrl`（https の `booth.pm` / `*.booth.pm` のみ）で
+サーバ側でも必ず検証する。
+
 ### ストレージ
 
 `server/storage.ts` は **ローカルFSへの書き込み**。Express が

@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
+import { CHECKOUT_ENABLED } from "@shared/const";
 import { trpc } from "@/lib/trpc";
 
 type ShellProps = {
@@ -74,21 +75,23 @@ export default function Shell({ children }: ShellProps) {
             ))}
           </nav>
 
-          {/* カートボタン */}
-          <Link to="/cart" className="shrink-0">
-            <Button size="sm" className="gap-2 rounded-full px-4 shadow-sm relative">
-              <ShoppingBag className="h-4 w-4" />
-              カート
-              {totalItems > 0 && (
-                <span
-                  data-testid="cart-badge"
-                  className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 min-w-5 px-1 flex items-center justify-center font-bold"
-                >
-                  {totalItems}
-                </span>
-              )}
-            </Button>
-          </Link>
+          {/* カートボタン（自前の決済を使うときだけ） */}
+          {CHECKOUT_ENABLED && (
+            <Link to="/cart" className="shrink-0">
+              <Button size="sm" className="gap-2 rounded-full px-4 shadow-sm relative">
+                <ShoppingBag className="h-4 w-4" />
+                カート
+                {totalItems > 0 && (
+                  <span
+                    data-testid="cart-badge"
+                    className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 min-w-5 px-1 flex items-center justify-center font-bold"
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </Button>
+            </Link>
+          )}
         </div>
       </header>
 
@@ -106,20 +109,22 @@ export default function Shell({ children }: ShellProps) {
               {siteSubtitle}
             </span>
           </Link>
-          <Link to="/cart" className="shrink-0">
-            <Button size="sm" className="gap-2 rounded-full px-3 shadow-sm relative">
-              <ShoppingBag className="h-4 w-4" />
-              <span className="hidden sm:inline">カート</span>
-              {totalItems > 0 && (
-                <span
-                  data-testid="cart-badge"
-                  className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 min-w-5 px-1 flex items-center justify-center font-bold"
-                >
-                  {totalItems}
-                </span>
-              )}
-            </Button>
-          </Link>
+          {CHECKOUT_ENABLED && (
+            <Link to="/cart" className="shrink-0">
+              <Button size="sm" className="gap-2 rounded-full px-3 shadow-sm relative">
+                <ShoppingBag className="h-4 w-4" />
+                <span className="hidden sm:inline">カート</span>
+                {totalItems > 0 && (
+                  <span
+                    data-testid="cart-badge"
+                    className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 min-w-5 px-1 flex items-center justify-center font-bold"
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </Button>
+            </Link>
+          )}
         </div>
       </header>
 
