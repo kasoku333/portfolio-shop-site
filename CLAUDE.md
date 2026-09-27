@@ -36,9 +36,9 @@ server/          Express + tRPC。_core/ が基盤、直下が業務ロジック
   siteSettings.ts  site-settings.json を読み書きするファイルストア
   dataDir.ts     上2つの保存先を決める（Railway の Volume 対応）
 shared/          クライアント/サーバ共有の定数・型（`@shared/*`）
-drizzle/         schema.ts + 生成済みマイグレーション（0000〜0002）
+drizzle/         schema.ts + 生成済みマイグレーション（0000〜0003）
 patches/         pnpm patch 置き場（現在は死んでいる。後述）
-.github/workflows/  ci.yml（型・ビルド・テスト）/ pages.yml（Pages デプロイ）
+.github/workflows/  ci.yml（型・ビルド・テスト）
 railway.json     Railway のビルド・起動設定（マイグレーションは本番起動時に server/db.ts の runMigrations が流す）
 docs/railway-deploy.md  Railway への公開手順
 start-*.cmd      Windows 用のワンクリック起動スクリプト
@@ -165,13 +165,12 @@ Vite の devProxy（`/api`, `/uploads`）が 3000 を決め打ちしており、
 過去に「HashRouter とアンカーリンクの競合で `/#/` 内リンクが 404」という
 不具合を踏んでいる（`510cead`）。ページ内アンカーとルート遷移を混ぜるときは注意。
 
-### 3. GitHub Pages 版にはバックエンドが無い
+### 3. 公開先は Railway だけ（GitHub Pages は廃止済み）
 
-`pages.yml` は `vite build` でクライアントだけを焼いて `dist/public` を上げる。
-`/api/trpc` は存在しないので、**Pages 上では DB 由来の表示は動かない**（見た目の確認用）。
-`--base=/portfolio-shop-site/` を CLI で渡して `client/vite.config.ts` の
-`base: "/"` を上書きしている。base を触るときは両方見る。
-本番（バックエンド込み）は Railway に出す。手順は `docs/railway-deploy.md`。
+以前は `pages.yml` でクライアントだけを GitHub Pages に上げていたが、
+バックエンドが無く DB 由来の表示が動かない見た目確認用だったので、Railway 公開後に消した。
+本番は Railway で、Express が `dist/public` も配る。手順は `docs/railway-deploy.md`。
+`client/vite.config.ts` の `base: "/"` はこの前提なので、サブパス配信に戻さないこと。
 
 ### 4. 開発サーバは2経路ある
 
@@ -239,10 +238,10 @@ Express 自身も `setupVite()` で Vite をミドルウェアとして持つ。
 
 ## Git / CI
 
-- 作業ブランチ: `claude/claude-md-docs-q696z6`。push は `git push -u origin <branch>`
+- 作業ブランチはセッションごとに指定される（`claude/...`）。push は `git push -u origin <branch>`
 - PR は **draft** で作る
 - CI（`ci.yml`）は push to main と全 PR で発火し、`install → check → build → test`
-- `pages.yml` は main への push で GitHub Pages へデプロイ
+- main へのマージで Railway が自動デプロイする（GitHub Actions ではなく Railway 側の連携）
 - コミットメッセージは日本語。`feat:` / `fix:` / `style:` の prefix が混在しているが、
   **既存の流儀に合わせる**（直近は prefix 有りが多数）
 

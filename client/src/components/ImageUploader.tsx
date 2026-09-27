@@ -176,7 +176,7 @@ export default function ImageUploader({
               クリックして画像をアップロード
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              またはドラッグ&ドロップ (JPG, PNG - 最大 {maxSize}MB)
+              またはドラッグ&ドロップ (JPEG, PNG, GIF, WebP, AVIF - 最大 {maxSize}MB)
             </p>
           </>
         )}
