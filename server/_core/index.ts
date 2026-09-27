@@ -7,8 +7,15 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { UPLOADS_DIR } from "../storage";
+import { runMigrations } from "../db";
 
 async function startServer() {
+  // 本番はテーブルが無いまま起動しないよう、先にマイグレーションを流す。
+  // 開発ではローカル DB を勝手に変えないよう、pnpm db:push に任せる。
+  if (process.env.NODE_ENV === "production") {
+    await runMigrations();
+  }
+
   const app = express();
   const server = createServer(app);
   // Configure body parser with larger size limit for file uploads
@@ -54,4 +61,7 @@ async function startServer() {
   });
 }
 
-startServer().catch(console.error);
+startServer().catch(error => {
+  console.error(error);
+  process.exit(1);
+});

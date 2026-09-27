@@ -1,5 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { migrate } from "drizzle-orm/mysql2/migrator";
+import path from "path";
 import { InsertUser, users, artworks, products, artworkProducts, carts, cartItems, orders, orderItems, profiles, InsertProfile, InsertOrder } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -16,6 +18,16 @@ export async function getDb() {
     }
   }
   return _db;
+}
+
+// drizzle/ のマイグレーションを DB に適用する（適用済みのものは飛ばす）。
+// デプロイ先の設定（preDeployCommand 等）に頼らず、サーバ起動時に自分で流す。
+export async function runMigrations() {
+  const db = await getDb();
+  if (!db) return;
+  const migrationsFolder = path.resolve(process.cwd(), "drizzle");
+  await migrate(db, { migrationsFolder });
+  console.log("[Database] Migrations applied from", migrationsFolder);
 }
 
 export async function upsertUser(user: InsertUser): Promise<void> {

@@ -39,7 +39,7 @@ shared/          クライアント/サーバ共有の定数・型（`@shared/*`
 drizzle/         schema.ts + 生成済みマイグレーション（0000〜0002）
 patches/         pnpm patch 置き場（現在は死んでいる。後述）
 .github/workflows/  ci.yml（型・ビルド・テスト）/ pages.yml（Pages デプロイ）
-railway.json     Railway のビルド・起動・デプロイ前マイグレーション
+railway.json     Railway のビルド・起動設定（マイグレーションは本番起動時に server/db.ts の runMigrations が流す）
 docs/railway-deploy.md  Railway への公開手順
 start-*.cmd      Windows 用のワンクリック起動スクリプト
 ```
