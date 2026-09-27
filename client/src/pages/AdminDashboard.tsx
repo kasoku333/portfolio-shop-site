@@ -150,6 +150,7 @@ export default function AdminDashboard() {
                   productType: product.productType,
                   stock: product.stock ?? undefined,
                   imageUrl: product.imageUrl ?? undefined,
+                  boothUrl: product.boothUrl ?? undefined,
                 });
               }}
               onEdit={(id, updates) => {
@@ -161,6 +162,7 @@ export default function AdminDashboard() {
                   productType: updates.productType,
                   stock: updates.stock ?? undefined,
                   imageUrl: updates.imageUrl ?? undefined,
+                  boothUrl: updates.boothUrl ?? undefined,
                 });
               }}
               onDelete={(id) => {

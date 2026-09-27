@@ -10,6 +10,17 @@ import { createCheckoutSession, isStripeConfigured } from "./stripe";
 import { sdk } from "./_core/sdk";
 import { getSiteSettings, saveSiteSettings } from "./siteSettings";
 import { createHash, timingSafeEqual } from "crypto";
+import { isBoothUrl } from "@shared/booth";
+
+// 空文字は「リンクを外す」扱いで null にする
+const boothUrlInput = z
+  .string()
+  .trim()
+  .refine(v => v === "" || isBoothUrl(v), {
+    message: "BOOTH の商品ページ（https://〜.booth.pm/...）の URL を入れてください",
+  })
+  .transform(v => (v === "" ? null : v))
+  .optional();
 
 // 長さの違いで早期 return しないよう、ハッシュ同士を定数時間で比較する
 function passwordMatches(input: string, expected: string): boolean {
@@ -154,6 +165,7 @@ export const appRouter = router({
         stock: z.number().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
+        boothUrl: boothUrlInput,
       }))
       .mutation(async ({ input }) => {
         return db.createProduct(input);
@@ -169,6 +181,7 @@ export const appRouter = router({
         stock: z.number().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
+        boothUrl: boothUrlInput,
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;

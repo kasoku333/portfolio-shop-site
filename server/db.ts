@@ -194,6 +194,7 @@ export async function createProduct(data: {
   stock?: number;
   imageUrl?: string;
   imageKey?: string;
+  boothUrl?: string | null;
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -206,6 +207,7 @@ export async function createProduct(data: {
     stock: data.stock ?? null,
     imageUrl: data.imageUrl ?? null,
     imageKey: data.imageKey ?? null,
+    boothUrl: data.boothUrl ?? null,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -222,6 +224,7 @@ export async function updateProduct(id: number, data: {
   stock?: number;
   imageUrl?: string;
   imageKey?: string;
+  boothUrl?: string | null;
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -233,6 +236,7 @@ export async function updateProduct(id: number, data: {
   if (data.stock !== undefined) updateData.stock = data.stock;
   if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
   if (data.imageKey !== undefined) updateData.imageKey = data.imageKey;
+  if (data.boothUrl !== undefined) updateData.boothUrl = data.boothUrl;
   await db.update(products).set(updateData).where(eq(products.id, id));
   return getProductById(id);
 }

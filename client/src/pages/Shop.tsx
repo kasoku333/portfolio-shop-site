@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import { trpc } from "@/lib/trpc";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
+import { ExternalLink } from "lucide-react";
+import { CHECKOUT_ENABLED } from "@shared/const";
 
 interface Product {
   id: number;
@@ -15,6 +17,7 @@ interface Product {
   imageUrl?: string | null;
   description?: string | null;
   stock?: number | null;
+  boothUrl?: string | null;
 }
 
 const FILTERS = [
@@ -75,6 +78,12 @@ export default function Shop() {
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">ショップ</h2>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
             デジタル作品と実物作品をお届けします。
+            {!CHECKOUT_ENABLED && (
+              <>
+                <br />
+                ご購入は BOOTH のページからどうぞ。
+              </>
+            )}
           </p>
         </div>
       </section>
@@ -224,25 +233,40 @@ export default function Shop() {
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  {selectedProduct?.productType === "digital"
-                    ? "PDF形式で読めるデジタル作品です。購入後、ダウンロードできます。"
-                    : "実物作品です。発送までしばらくお待ちください。"}
+                  {!CHECKOUT_ENABLED
+                    ? "ご購入・お届けは BOOTH で承っています。"
+                    : selectedProduct?.productType === "digital"
+                      ? "PDF形式で読めるデジタル作品です。購入後、ダウンロードできます。"
+                      : "実物作品です。発送までしばらくお待ちください。"}
                 </p>
               )}
             </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
-              <Button
-                className="flex-1"
-                variant="default"
-                onClick={() => {
-                  if (selectedProduct) {
-                    handleAddToCart(selectedProduct);
-                    setSelectedProduct(null);
-                  }
-                }}
-              >
-                カートに追加
-              </Button>
+              {CHECKOUT_ENABLED ? (
+                <Button
+                  className="flex-1"
+                  variant="default"
+                  onClick={() => {
+                    if (selectedProduct) {
+                      handleAddToCart(selectedProduct);
+                      setSelectedProduct(null);
+                    }
+                  }}
+                >
+                  カートに追加
+                </Button>
+              ) : selectedProduct?.boothUrl ? (
+                <Button className="flex-1 gap-2" variant="default" asChild>
+                  <a href={selectedProduct.boothUrl} target="_blank" rel="noopener noreferrer">
+                    BOOTH で見る
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                </Button>
+              ) : (
+                <Button className="flex-1" variant="default" disabled>
+                  準備中
+                </Button>
+              )}
               <Button className="flex-1" variant="outline" onClick={() => setSelectedProduct(null)}>
                 閉じる
               </Button>

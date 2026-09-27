@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Trash2, Edit2 } from "lucide-react";
 import ImageUploader from "./ImageUploader";
+import { isBoothUrl } from "@shared/booth";
 
 interface Product {
   id: number;
@@ -15,6 +16,7 @@ interface Product {
   productType: "digital" | "physical";
   imageUrl?: string | null;
   stock?: number | null;
+  boothUrl?: string | null;
 }
 
 interface ProductManagerProps {
@@ -39,6 +41,7 @@ export default function ProductManager({
     productType: "digital" as "digital" | "physical",
     stock: "",
     imageUrl: "",
+    boothUrl: "",
   });
 
   const handleOpenDialog = (product?: Product) => {
@@ -51,6 +54,7 @@ export default function ProductManager({
         productType: product.productType,
         stock: product.stock?.toString() || "",
         imageUrl: product.imageUrl || "",
+        boothUrl: product.boothUrl || "",
       });
     } else {
       setEditingId(null);
@@ -61,6 +65,7 @@ export default function ProductManager({
         productType: "digital",
         stock: "",
         imageUrl: "",
+        boothUrl: "",
       });
     }
     setIsDialogOpen(true);
@@ -71,6 +76,11 @@ export default function ProductManager({
       alert("タイトルと価格は必須です");
       return;
     }
+    const boothUrl = formData.boothUrl.trim();
+    if (boothUrl && !isBoothUrl(boothUrl)) {
+      alert("BOOTH の商品ページの URL（https://〜.booth.pm/items/...）を入れてください");
+      return;
+    }
 
     const productData = {
       title: formData.title,
@@ -79,6 +89,7 @@ export default function ProductManager({
       productType: formData.productType,
       stock: formData.productType === "physical" ? parseInt(formData.stock) : undefined,
       imageUrl: formData.imageUrl,
+      boothUrl,
     };
 
     if (editingId) {
@@ -118,6 +129,9 @@ export default function ProductManager({
                 <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
                   在庫
                 </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                  BOOTH
+                </th>
                 <th className="px-6 py-3 text-right text-sm font-semibold text-foreground">
                   操作
                 </th>
@@ -126,7 +140,7 @@ export default function ProductManager({
             <tbody>
               {products.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
                     商品がまだ登録されていません
                   </td>
                 </tr>
@@ -144,6 +158,20 @@ export default function ProductManager({
                     </td>
                     <td className="px-6 py-4 text-sm text-foreground">
                       {product.productType === "physical" ? product.stock : "-"}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {product.boothUrl ? (
+                        <a
+                          href={product.boothUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-accent underline underline-offset-2"
+                        >
+                          リンクあり
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">未設定</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -273,6 +301,25 @@ export default function ProductManager({
                 />
               </div>
             )}
+
+            {/* BOOTH URL */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                BOOTH の商品ページ URL
+              </label>
+              <Input
+                type="url"
+                value={formData.boothUrl}
+                onChange={(e) =>
+                  setFormData({ ...formData, boothUrl: e.target.value })
+                }
+                placeholder="https://xxxx.booth.pm/items/1234567"
+                className="w-full"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                ショップの「BOOTH で見る」ボタンの行き先。空欄なら「準備中」と表示されます。
+              </p>
+            </div>
 
             {/* Image Upload */}
             <div>

@@ -56,6 +56,7 @@ export const products = mysqlTable("products", {
   imageKey: varchar("imageKey", { length: 512 }),
   fileUrl: varchar("fileUrl", { length: 512 }),
   fileKey: varchar("fileKey", { length: 512 }),
+  boothUrl: varchar("boothUrl", { length: 512 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
