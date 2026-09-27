@@ -33,11 +33,14 @@ server/          Express + tRPC。_core/ が基盤、直下が業務ロジック
   routers.ts     appRouter 本体。ここが API の全体像
   db.ts          Drizzle クエリヘルパー（全 DB アクセスはここ経由）
   storage.ts     アップロード先（**ローカルFS**。後述）
-  siteSettings.ts  server/site-settings.json を読み書きするファイルストア
+  siteSettings.ts  site-settings.json を読み書きするファイルストア
+  dataDir.ts     上2つの保存先を決める（Railway の Volume 対応）
 shared/          クライアント/サーバ共有の定数・型（`@shared/*`）
 drizzle/         schema.ts + 生成済みマイグレーション（0000〜0002）
 patches/         pnpm patch 置き場（現在は死んでいる。後述）
 .github/workflows/  ci.yml（型・ビルド・テスト）/ pages.yml（Pages デプロイ）
+railway.json     Railway のビルド・起動・デプロイ前マイグレーション
+docs/railway-deploy.md  Railway への公開手順
 start-*.cmd      Windows 用のワンクリック起動スクリプト
 ```
 
@@ -96,36 +99,37 @@ procedure は3種（`server/_core/trpc.ts`）:
 |---|---|
 | `publicProcedure` | 誰でも |
 | `protectedProcedure` | `ctx.user` が必要 |
-| `adminProcedure` | `ctx.user.role === "admin"` が必要 |
+| `adminProcedure` | `ctx.adminSession` がある、または `ctx.user.role === "admin"` |
 
-> **⚠ 現状の実装ギャップ（把握した上で触ること）**
->
-> 管理系の書き込み（`artworks.create/update/delete`、`products.*`、
-> `orders.listAll` / `orders.updateStatus`、`siteSettings.update`）は
-> **すべて `publicProcedure` のまま**で、サーバ側の認可が無い。
-> `adminProcedure` は `system.notifyOwner` でしか使われていない。
-> `/admin` 画面の保護は `AdminDashboard.tsx` のクライアント側リダイレクトだけで、
-> しかも `auth.me` が何か返せば role を `"admin"` と決め打ちしている。
->
-> つまり **API を直接叩けば誰でも書き換えられる**。
-> ここを直すなら `adminProcedure` への差し替え＋`auth.me` の role を素直に返す修正がセット。
-> 直さないなら、少なくとも「守られている」前提のコードを新たに増やさないこと。
+Google OAuth は `ADMIN_EMAIL` 本人しか通さず、通ったユーザーは `role: "admin"` で登録される。
+
+**管理系の API（作品・商品の作成/更新/削除、注文の閲覧と更新、`siteSettings.update`、
+`upload.image`）は必ず `adminProcedure` にする。** `/admin` 画面のリダイレクトは
+見た目のためだけで、守っているのはサーバ側の `adminProcedure`。
+認可の回帰テストは `server/admin-auth.test.ts` にあるので、管理系 API を足したらそこにも足す。
+
+`JWT_SECRET` が空だとセッションの署名も検証もしない（ログインできなくなる）。
+決済（`checkout.createSession`）の価格は DB から取る。クライアントが送る値を信用しないこと。
 
 ### ストレージ
 
-`server/storage.ts` は **`server/uploads/` へのローカル書き込み**。Express が
-`/uploads` で静的配信する。`package.json` に `@aws-sdk/client-s3` が入っていて
+`server/storage.ts` は **ローカルFSへの書き込み**。Express が
+`/uploads` で静的配信する。保存先は `server/dataDir.ts` が
+`DATA_DIR` → `RAILWAY_VOLUME_MOUNT_PATH` → `server/`（開発時）の順で決める。
+本番（Railway）では Volume に置くので、再デプロイしても消えない。`package.json` に `@aws-sdk/client-s3` が入っていて
 `server/upload.ts` のコメントにも "Upload to S3" とあるが、**S3 は使っていない**。
 コメントが実装より古いだけなので、S3 前提で読まないこと。
 
 アップロードは tRPC の `upload.image` に base64 で送る方式。
+保存名はサーバで `uploads/<nanoid>.<拡張子>` に付け直す（元のファイル名はパスに使わない）。
+受け付けるのは JPEG / PNG / GIF / WebP / AVIF のみ（同一オリジン配信なので SVG は XSS になる）。
 そのため express の body limit が `150mb` まで引き上げてある。
 
 ### サイト設定
 
-`siteSettings.get/update` はDBではなく `server/site-settings.json` を読み書きする。
-**リポジトリにコミットされているファイルを実行時に上書きする**ので、
-本番で更新した内容は次のデプロイで巻き戻る。作り込むならDBへ移す。
+`siteSettings.get/update` はDBではなく `site-settings.json` を読み書きする。
+保存先はアップロードと同じく `dataDir.ts` で決まる。開発時はコミット済みの
+`server/site-settings.json` を上書きするので、ローカルで変えた内容をうっかりコミットしないこと。
 
 ### DB は無くても起動する
 
@@ -158,6 +162,7 @@ Vite の devProxy（`/api`, `/uploads`）が 3000 を決め打ちしており、
 `/api/trpc` は存在しないので、**Pages 上では DB 由来の表示は動かない**（見た目の確認用）。
 `--base=/portfolio-shop-site/` を CLI で渡して `client/vite.config.ts` の
 `base: "/"` を上書きしている。base を触るときは両方見る。
+本番（バックエンド込み）は Railway に出す。手順は `docs/railway-deploy.md`。
 
 ### 4. 開発サーバは2経路ある
 
