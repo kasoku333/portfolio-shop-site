@@ -23,8 +23,6 @@ export default function Cart() {
       const result = await checkoutMutation.mutateAsync({
         items: items.map((item) => ({
           productId: item.productId,
-          name: item.title,
-          price: item.price,
           quantity: item.quantity,
         })),
         successUrl: `${baseUrl}#/checkout/success`,

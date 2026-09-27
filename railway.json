@@ -1,0 +1,12 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "buildCommand": "pnpm build"
+  },
+  "deploy": {
+    "preDeployCommand": ["pnpm exec drizzle-kit migrate"],
+    "startCommand": "pnpm start",
+    "healthcheckPath": "/",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}

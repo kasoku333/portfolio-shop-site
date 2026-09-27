@@ -80,6 +80,10 @@ class SDKServer {
 
   private getSessionSecret() {
     const secret = ENV.cookieSecret;
+    // 空の秘密鍵だと誰でも管理者セッションを偽造できるので、署名も検証もさせない
+    if (!secret) {
+      throw new Error("JWT_SECRET is not set. Set it in .env to enable login.");
+    }
     return new TextEncoder().encode(secret);
   }
 

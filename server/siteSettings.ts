@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { resolveDataPath } from "./dataDir";
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
-const SETTINGS_FILE = path.resolve(currentDir, "site-settings.json");
+const SETTINGS_FILE = resolveDataPath("site-settings.json", currentDir);
 
 export interface SkillItem {
   id: string;
@@ -66,6 +67,7 @@ export function getSiteSettings(): SiteSettings {
 export function saveSiteSettings(settings: Partial<SiteSettings>): SiteSettings {
   const current = getSiteSettings();
   const updated = { ...current, ...settings };
+  fs.mkdirSync(path.dirname(SETTINGS_FILE), { recursive: true });
   fs.writeFileSync(SETTINGS_FILE, JSON.stringify(updated, null, 2), "utf-8");
   return updated;
 }
