@@ -18,11 +18,12 @@ Railway プロジェクト
 1. Railway にログインし、**New Project → Deploy from GitHub repo** で `kasoku333/portfolio-shop-site` を選ぶ
 2. 同じプロジェクトで **+ New → Database → MySQL** を追加する
 
-ビルド・起動・DB マイグレーションのコマンドは `railway.json` に書いてあるので、画面で設定しなくてよい。
+ビルド・起動のコマンドは `railway.json` に書いてあるので、画面で設定しなくてよい。
+Railway が `server` / `client` / `drizzle` を別々のサービスに分けようとしたら、`server` 以外を消し、
+Build Command・Start Command・Watch Patterns の上書きも消しておく（リポジトリ全体で1つのアプリ）。
 
 - ビルド: `pnpm build`
-- デプロイ前: `pnpm exec drizzle-kit migrate`（DB のテーブルを最新にする）
-- 起動: `pnpm start`
+- 起動: `pnpm start`（起動時に `drizzle/` のマイグレーションを流すので、DB のテーブルは自動で最新になる）
 
 ## 2. Volume を付ける
 
