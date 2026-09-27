@@ -75,4 +75,4 @@ Google ログインを使う場合は、Google Cloud Console の OAuth クライ
 - **料金の目安**：Hobby プラン月 $5（$5 分の利用料込み）。アプリ + MySQL が小規模なら、その範囲かやや超える程度。Volume は 1GB あたり月 $0.15
 - ローカルの MySQL にある作品データは Railway には自動で移らない。移すなら `mysqldump` で書き出して Railway の MySQL に流し込み、
   `server/uploads/` の画像も Volume にコピーする必要がある（必要になったら相談）
-- GitHub Pages のデプロイ（見た目確認用）はそのまま残っている。Railway が動いたら止めてよい
+- GitHub Pages のデプロイ（見た目確認用）は廃止済み。公開先は Railway だけ
