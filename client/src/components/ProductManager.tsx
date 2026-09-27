@@ -299,6 +299,9 @@ export default function ProductManager({
                   placeholder="10"
                   className="w-full"
                 />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  管理用です。サイトには表示されません
+                </p>
               </div>
             )}
 

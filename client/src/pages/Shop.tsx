@@ -16,7 +16,8 @@ interface Product {
   productType: "digital" | "physical";
   imageUrl?: string | null;
   description?: string | null;
-  stock?: number | null;
+  // 在庫数は API から来ても表示しない。販売は BOOTH なので数がずれて
+  // 買う人を混乱させるため（在庫は管理画面でだけ扱う）
   boothUrl?: string | null;
 }
 
@@ -180,9 +181,6 @@ export default function Shop() {
                       <span className="text-lg font-bold text-accent">
                         {formatPrice(product.price)}
                       </span>
-                      {product.productType === "physical" && product.stock != null && (
-                        <span className="text-xs text-muted-foreground">在庫: {product.stock}</span>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -224,9 +222,6 @@ export default function Shop() {
                   {getProductTypeLabel(selectedProduct?.productType || "")}
                 </span>
               </div>
-              {selectedProduct?.productType === "physical" && selectedProduct?.stock != null && (
-                <p className="text-sm text-muted-foreground">在庫: {selectedProduct.stock}個</p>
-              )}
               {selectedProduct?.description ? (
                 <p className="text-foreground leading-relaxed whitespace-pre-line">
                   {selectedProduct.description}
