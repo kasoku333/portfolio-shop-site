@@ -19,7 +19,10 @@ export async function storagePut(
   contentType = "application/octet-stream"
 ): Promise<{ key: string; url: string }> {
   const key = relKey.replace(/^\/+/, "");
-  const filePath = path.join(UPLOADS_DIR, key);
+  const filePath = path.resolve(UPLOADS_DIR, key);
+  if (!filePath.startsWith(UPLOADS_DIR + path.sep)) {
+    throw new Error(`Invalid storage key: ${relKey}`);
+  }
 
   // Ensure subdirectory exists
   const dir = path.dirname(filePath);

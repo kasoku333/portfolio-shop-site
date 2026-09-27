@@ -20,7 +20,7 @@ export default function AdminDashboard() {
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: () => navigate("/login"),
   });
-  const user = authUser ? { name: authUser.name || "管理者", role: "admin" as const } : null;
+  const user = authUser?.role === "admin" ? { name: authUser.name || "管理者", role: authUser.role } : null;
   const logout = () => logoutMutation.mutate();
 
   // tRPC: 商品データ取得

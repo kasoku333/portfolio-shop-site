@@ -1,7 +1,7 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { adminProcedure, publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
@@ -9,6 +9,14 @@ import { uploadRouter } from "./upload";
 import { createCheckoutSession, isStripeConfigured } from "./stripe";
 import { sdk } from "./_core/sdk";
 import { getSiteSettings, saveSiteSettings } from "./siteSettings";
+import { createHash, timingSafeEqual } from "crypto";
+
+// 長さの違いで早期 return しないよう、ハッシュ同士を定数時間で比較する
+function passwordMatches(input: string, expected: string): boolean {
+  const a = createHash("sha256").update(input).digest();
+  const b = createHash("sha256").update(expected).digest();
+  return timingSafeEqual(a, b);
+}
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -36,7 +44,7 @@ export const appRouter = router({
             message: "ADMIN_PASSWORD is not configured on the server.",
           });
         }
-        if (input.password !== adminPassword) {
+        if (!passwordMatches(input.password, adminPassword)) {
           throw new TRPCError({
             code: "UNAUTHORIZED",
             message: "パスワードが正しくありません",
@@ -85,7 +93,7 @@ export const appRouter = router({
         return artwork;
       }),
 
-    create: publicProcedure
+    create: adminProcedure
       .input(z.object({
         title: z.string().min(1),
         description: z.string().optional(),
@@ -98,7 +106,7 @@ export const appRouter = router({
         return db.createArtwork(input);
       }),
 
-    update: publicProcedure
+    update: adminProcedure
       .input(z.object({
         id: z.number(),
         title: z.string().min(1).optional(),
@@ -113,7 +121,7 @@ export const appRouter = router({
         return db.updateArtwork(id, data);
       }),
 
-    delete: publicProcedure
+    delete: adminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await db.deleteArtwork(input.id);
@@ -137,7 +145,7 @@ export const appRouter = router({
         return product;
       }),
 
-    create: publicProcedure
+    create: adminProcedure
       .input(z.object({
         title: z.string().min(1),
         description: z.string().optional(),
@@ -151,7 +159,7 @@ export const appRouter = router({
         return db.createProduct(input);
       }),
 
-    update: publicProcedure
+    update: adminProcedure
       .input(z.object({
         id: z.number(),
         title: z.string().min(1).optional(),
@@ -167,7 +175,7 @@ export const appRouter = router({
         return db.updateProduct(id, data);
       }),
 
-    delete: publicProcedure
+    delete: adminProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await db.deleteProduct(input.id);
@@ -197,7 +205,7 @@ export const appRouter = router({
   // Order routes
   orders: router({
     // 管理者用: 全注文一覧
-    listAll: publicProcedure.query(async () => {
+    listAll: adminProcedure.query(async () => {
       return db.getAllOrders();
     }),
 
@@ -205,7 +213,7 @@ export const appRouter = router({
       return db.getOrdersByUser(ctx.user.id);
     }),
 
-    getById: publicProcedure
+    getById: adminProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {
         const order = await db.getOrderById(input.id);
@@ -215,13 +223,13 @@ export const appRouter = router({
         return order;
       }),
 
-    getItems: publicProcedure
+    getItems: adminProcedure
       .input(z.object({ orderId: z.number() }))
       .query(async ({ input }) => {
         return db.getOrderItems(input.orderId);
       }),
 
-    updateStatus: publicProcedure
+    updateStatus: adminProcedure
       .input(z.object({
         id: z.number(),
         status: z.enum(["pending", "completed", "failed", "cancelled"]),
@@ -257,7 +265,7 @@ export const appRouter = router({
     get: publicProcedure.query(() => {
       return getSiteSettings();
     }),
-    update: publicProcedure
+    update: adminProcedure
       .input(z.object({
         siteName: z.string().optional(),
         siteSubtitle: z.string().optional(),
@@ -298,11 +306,9 @@ export const appRouter = router({
     createSession: publicProcedure
       .input(z.object({
         items: z.array(z.object({
-          productId: z.number(),
-          name: z.string(),
-          price: z.number(),
-          quantity: z.number(),
-        })),
+          productId: z.number().int(),
+          quantity: z.number().int().min(1).max(99),
+        })).min(1),
         successUrl: z.string(),
         cancelUrl: z.string(),
       }))
@@ -313,8 +319,23 @@ export const appRouter = router({
             message: "Stripe is not configured. Set STRIPE_SECRET_KEY in .env",
           });
         }
+        // 商品名と価格はクライアントの申告を信用せず、DB の値を使う
+        const items = await Promise.all(
+          input.items.map(async (item) => {
+            const product = await db.getProductById(item.productId);
+            if (!product) {
+              throw new TRPCError({ code: "BAD_REQUEST", message: "カートに存在しない商品が含まれています" });
+            }
+            return {
+              productId: product.id,
+              name: product.title,
+              price: Math.round(Number(product.price)),
+              quantity: item.quantity,
+            };
+          })
+        );
         const session = await createCheckoutSession({
-          items: input.items,
+          items,
           successUrl: input.successUrl,
           cancelUrl: input.cancelUrl,
         });
