@@ -59,6 +59,16 @@ async function startServer() {
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
   });
+
+  // Railway は新しい版を公開すると、古い版に SIGTERM を送って止める。
+  // 受け取らずに落ちると終了コード 143 になり、pnpm が「Command failed」を出して
+  // Railway から「クラッシュしました」のメールが毎回届くので、自分で閉じて 0 で終える。
+  process.once("SIGTERM", () => {
+    console.log("[shutdown] SIGTERM received, closing server");
+    server.close(() => process.exit(0));
+    // 応答中の接続が残って閉じきれないときも、Railway に強制終了される前に終える
+    setTimeout(() => process.exit(0), 10_000).unref();
+  });
 }
 
 startServer().catch(error => {
