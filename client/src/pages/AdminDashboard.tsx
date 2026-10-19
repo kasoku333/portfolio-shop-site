@@ -183,6 +183,7 @@ export default function AdminDashboard() {
                   category: artwork.category,
                   content: artwork.content ?? undefined,
                   imageUrl: artwork.imageUrl ?? undefined,
+                  pages: artwork.pages ?? undefined,
                 });
               }}
               onEdit={(id, updates) => {
@@ -193,6 +194,7 @@ export default function AdminDashboard() {
                   category: updates.category,
                   content: updates.content ?? undefined,
                   imageUrl: updates.imageUrl ?? undefined,
+                  pages: updates.pages ?? undefined,
                 });
               }}
               onDelete={(id) => {

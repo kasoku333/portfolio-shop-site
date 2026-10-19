@@ -11,6 +11,7 @@ import { sdk } from "./_core/sdk";
 import { getSiteSettings, saveSiteSettings } from "./siteSettings";
 import { createHash, timingSafeEqual } from "crypto";
 import { isBoothUrl } from "@shared/booth";
+import { MAX_MANGA_PAGES, isPageImageUrl } from "@shared/manga";
 
 // 空文字は「リンクを外す」扱いで null にする
 const boothUrlInput = z
@@ -21,6 +22,11 @@ const boothUrlInput = z
   })
   .transform(v => (v === "" ? null : v))
   .optional();
+
+// 漫画のページ画像。<img src> にそのまま入るので、受け付ける URL の形を絞る
+const mangaPagesInput = z
+  .array(z.string().max(512).refine(isPageImageUrl, "ページ画像の URL が正しくありません"))
+  .max(MAX_MANGA_PAGES);
 
 // 長さの違いで早期 return しないよう、ハッシュ同士を定数時間で比較する
 function passwordMatches(input: string, expected: string): boolean {
@@ -112,6 +118,7 @@ export const appRouter = router({
         content: z.string().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
+        pages: mangaPagesInput.optional(),
       }))
       .mutation(async ({ input }) => {
         return db.createArtwork(input);
@@ -126,6 +133,7 @@ export const appRouter = router({
         content: z.string().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
+        pages: mangaPagesInput.optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;

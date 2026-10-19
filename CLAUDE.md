@@ -39,7 +39,7 @@ server/          Express + tRPC。_core/ が基盤、直下が業務ロジック
   siteSettings.ts  site-settings.json を読み書きするファイルストア
   dataDir.ts     上2つの保存先を決める（Railway の Volume 対応）
 shared/          クライアント/サーバ共有の定数・型（`@shared/*`）
-drizzle/         schema.ts + 生成済みマイグレーション（0000〜0003）
+drizzle/         schema.ts + 生成済みマイグレーション（0000〜0004）
 patches/         pnpm patch 置き場（現在は死んでいる。後述）
 .github/workflows/  ci.yml（型・ビルド・テスト）
 railway.json     Railway のビルド・起動設定（マイグレーションは本番起動時に server/db.ts の runMigrations が流す）

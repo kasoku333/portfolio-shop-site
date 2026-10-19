@@ -151,11 +151,11 @@ export default function Gallery() {
                   </>
                 );
 
-                // 小説は専用の読書ページへ、イラスト・漫画は画像モーダルを開く。
-                return artwork.category === "novel" ? (
+                // 小説・漫画はそれぞれ専用の読むページへ、イラストは画像モーダルを開く。
+                return artwork.category === "novel" || artwork.category === "manga" ? (
                   <Link
                     key={artwork.id}
-                    to={`/novel/${artwork.id}`}
+                    to={`/${artwork.category}/${artwork.id}`}
                     className="group text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-lg block"
                   >
                     {cardInner}

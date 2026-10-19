@@ -134,6 +134,7 @@ export async function createArtwork(data: {
   content?: string;
   imageUrl?: string;
   imageKey?: string;
+  pages?: string[];
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -145,6 +146,7 @@ export async function createArtwork(data: {
     content: data.content ?? null,
     imageUrl: data.imageUrl ?? null,
     imageKey: data.imageKey ?? null,
+    pages: data.pages ?? null,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -159,6 +161,7 @@ export async function updateArtwork(id: number, data: {
   content?: string;
   imageUrl?: string;
   imageKey?: string;
+  pages?: string[];
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -169,6 +172,7 @@ export async function updateArtwork(id: number, data: {
   if (data.content !== undefined) updateData.content = data.content;
   if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
   if (data.imageKey !== undefined) updateData.imageKey = data.imageKey;
+  if (data.pages !== undefined) updateData.pages = data.pages;
   await db.update(artworks).set(updateData).where(eq(artworks.id, id));
   return getArtworkById(id);
 }
