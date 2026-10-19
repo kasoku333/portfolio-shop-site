@@ -36,6 +36,9 @@ export const artworks = mysqlTable("artworks", {
   content: text("content"),
   imageUrl: varchar("imageUrl", { length: 512 }),
   imageKey: varchar("imageKey", { length: 512 }),
+  // 漫画のページ画像URL（読む順）。imageUrl は一覧用の表紙で、ページの1枚目と同じにする。
+  // この欄ができる前に登録した漫画は null のままなので、表示側で imageUrl 1枚の漫画として扱う。
+  pages: json("pages").$type<string[]>(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

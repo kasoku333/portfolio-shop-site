@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Trash2, Edit2 } from "lucide-react";
 import ImageUploader from "./ImageUploader";
+import MangaPagesEditor from "./MangaPagesEditor";
+import { getMangaPages } from "@shared/manga";
 
 interface Artwork {
   id: number;
@@ -14,6 +16,7 @@ interface Artwork {
   category: "illustration" | "manga" | "novel";
   content?: string | null;
   imageUrl?: string | null;
+  pages?: string[] | null;
 }
 
 interface ArtworkManagerProps {
@@ -37,6 +40,7 @@ export default function ArtworkManager({
     category: "illustration" as "illustration" | "manga" | "novel",
     content: "",
     imageUrl: "",
+    pages: [] as string[],
   });
 
   const handleOpenDialog = (artwork?: Artwork) => {
@@ -48,6 +52,8 @@ export default function ArtworkManager({
         category: artwork.category,
         content: artwork.content || "",
         imageUrl: artwork.imageUrl || "",
+        // ページ欄ができる前の漫画は、表紙1枚を1ページ目として編集を始める
+        pages: artwork.category === "manga" ? getMangaPages(artwork) : [],
       });
     } else {
       setEditingId(null);
@@ -57,6 +63,7 @@ export default function ArtworkManager({
         category: "illustration",
         content: "",
         imageUrl: "",
+        pages: [],
       });
     }
     setIsDialogOpen(true);
@@ -73,12 +80,20 @@ export default function ArtworkManager({
       return;
     }
 
+    if (formData.category === "manga" && formData.pages.length === 0) {
+      alert("漫画のページ画像を1枚以上追加してください");
+      return;
+    }
+
+    // 漫画は1ページ目を表紙（一覧のサムネイル）にする
+    const isManga = formData.category === "manga";
     const artworkData = {
       title: formData.title,
       description: formData.description,
       category: formData.category,
       content: formData.content,
-      imageUrl: formData.imageUrl,
+      imageUrl: isManga ? formData.pages[0] : formData.imageUrl,
+      ...(isManga && { pages: formData.pages }),
     };
 
     if (editingId) {
@@ -261,17 +276,29 @@ export default function ArtworkManager({
               </div>
             )}
 
-            {/* Image Upload（小説では任意の表紙画像） */}
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                {formData.category === "novel" ? "表紙画像（任意）" : "作品画像"}
-              </label>
-              <ImageUploader
-                onImageUrl={(url) =>
-                  setFormData({ ...formData, imageUrl: url })
-                }
-              />
-            </div>
+            {/* 漫画はページ画像を複数枚、それ以外は1枚（小説では任意の表紙画像） */}
+            {formData.category === "manga" ? (
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  ページ画像 *
+                </label>
+                <MangaPagesEditor
+                  pages={formData.pages}
+                  onChange={pages => setFormData(prev => ({ ...prev, pages }))}
+                />
+              </div>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  {formData.category === "novel" ? "表紙画像（任意）" : "作品画像"}
+                </label>
+                <ImageUploader
+                  onImageUrl={(url) =>
+                    setFormData({ ...formData, imageUrl: url })
+                  }
+                />
+              </div>
+            )}
 
             {/* Buttons */}
             <div className="flex gap-3 pt-4 border-t border-border">
