@@ -34,7 +34,7 @@ export default function NovelReader() {
   }
 
   return (
-    <Shell>
+    <Shell title={artwork?.title}>
       <section className="py-10 md:py-14">
         <div className="container max-w-3xl space-y-8">
           {/* 戻る導線 */}

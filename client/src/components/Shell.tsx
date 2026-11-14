@@ -1,9 +1,12 @@
 import { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { trpc } from "@/lib/trpc";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 type ShellProps = {
   children: ReactNode;
+  // ブラウザのタブ名に出すページ名。省略時はサイト名と説明を出す（トップ用）。
+  title?: string;
 };
 
 // メインナビ（PCヘッダー / モバイル下部タブバー共通）
@@ -17,7 +20,7 @@ const mainNavItems = [
   { to: "/history", label: "History" },
 ] as const;
 
-export default function Shell({ children }: ShellProps) {
+export default function Shell({ children, title }: ShellProps) {
   // API 停止時にヘッダー描画が長時間ブロックされないよう retry を抑える。
   const { data: settings } = trpc.siteSettings.get.useQuery(undefined, {
     staleTime: 1000 * 60 * 5,
@@ -27,6 +30,8 @@ export default function Shell({ children }: ShellProps) {
   const siteName = settings?.siteName || "木陰の部屋";
   const siteSubtitle = settings?.siteSubtitle || "PORTFOLIO & SHOP";
   const email = settings?.email || "";
+
+  usePageTitle(title, siteName);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

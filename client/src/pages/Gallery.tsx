@@ -57,7 +57,7 @@ export default function Gallery() {
   };
 
   return (
-    <Shell>
+    <Shell title="ギャラリー">
       {/* Hero Section */}
       <section className="py-14 md:py-20 text-center bg-muted/40 border-b border-border/60">
         <div className="container space-y-3">

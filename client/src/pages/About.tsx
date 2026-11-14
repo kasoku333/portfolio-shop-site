@@ -27,7 +27,7 @@ export default function About() {
   const hasSnsLinks = twitterUrl || pixivUrl || otherUrl;
 
   return (
-    <Shell>
+    <Shell title="About">
       {/* Header Section */}
       <section className="py-14 md:py-20 border-b border-border/60 bg-muted/40">
         <div className="container text-center space-y-3">

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function NotFound() {
   return (
-    <Shell>
+    <Shell title="ページが見つかりません">
       <section className="py-20 md:py-28">
         <div className="container max-w-xl text-center space-y-4">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">404</p>

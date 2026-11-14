@@ -34,7 +34,7 @@ export default function History() {
   };
 
   return (
-    <Shell>
+    <Shell title="History">
       {/* Header Section */}
       <section className="py-14 md:py-20 border-b border-border/60 bg-muted/40">
         <div className="container text-center space-y-3">

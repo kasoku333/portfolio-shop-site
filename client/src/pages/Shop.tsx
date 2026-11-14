@@ -50,7 +50,7 @@ export default function Shop() {
   };
 
   return (
-    <Shell>
+    <Shell title="ショップ">
       {/* Header Section */}
       <section className="py-14 md:py-20 border-b border-border/60 bg-muted/40">
         <div className="container text-center space-y-3">

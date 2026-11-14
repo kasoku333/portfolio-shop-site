@@ -2,7 +2,7 @@ import Shell from "@/components/Shell";
 
 export default function PrivacyPolicy() {
   return (
-    <Shell>
+    <Shell title="プライバシーポリシー">
       <section className="py-16 md:py-24 border-b border-border">
         <div className="container text-center">
           <h2 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
