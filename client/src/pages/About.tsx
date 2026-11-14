@@ -117,8 +117,10 @@ export default function About() {
               </div>
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+            {/* Divider（下に続く内容がある時だけ出す） */}
+            {skills.length > 0 && (
+              <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+            )}
 
             {/* Skills Section */}
             {skills.length > 0 && (
