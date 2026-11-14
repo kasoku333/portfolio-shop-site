@@ -14,12 +14,22 @@ export default function NovelReader() {
     data: artwork,
     isLoading,
     isError,
+    error,
   } = trpc.artworks.getById.useQuery(
     { id: numericId },
-    { enabled: isValidId, retry: 1 }
+    {
+      enabled: isValidId,
+      // 「作品が存在しない」は何度試しても同じなので再試行しない。
+      retry: (failureCount, err) =>
+        err.data?.code !== "NOT_FOUND" && failureCount < 1,
+    }
   );
 
-  if (!isValidId) {
+  // 存在しないID、または小説以外（イラスト・漫画）のIDは「ページが見つからない」として扱う。
+  const isMissing = error?.data?.code === "NOT_FOUND";
+  const isNotNovel = !!artwork && artwork.category !== "novel";
+
+  if (!isValidId || isMissing || isNotNovel) {
     return <NotFound />;
   }
 
