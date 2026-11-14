@@ -17,9 +17,9 @@ export default function NotFound() {
             移動または削除された可能性があります。
           </p>
           <div className="pt-4">
-            <Link to="/">
-              <Button>トップへ戻る</Button>
-            </Link>
+            <Button asChild>
+              <Link to="/">トップへ戻る</Link>
+            </Button>
           </div>
         </div>
       </section>

@@ -107,12 +107,12 @@ export default function About() {
                 )}
 
                 <div className="pt-2 flex flex-wrap gap-3">
-                  <Link to="/gallery">
-                    <Button variant="outline">ギャラリーへ</Button>
-                  </Link>
-                  <Link to="/shop">
-                    <Button>ショップへ</Button>
-                  </Link>
+                  <Button asChild variant="outline">
+                    <Link to="/gallery">ギャラリーへ</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link to="/shop">ショップへ</Link>
+                  </Button>
                 </div>
               </div>
             </div>

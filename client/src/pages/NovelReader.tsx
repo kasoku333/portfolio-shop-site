@@ -111,9 +111,9 @@ export default function NovelReader() {
 
               {/* 末尾の戻る導線 */}
               <div className="pt-8 border-t border-border/60 text-center">
-                <Link to="/gallery?category=novel">
-                  <Button variant="outline">小説一覧へ戻る</Button>
-                </Link>
+                <Button asChild variant="outline">
+                  <Link to="/gallery?category=novel">小説一覧へ戻る</Link>
+                </Button>
               </div>
             </article>
           )}

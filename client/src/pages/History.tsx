@@ -106,14 +106,12 @@ export default function History() {
               これまでの活動の中で生まれた作品たちをご覧ください。
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link to="/gallery" className="sm:w-auto">
-                <Button variant="outline" className="w-full sm:w-auto">
-                  ギャラリーへ
-                </Button>
-              </Link>
-              <Link to="/shop" className="sm:w-auto">
-                <Button className="w-full sm:w-auto">ショップへ</Button>
-              </Link>
+              <Button asChild variant="outline" className="w-full sm:w-auto">
+                <Link to="/gallery">ギャラリーへ</Link>
+              </Button>
+              <Button asChild className="w-full sm:w-auto">
+                <Link to="/shop">ショップへ</Link>
+              </Button>
             </div>
           </div>
         </div>

@@ -227,11 +227,12 @@ export default function Gallery() {
                   )}
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                  <Link to="/shop" className="flex-1">
-                    <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                      関連商品を見る
-                    </Button>
-                  </Link>
+                  <Button
+                    asChild
+                    className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
+                  >
+                    <Link to="/shop">関連商品を見る</Link>
+                  </Button>
                   <Button
                     variant="outline"
                     className="flex-1"
