@@ -66,7 +66,7 @@ export default function Shop() {
       <section className="py-12 md:py-16">
         <div className="container">
           {/* Filter Tabs */}
-          <div className="flex flex-wrap gap-2 sm:gap-3 mb-10" role="tablist" aria-label="商品タイプで絞り込む">
+          <div className="flex flex-wrap gap-2 sm:gap-3 mb-10" role="group" aria-label="商品タイプで絞り込む">
             {FILTERS.map((filter) => {
               const isActive = selectedFilter === filter.value;
               return (
@@ -74,8 +74,7 @@ export default function Shop() {
                   key={filter.value}
                   type="button"
                   onClick={() => setSelectedFilter(filter.value)}
-                  role="tab"
-                  aria-selected={isActive}
+                  aria-pressed={isActive}
                   className={[
                     "px-4 py-2 rounded-full text-sm border transition-colors",
                     isActive

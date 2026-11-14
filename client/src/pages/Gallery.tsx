@@ -77,7 +77,7 @@ export default function Gallery() {
       <section className="py-12 md:py-16">
         <div className="container space-y-8">
           {/* Category Filter（このページの主導線） */}
-          <div className="flex flex-wrap gap-2 sm:gap-3" role="tablist" aria-label="カテゴリで絞り込む">
+          <div className="flex flex-wrap gap-2 sm:gap-3" role="group" aria-label="カテゴリで絞り込む">
             {FILTERS.map((filter) => {
               const isActive = selectedCategory === filter.value;
               return (
@@ -85,8 +85,7 @@ export default function Gallery() {
                   key={filter.value}
                   type="button"
                   onClick={() => selectCategory(filter.value)}
-                  role="tab"
-                  aria-selected={isActive}
+                  aria-pressed={isActive}
                   className={[
                     "px-4 py-2 rounded-full text-sm border transition-colors",
                     isActive
