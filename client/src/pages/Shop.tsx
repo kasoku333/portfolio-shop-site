@@ -55,7 +55,7 @@ export default function Shop() {
       <section className="py-14 md:py-20 border-b border-border/60 bg-muted/40">
         <div className="container text-center space-y-3">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Shop</p>
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">ショップ</h2>
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground">ショップ</h1>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
             作品はBOOTHにて頒布しています。気になる作品を選ぶと、BOOTHの商品ページが開きます。
           </p>
@@ -150,9 +150,9 @@ export default function Shop() {
                       </div>
                     </div>
                     <div className="p-4 flex-1 flex flex-col">
-                      <h4 className="font-serif font-semibold text-foreground mb-2 line-clamp-2">
+                      <h2 className="text-xl font-serif font-semibold text-foreground mb-2 line-clamp-2">
                         {product.title}
-                      </h4>
+                      </h2>
                       <div className="mt-auto flex items-center justify-between gap-2">
                         <span className="text-lg font-bold text-accent">
                           {formatPrice(product.price)}

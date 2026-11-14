@@ -62,9 +62,9 @@ export default function Gallery() {
       <section className="py-14 md:py-20 text-center bg-muted/40 border-b border-border/60">
         <div className="container space-y-3">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Gallery</p>
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
             作品ギャラリー
-          </h2>
+          </h1>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
             イラスト・漫画・小説の作品を、ゆっくり並べています。
             <br className="hidden sm:inline" />
@@ -151,9 +151,9 @@ export default function Gallery() {
                         </div>
                       )}
                     </div>
-                    <h4 className="font-serif font-semibold text-foreground mb-1 line-clamp-2">
+                    <h2 className="text-xl font-serif font-semibold text-foreground mb-1 line-clamp-2">
                       {artwork.title}
-                    </h4>
+                    </h2>
                     <p className="text-xs text-muted-foreground">
                       {getCategoryLabel(artwork.category)}
                     </p>

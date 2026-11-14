@@ -32,9 +32,9 @@ export default function About() {
       <section className="py-14 md:py-20 border-b border-border/60 bg-muted/40">
         <div className="container text-center space-y-3">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">About</p>
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
             この部屋について
-          </h2>
+          </h1>
           <p className="text-sm md:text-base text-muted-foreground">
             木陰の部屋と、つくっている人について。
           </p>
@@ -66,9 +66,9 @@ export default function About() {
                 )}
               </div>
               <div className="space-y-4">
-                <h3 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
+                <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
                   {creatorName}
-                </h3>
+                </h2>
                 <p className="text-foreground/90 leading-relaxed whitespace-pre-line">{bio}</p>
 
                 {hasSnsLinks && (
@@ -123,9 +123,9 @@ export default function About() {
             {/* Skills Section */}
             {skills.length > 0 && (
               <div>
-                <h3 className="text-xl md:text-2xl font-serif font-bold mb-6 md:mb-8 text-foreground">
+                <h2 className="text-xl md:text-2xl font-serif font-bold mb-6 md:mb-8 text-foreground">
                   制作しているもの
-                </h3>
+                </h2>
                 <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   {skills.map((skill) => (
                     <div
@@ -133,9 +133,9 @@ export default function About() {
                       className="p-5 md:p-6 rounded-lg border border-border bg-card transition-all duration-300 hover:shadow-lg"
                       style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}
                     >
-                      <h4 className="font-serif font-semibold text-foreground mb-2">
+                      <h3 className="text-xl font-serif font-semibold text-foreground mb-2">
                         {skill.title}
-                      </h4>
+                      </h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">
                         {skill.description}
                       </p>
@@ -156,9 +156,9 @@ export default function About() {
                 className="bg-card border border-border rounded-lg p-6 md:p-8"
                 style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}
               >
-                <h3 className="text-xl md:text-2xl font-serif font-bold mb-3 md:mb-4 text-foreground">
+                <h2 className="text-xl md:text-2xl font-serif font-bold mb-3 md:mb-4 text-foreground">
                   ひとこと
-                </h3>
+                </h2>
                 <p className="text-foreground/90 leading-relaxed whitespace-pre-line">{message}</p>
               </div>
             )}

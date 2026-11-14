@@ -39,9 +39,9 @@ export default function History() {
       <section className="py-14 md:py-20 border-b border-border/60 bg-muted/40">
         <div className="container text-center space-y-3">
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">History</p>
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
+          <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
             制作の歩み
-          </h2>
+          </h1>
           <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
             これまでに残してきた、制作とサイトの記録です。
           </p>
@@ -80,9 +80,9 @@ export default function History() {
                         {getCategoryLabel(item.category)}
                       </span>
                     </div>
-                    <h3 className="text-lg md:text-xl font-serif font-bold text-foreground mb-2">
+                    <h2 className="text-lg md:text-xl font-serif font-bold text-foreground mb-2">
                       {item.title}
-                    </h3>
+                    </h2>
                     {item.description && (
                       <p className="text-sm md:text-base text-foreground/90 leading-relaxed whitespace-pre-line">
                         {item.description}
@@ -99,9 +99,9 @@ export default function History() {
             className="mt-12 md:mt-16 p-6 md:p-8 rounded-lg border border-border bg-card text-center"
             style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}
           >
-            <h3 className="text-xl md:text-2xl font-serif font-bold mb-3 md:mb-4 text-foreground">
+            <h2 className="text-xl md:text-2xl font-serif font-bold mb-3 md:mb-4 text-foreground">
               最新作品をチェック
-            </h3>
+            </h2>
             <p className="text-sm md:text-base text-muted-foreground mb-6">
               これまでの活動の中で生まれた作品たちをご覧ください。
             </p>
