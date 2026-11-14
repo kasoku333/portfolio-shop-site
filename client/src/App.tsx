@@ -1,7 +1,8 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
@@ -13,6 +14,16 @@ import Gallery from "./pages/Gallery";
 import NovelReader from "./pages/NovelReader";
 import Login from "./pages/Login";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+
+// ページ（パス）が変わったら先頭へ戻す。
+// 絞り込みなどクエリだけの変化では動かさない。
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
 // 販売はBOOTHへ委譲したため、カート・決済・特商法のルートは外している。
 // ページ本体（Cart / CheckoutSuccess / CheckoutCancel / Tokushoho）は
@@ -50,6 +61,7 @@ function App() {
       >
         <TooltipProvider>
           <Toaster />
+          <ScrollToTop />
           <Router />
         </TooltipProvider>
       </ThemeProvider>
