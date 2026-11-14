@@ -6,6 +6,18 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["dev"],
       "port": 5173
+    },
+    {
+      "name": "client",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "client", "dev"],
+      "port": 5173
+    },
+    {
+      "name": "api",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "server", "dev"],
+      "port": 3000
     }
   ]
 }
