@@ -25,14 +25,24 @@ const FILTERS = [
   { value: "novel", label: "小説" },
 ] as const;
 
+type FilterValue = (typeof FILTERS)[number]["value"];
+
 export default function Gallery() {
-  const [searchParams] = useSearchParams();
-  const initialCategory = searchParams.get("category") ?? "all";
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
+
+  // 絞り込みの状態は URL（?category=...）だけを正とする。
+  // ナビの「ギャラリー」やブラウザの戻る・進むでも表示がずれない。
+  // 一覧にない値が来たら「すべて」として扱う。
+  const categoryParam = searchParams.get("category");
+  const selectedCategory: FilterValue =
+    FILTERS.find((filter) => filter.value === categoryParam)?.value ?? "all";
+  const selectCategory = (value: FilterValue) => {
+    setSearchParams(value === "all" ? {} : { category: value });
+  };
 
   const { data: artworks = [], isLoading, isError } = trpc.artworks.list.useQuery(
-    { category: selectedCategory as any },
+    { category: selectedCategory },
     { retry: 1, retryDelay: 1000 }
   );
   const showLoading = isLoading && !isError;
@@ -74,7 +84,7 @@ export default function Gallery() {
                 <button
                   key={filter.value}
                   type="button"
-                  onClick={() => setSelectedCategory(filter.value)}
+                  onClick={() => selectCategory(filter.value)}
                   role="tab"
                   aria-selected={isActive}
                   className={[
