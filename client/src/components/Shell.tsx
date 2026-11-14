@@ -93,11 +93,8 @@ export default function Shell({ children, title }: ShellProps) {
         </div>
       </header>
 
-      {/* メインコンテンツ。モバイルは下部タブバー分の余白を確保。 */}
-      <main className="pb-[env(safe-area-inset-bottom)] lg:pb-0">
-        {children}
-        <div className="h-16 lg:hidden" aria-hidden="true" />
-      </main>
+      {/* メインコンテンツ。下部タブバー分の余白はページ最下部（フッターの後ろ）で確保する。 */}
+      <main>{children}</main>
 
       {/*
         ===== モバイル下部タブバー (1023px以下で表示) =====
@@ -149,6 +146,12 @@ export default function Shell({ children, title }: ShellProps) {
             {email && <span>{email}</span>}
           </div>
         </div>
+        {/* モバイルの固定タブバー（高さ約41px + セーフエリア）にフッターが隠れないための余白。 */}
+        <div
+          className="lg:hidden"
+          style={{ height: "calc(41px + env(safe-area-inset-bottom))" }}
+          aria-hidden="true"
+        />
       </footer>
     </div>
   );
