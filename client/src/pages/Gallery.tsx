@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc";
 import Shell from "@/components/Shell";
 import { Link, useSearchParams } from "react-router-dom";
@@ -217,12 +217,13 @@ export default function Gallery() {
                   <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">
                     {getCategoryLabel(selectedArtwork.category)}
                   </p>
+                  {/* DialogDescription にすると、読み上げ時にモーダルの説明として関連付けられる。 */}
                   {selectedArtwork.description ? (
-                    <p className="text-foreground whitespace-pre-line leading-relaxed">
+                    <DialogDescription className="text-base text-foreground whitespace-pre-line leading-relaxed">
                       {selectedArtwork.description}
-                    </p>
+                    </DialogDescription>
                   ) : (
-                    <p className="text-sm text-muted-foreground">説明文はまだありません。</p>
+                    <DialogDescription>説明文はまだありません。</DialogDescription>
                   )}
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
