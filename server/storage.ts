@@ -1,12 +1,13 @@
 // Local file storage for uploaded images
-// Saves files to server/uploads/ and serves them via Express static middleware
+// Saves files to <data dir>/uploads/ and serves them via Express static middleware
 
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { resolveDataPath } from "./dataDir";
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
-const UPLOADS_DIR = path.resolve(currentDir, "uploads");
+const UPLOADS_DIR = resolveDataPath("uploads", currentDir);
 
 // Ensure uploads directory exists
 if (!fs.existsSync(UPLOADS_DIR)) {
@@ -19,7 +20,10 @@ export async function storagePut(
   contentType = "application/octet-stream"
 ): Promise<{ key: string; url: string }> {
   const key = relKey.replace(/^\/+/, "");
-  const filePath = path.join(UPLOADS_DIR, key);
+  const filePath = path.resolve(UPLOADS_DIR, key);
+  if (!filePath.startsWith(UPLOADS_DIR + path.sep)) {
+    throw new Error(`Invalid storage key: ${relKey}`);
+  }
 
   // Ensure subdirectory exists
   const dir = path.dirname(filePath);

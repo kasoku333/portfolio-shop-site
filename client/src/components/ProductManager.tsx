@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Trash2, Edit2 } from "lucide-react";
 import ImageUploader from "./ImageUploader";
+import { isBoothUrl } from "@shared/booth";
 
 interface Product {
   id: number;
@@ -26,23 +27,6 @@ interface Product {
   imageUrl?: string | null;
   stock?: number | null;
   boothUrl?: string | null;
-}
-
-// 「xxx.booth.pm/items/123」のようにスキーマ無しで貼られることが多いため、https:// を補う。
-// サーバー側の検証はURL形式を要求するので、ここで整えないと保存が弾かれる。
-function normalizeUrl(value: string) {
-  const trimmed = value.trim();
-  if (!trimmed) return "";
-  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
-}
-
-function isValidUrl(value: string) {
-  try {
-    new URL(value);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 interface ProductManagerProps {
@@ -103,10 +87,9 @@ export default function ProductManager({
       alert("タイトルと価格は必須です");
       return;
     }
-
-    const boothUrl = normalizeUrl(formData.boothUrl);
-    if (boothUrl && !isValidUrl(boothUrl)) {
-      alert("BOOTHのURLの形式が正しくないようです。商品ページのURLをそのまま貼り付けてください。");
+    const boothUrl = formData.boothUrl.trim();
+    if (boothUrl && !isBoothUrl(boothUrl)) {
+      alert("BOOTH の商品ページの URL（https://〜.booth.pm/items/...）を入れてください");
       return;
     }
 
@@ -161,6 +144,9 @@ export default function ProductManager({
                 <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   在庫
                 </th>
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
+                  BOOTH
+                </th>
                 <th className="px-6 py-3 text-right text-sm whitespace-nowrap font-semibold text-foreground">
                   操作
                 </th>
@@ -169,7 +155,7 @@ export default function ProductManager({
             <tbody>
               {products.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
                     商品がまだ登録されていません
                   </td>
                 </tr>
@@ -187,6 +173,20 @@ export default function ProductManager({
                     </td>
                     <td className="px-6 py-4 text-sm text-foreground">
                       {product.productType === "physical" ? product.stock : "-"}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {product.boothUrl ? (
+                        <a
+                          href={product.boothUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-accent underline underline-offset-2"
+                        >
+                          リンクあり
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">未設定</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -333,8 +333,30 @@ export default function ProductManager({
                   placeholder="10"
                   className="w-full"
                 />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  管理用です。サイトには表示されません
+                </p>
               </div>
             )}
+
+            {/* BOOTH URL */}
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                BOOTH の商品ページ URL
+              </label>
+              <Input
+                type="url"
+                value={formData.boothUrl}
+                onChange={(e) =>
+                  setFormData({ ...formData, boothUrl: e.target.value })
+                }
+                placeholder="https://xxxx.booth.pm/items/1234567"
+                className="w-full"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                ショップの「BOOTH で見る」ボタンの行き先。空欄なら「準備中」と表示されます。
+              </p>
+            </div>
 
             {/* Image Upload */}
             <div>

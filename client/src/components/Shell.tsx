@@ -1,5 +1,9 @@
 import { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { ShoppingBag } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useCart } from "@/contexts/CartContext";
+import { CHECKOUT_ENABLED } from "@shared/const";
 import { trpc } from "@/lib/trpc";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -10,8 +14,8 @@ type ShellProps = {
 };
 
 // メインナビ（PCヘッダー / モバイル下部タブバー共通）
-// 上部メニューは「トップ / ギャラリー / ショップ / About / History」。
-// 販売はBOOTHへ委譲したため、カート導線は置いていない。
+// 上部メニューは「トップ / ギャラリー / ショップ / About / History」を基本とし、
+// カートはアイコン付きの専用ボタンとして別配置。
 const mainNavItems = [
   { to: "/", label: "トップ" },
   { to: "/gallery", label: "ギャラリー" },
@@ -21,6 +25,7 @@ const mainNavItems = [
 ] as const;
 
 export default function Shell({ children, title }: ShellProps) {
+  const { totalItems } = useCart();
   // API 停止時にヘッダー描画が長時間ブロックされないよう retry を抑える。
   const { data: settings } = trpc.siteSettings.get.useQuery(undefined, {
     staleTime: 1000 * 60 * 5,
@@ -37,7 +42,8 @@ export default function Shell({ children, title }: ShellProps) {
     <div className="min-h-screen bg-background text-foreground">
       {/*
         ===== デスクトップヘッダー (1024px以上で表示) =====
-        左にロゴ、右にメインナビ。
+        トップ / ギャラリー / ショップ / About / History を中央寄せ、
+        右端にカートボタン。
         従来あったカテゴリ（漫画/イラスト/小説）ショートカットは
         ギャラリーページ内のフィルターと役割が重複するため削除。
       */}
@@ -73,12 +79,30 @@ export default function Shell({ children, title }: ShellProps) {
               </NavLink>
             ))}
           </nav>
+
+          {/* カートボタン（自前の決済を使うときだけ） */}
+          {CHECKOUT_ENABLED && (
+            <Link to="/cart" className="shrink-0">
+              <Button size="sm" className="gap-2 rounded-full px-4 shadow-sm relative">
+                <ShoppingBag className="h-4 w-4" />
+                カート
+                {totalItems > 0 && (
+                  <span
+                    data-testid="cart-badge"
+                    className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 min-w-5 px-1 flex items-center justify-center font-bold"
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </Button>
+            </Link>
+          )}
         </div>
       </header>
 
       {/*
         ===== モバイルヘッダー (1023px以下で表示) =====
-        ロゴのみ。メインナビは下部タブバーへ移動。
+        ロゴ + カートボタン。メインナビは下部タブバーへ移動。
       */}
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur lg:hidden">
         <div className="container flex items-center justify-between py-3">
@@ -90,6 +114,22 @@ export default function Shell({ children, title }: ShellProps) {
               {siteSubtitle}
             </span>
           </Link>
+          {CHECKOUT_ENABLED && (
+            <Link to="/cart" className="shrink-0">
+              <Button size="sm" className="gap-2 rounded-full px-3 shadow-sm relative">
+                <ShoppingBag className="h-4 w-4" />
+                <span className="hidden sm:inline">カート</span>
+                {totalItems > 0 && (
+                  <span
+                    data-testid="cart-badge"
+                    className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 min-w-5 px-1 flex items-center justify-center font-bold"
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </Button>
+            </Link>
+          )}
         </div>
       </header>
 
@@ -139,6 +179,9 @@ export default function Shell({ children, title }: ShellProps) {
             <p className="font-semibold text-foreground mb-1">リンク</p>
             <Link to="/privacy" className="text-muted-foreground hover:text-accent transition-colors">
               プライバシーポリシー
+            </Link>
+            <Link to="/tokushoho" className="text-muted-foreground hover:text-accent transition-colors">
+              特定商取引法に基づく表記
             </Link>
           </div>
           <div className="flex flex-col gap-2 text-sm text-muted-foreground md:items-end">

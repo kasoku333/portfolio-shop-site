@@ -1,7 +1,7 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, protectedProcedure, adminProcedure, router } from "./_core/trpc";
+import { adminProcedure, publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
@@ -9,6 +9,31 @@ import { uploadRouter } from "./upload";
 import { createCheckoutSession, isStripeConfigured } from "./stripe";
 import { sdk } from "./_core/sdk";
 import { getSiteSettings, saveSiteSettings, sortByArtworkOrder } from "./siteSettings";
+import { createHash, timingSafeEqual } from "crypto";
+import { isBoothUrl } from "@shared/booth";
+import { MAX_MANGA_PAGES, isPageImageUrl } from "@shared/manga";
+
+// 空文字は「リンクを外す」扱いで null にする
+const boothUrlInput = z
+  .string()
+  .trim()
+  .refine(v => v === "" || isBoothUrl(v), {
+    message: "BOOTH の商品ページ（https://〜.booth.pm/...）の URL を入れてください",
+  })
+  .transform(v => (v === "" ? null : v))
+  .optional();
+
+// 漫画のページ画像。<img src> にそのまま入るので、受け付ける URL の形を絞る
+const mangaPagesInput = z
+  .array(z.string().max(512).refine(isPageImageUrl, "ページ画像の URL が正しくありません"))
+  .max(MAX_MANGA_PAGES);
+
+// 長さの違いで早期 return しないよう、ハッシュ同士を定数時間で比較する
+function passwordMatches(input: string, expected: string): boolean {
+  const a = createHash("sha256").update(input).digest();
+  const b = createHash("sha256").update(expected).digest();
+  return timingSafeEqual(a, b);
+}
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -36,7 +61,7 @@ export const appRouter = router({
             message: "ADMIN_PASSWORD is not configured on the server.",
           });
         }
-        if (input.password !== adminPassword) {
+        if (!passwordMatches(input.password, adminPassword)) {
           throw new TRPCError({
             code: "UNAUTHORIZED",
             message: "パスワードが正しくありません",
@@ -93,6 +118,7 @@ export const appRouter = router({
         content: z.string().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
+        pages: mangaPagesInput.optional(),
       }))
       .mutation(async ({ input }) => {
         return db.createArtwork(input);
@@ -107,6 +133,7 @@ export const appRouter = router({
         content: z.string().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
+        pages: mangaPagesInput.optional(),
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
@@ -154,8 +181,7 @@ export const appRouter = router({
         stock: z.number().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
-        // 販売はBOOTHへ委譲しているため、商品カードの遷移先URL。未設定なら一覧で「準備中」表示になる。
-        boothUrl: z.string().url().or(z.literal("")).optional(),
+        boothUrl: boothUrlInput,
       }))
       .mutation(async ({ input }) => {
         return db.createProduct(input);
@@ -171,7 +197,7 @@ export const appRouter = router({
         stock: z.number().optional(),
         imageUrl: z.string().optional(),
         imageKey: z.string().optional(),
-        boothUrl: z.string().url().or(z.literal("")).optional(),
+        boothUrl: boothUrlInput,
       }))
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
@@ -207,7 +233,7 @@ export const appRouter = router({
 
   // Order routes
   orders: router({
-    // 管理者用: 全注文一覧。購入者の氏名・住所を含むため adminProcedure 必須。
+    // 管理者用: 全注文一覧
     listAll: adminProcedure.query(async () => {
       return db.getAllOrders();
     }),
@@ -312,18 +338,12 @@ export const appRouter = router({
       return { available: isStripeConfigured() };
     }),
 
-    // 販売はBOOTHへ委譲したため、この経路は封鎖している。
-    // ブラウザから渡された price をそのまま Stripe へ流す実装のままなので、
-    // 自作決済を再開する際は「productId から価格と在庫をサーバー側で引き直す」修正が先に必要。
-    // それを済ませるまで publicProcedure に戻さないこと。
-    createSession: adminProcedure
+    createSession: publicProcedure
       .input(z.object({
         items: z.array(z.object({
-          productId: z.number(),
-          name: z.string(),
-          price: z.number(),
-          quantity: z.number(),
-        })),
+          productId: z.number().int(),
+          quantity: z.number().int().min(1).max(99),
+        })).min(1),
         successUrl: z.string(),
         cancelUrl: z.string(),
       }))
@@ -334,8 +354,23 @@ export const appRouter = router({
             message: "Stripe is not configured. Set STRIPE_SECRET_KEY in .env",
           });
         }
+        // 商品名と価格はクライアントの申告を信用せず、DB の値を使う
+        const items = await Promise.all(
+          input.items.map(async (item) => {
+            const product = await db.getProductById(item.productId);
+            if (!product) {
+              throw new TRPCError({ code: "BAD_REQUEST", message: "カートに存在しない商品が含まれています" });
+            }
+            return {
+              productId: product.id,
+              name: product.title,
+              price: Math.round(Number(product.price)),
+              quantity: item.quantity,
+            };
+          })
+        );
         const session = await createCheckoutSession({
-          items: input.items,
+          items,
           successUrl: input.successUrl,
           cancelUrl: input.cancelUrl,
         });

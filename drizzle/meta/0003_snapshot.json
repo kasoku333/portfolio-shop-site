@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "36f0f717-53e5-401c-a692-1fde84665e51",
+  "id": "60e58a4d-8238-4614-9526-c54a2ce8f5fd",
   "prevId": "1e076b5a-f324-4160-bb0e-da5fb4dd48a9",
   "tables": {
     "artworkProducts": {

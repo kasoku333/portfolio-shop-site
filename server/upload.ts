@@ -1,18 +1,17 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { adminProcedure, router } from "./_core/trpc";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
 
-// storagePut は path.join でキーを解決するため、ファイル名に "../" や区切り文字が混ざると
-// アップロード先ディレクトリの外へ書き込めてしまう。保存前に落としておく。
-function sanitizeFileName(fileName: string) {
-  const cleaned = fileName
-    .replace(/[/\\]/g, "_")
-    .replace(/\.{2,}/g, "_")
-    .trim()
-    .slice(0, 100);
-  return cleaned || "upload";
-}
+// /uploads は同じオリジンで配信されるので、スクリプトを含み得る SVG や HTML は受け付けない
+const ALLOWED_IMAGE_TYPES: Record<string, string> = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/gif": ".gif",
+  "image/webp": ".webp",
+  "image/avif": ".avif",
+};
 
 export const uploadRouter = router({
   image: adminProcedure
@@ -20,21 +19,25 @@ export const uploadRouter = router({
       z.object({
         fileName: z.string(),
         fileData: z.string(), // base64 encoded
-        contentType: z
-          .string()
-          .regex(/^image\//, "画像ファイルのみアップロードできます")
-          .default("image/jpeg"),
+        contentType: z.string().default("image/jpeg"),
       })
     )
     .mutation(async ({ input }) => {
+      const ext = ALLOWED_IMAGE_TYPES[input.contentType];
+      if (!ext) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "JPEG・PNG・GIF・WebP・AVIF の画像を選択してください",
+        });
+      }
+
       try {
         // Decode base64 to buffer
         const buffer = Buffer.from(input.fileData, "base64");
 
-        // Generate unique filename
-        const fileKey = `uploads/${nanoid()}-${sanitizeFileName(input.fileName)}`;
+        // 元のファイル名はパスに使わない（"../" でアップロード先の外に書き込めてしまうため）
+        const fileKey = `uploads/${nanoid()}${ext}`;
 
-        // Upload to S3
         const result = await storagePut(fileKey, buffer, input.contentType);
 
         return {

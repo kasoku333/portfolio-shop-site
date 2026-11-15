@@ -74,7 +74,7 @@ export function registerOAuthRoutes(app: Express) {
         return;
       }
 
-      if (userInfo.email.toLowerCase() !== ENV.adminEmail.toLowerCase()) {
+      if (!ENV.adminEmail || userInfo.email.toLowerCase() !== ENV.adminEmail.toLowerCase()) {
         console.warn("[OAuth] Unauthorized login attempt:", userInfo.email);
         res.status(403).json({ error: "Unauthorized: admin access only" });
         return;
@@ -82,11 +82,13 @@ export function registerOAuthRoutes(app: Express) {
 
       // 4. DB にユーザー情報を登録/更新
       //    openId には Google の sub（ユーザーID）を使用
+      //    ここまで来られるのは ADMIN_EMAIL 本人だけなので role は admin
       await db.upsertUser({
         openId: userInfo.sub,
         name: userInfo.name || null,
         email: userInfo.email,
         loginMethod: "google",
+        role: "admin",
         lastSignedIn: new Date(),
       });
 

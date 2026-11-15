@@ -23,7 +23,7 @@ export async function createContext(
     const sessionCookie = cookies[COOKIE_NAME];
     if (sessionCookie) {
       const session = await sdk.verifySession(sessionCookie);
-      if (session && session.openId === "admin") {
+      if (session && session.openId === "admin" && session.appId === "admin") {
         adminSession = { name: session.name };
       }
     }

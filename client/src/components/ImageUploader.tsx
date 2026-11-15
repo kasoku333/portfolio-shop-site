@@ -156,7 +156,7 @@ export default function ImageUploader({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/gif,image/webp,image/avif"
           onChange={handleFileInputChange}
           className="hidden"
         />
@@ -185,7 +185,7 @@ export default function ImageUploader({
               クリックして画像をアップロード
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              またはドラッグ&ドロップ (JPG, PNG - 最大 {maxSize}MB)
+              またはドラッグ&ドロップ (JPEG, PNG, GIF, WebP, AVIF - 最大 {maxSize}MB)
             </p>
           </>
         )}

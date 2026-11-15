@@ -28,7 +28,7 @@ export default function AdminDashboard() {
       navigate("/login");
     },
   });
-  const user = authUser ? { name: authUser.name || "管理者", role: "admin" as const } : null;
+  const user = authUser?.role === "admin" ? { name: authUser.name || "管理者", role: authUser.role } : null;
   const logout = () => logoutMutation.mutate();
 
   // 保存に失敗しても画面に何も出ないと原因が追えないため、成否を必ずトーストで知らせる。
@@ -210,6 +210,7 @@ export default function AdminDashboard() {
                   category: artwork.category,
                   content: artwork.content ?? undefined,
                   imageUrl: artwork.imageUrl ?? undefined,
+                  pages: artwork.pages ?? undefined,
                 });
               }}
               onEdit={(id, updates) => {
@@ -220,6 +221,7 @@ export default function AdminDashboard() {
                   category: updates.category,
                   content: updates.content ?? undefined,
                   imageUrl: updates.imageUrl ?? undefined,
+                  pages: updates.pages ?? undefined,
                 });
               }}
               onDelete={(id) => {

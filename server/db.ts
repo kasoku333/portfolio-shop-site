@@ -1,5 +1,7 @@
 import { eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { migrate } from "drizzle-orm/mysql2/migrator";
+import path from "path";
 import { InsertUser, users, artworks, products, artworkProducts, carts, cartItems, orders, orderItems, profiles, InsertProfile, InsertOrder } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -16,6 +18,16 @@ export async function getDb() {
     }
   }
   return _db;
+}
+
+// drizzle/ のマイグレーションを DB に適用する（適用済みのものは飛ばす）。
+// デプロイ先の設定（preDeployCommand 等）に頼らず、サーバ起動時に自分で流す。
+export async function runMigrations() {
+  const db = await getDb();
+  if (!db) return;
+  const migrationsFolder = path.resolve(process.cwd(), "drizzle");
+  await migrate(db, { migrationsFolder });
+  console.log("[Database] Migrations applied from", migrationsFolder);
 }
 
 export async function upsertUser(user: InsertUser): Promise<void> {
@@ -122,6 +134,7 @@ export async function createArtwork(data: {
   content?: string;
   imageUrl?: string;
   imageKey?: string;
+  pages?: string[];
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -133,6 +146,7 @@ export async function createArtwork(data: {
     content: data.content ?? null,
     imageUrl: data.imageUrl ?? null,
     imageKey: data.imageKey ?? null,
+    pages: data.pages ?? null,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -147,6 +161,7 @@ export async function updateArtwork(id: number, data: {
   content?: string;
   imageUrl?: string;
   imageKey?: string;
+  pages?: string[];
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -157,6 +172,7 @@ export async function updateArtwork(id: number, data: {
   if (data.content !== undefined) updateData.content = data.content;
   if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
   if (data.imageKey !== undefined) updateData.imageKey = data.imageKey;
+  if (data.pages !== undefined) updateData.pages = data.pages;
   await db.update(artworks).set(updateData).where(eq(artworks.id, id));
   return getArtworkById(id);
 }
@@ -182,7 +198,7 @@ export async function createProduct(data: {
   stock?: number;
   imageUrl?: string;
   imageKey?: string;
-  boothUrl?: string;
+  boothUrl?: string | null;
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -195,8 +211,7 @@ export async function createProduct(data: {
     stock: data.stock ?? null,
     imageUrl: data.imageUrl ?? null,
     imageKey: data.imageKey ?? null,
-    // 空文字は「未設定」として扱いたいので null に倒す
-    boothUrl: data.boothUrl || null,
+    boothUrl: data.boothUrl ?? null,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -213,7 +228,7 @@ export async function updateProduct(id: number, data: {
   stock?: number;
   imageUrl?: string;
   imageKey?: string;
-  boothUrl?: string;
+  boothUrl?: string | null;
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -225,8 +240,7 @@ export async function updateProduct(id: number, data: {
   if (data.stock !== undefined) updateData.stock = data.stock;
   if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
   if (data.imageKey !== undefined) updateData.imageKey = data.imageKey;
-  // 空文字で送られたら null に戻す（URLの解除ができるようにする）
-  if (data.boothUrl !== undefined) updateData.boothUrl = data.boothUrl || null;
+  if (data.boothUrl !== undefined) updateData.boothUrl = data.boothUrl;
   await db.update(products).set(updateData).where(eq(products.id, id));
   return getProductById(id);
 }
