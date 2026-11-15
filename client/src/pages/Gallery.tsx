@@ -197,7 +197,8 @@ export default function Gallery() {
 
       {/* Artwork Detail Modal */}
       <Dialog open={!!selectedArtwork} onOpenChange={() => setSelectedArtwork(null)}>
-        <DialogContent className="max-w-2xl w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto">
+        {/* 幅は sm: 付きで指定する。付けないと ui/dialog 側の sm:max-w-lg（512px）が勝って広がらない。 */}
+        <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-3xl max-h-[92vh] overflow-y-auto">
           {selectedArtwork && (
             <>
               <DialogHeader>
@@ -210,7 +211,7 @@ export default function Gallery() {
                   <img
                     src={selectedArtwork.imageUrl}
                     alt={selectedArtwork.title}
-                    className="w-full rounded-lg max-h-[60vh] object-contain bg-muted"
+                    className="w-full rounded-lg max-h-[70vh] object-contain bg-muted"
                   />
                 )}
                 <div>
