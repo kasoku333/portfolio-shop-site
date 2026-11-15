@@ -20,8 +20,13 @@ export default function AdminDashboard() {
     retry: false,
     refetchOnWindowFocus: false,
   });
+  const utils = trpc.useUtils();
   const logoutMutation = trpc.auth.logout.useMutation({
-    onSuccess: () => navigate("/login"),
+    onSuccess: () => {
+      // ログイン状態の控えを消す。残すと、戻ってきた時に管理者用のAPIを呼んでしまう。
+      utils.auth.me.setData(undefined, null);
+      navigate("/login");
+    },
   });
   const user = authUser ? { name: authUser.name || "管理者", role: "admin" as const } : null;
   const logout = () => logoutMutation.mutate();
@@ -50,7 +55,9 @@ export default function AdminDashboard() {
   const deleteArtwork = trpc.artworks.delete.useMutation(notifySaved("作品を削除", refetchArtworks));
 
   // tRPC: 注文データ取得
+  // 管理者専用のAPIなので、ログインを確認できるまで呼ばない。
   const { data: orders = [], refetch: refetchOrders } = trpc.orders.listAll.useQuery(undefined, {
+    enabled: !!authUser,
     retry: 1,
     retryDelay: 1000,
   });
@@ -120,10 +127,7 @@ export default function AdminDashboard() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                logout();
-                navigate("/");
-              }}
+              onClick={logout}
               className="flex items-center gap-2"
               aria-label="ログアウト"
             >
