@@ -1,84 +1,57 @@
 import type { SVGProps } from "react";
 
-// トップの入口に使う手描き風のアイコン。
-// 線をわざと少し歪ませ、顔を付けて「ゆるい」印象にしている。
-// 塗りは不透明な淡い色なので、ライト・ダークどちらの背景でも同じ見え方になる。
-const LINE = "oklch(0.36 0.03 55)";
-const PAPER = "oklch(0.985 0.012 85)";
-const CHEEK = "oklch(0.86 0.08 20)";
+// トップの入口に使う記号。
+// 地図記号のように要素を絞り、明朝体にならって「縦は太く、横は細く、
+// 横線の右端に小さな山（うろこ）」という強弱を付けて、硬くなりすぎないようにしている。
+// 色は currentColor なので、使う側の文字色がそのまま乗る。
+const THICK = 5.5;
+const THIN = 2;
 
 const base = {
   viewBox: "0 0 96 96",
   fill: "none",
-  stroke: LINE,
-  strokeWidth: 3,
+  stroke: "currentColor",
   strokeLinecap: "round",
   strokeLinejoin: "round",
   "aria-hidden": true,
 } as const;
 
-// 漫画：コマ割りした1ページ。下のコマに顔。
+// 漫画：コマ割り。
 export function MangaIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>
-      <path d="M20 22 Q47 17 76 21 Q79 48 77 76 Q48 80 21 77 Q17 50 20 22 Z" fill={PAPER} />
-      <path d="M21 46 Q48 43 77 45" />
-      <path d="M50 20 Q49 33 51 44" />
-      <path d="M27 30 L41 28" />
-      <path d="M27 37 L36 36" />
-      <path
-        d="M64 25 L66 31 L72 33 L66 35 L64 41 L62 35 L56 33 L62 31 Z"
-        fill="oklch(0.9 0.12 90)"
-        strokeWidth={2.4}
-      />
-      <circle cx="35" cy="66" r="3.2" fill={CHEEK} stroke="none" />
-      <circle cx="62" cy="66" r="3.2" fill={CHEEK} stroke="none" />
-      <circle cx="41" cy="60" r="2.2" fill={LINE} stroke="none" />
-      <circle cx="56" cy="60" r="2.2" fill={LINE} stroke="none" />
-      <path d="M44.5 65 Q48.5 69 52.5 65" />
+      <path d="M25 20 L25 78" strokeWidth={THICK} />
+      <path d="M71 20 L71 78" strokeWidth={THICK} />
+      <path d="M52 20 L52 46" strokeWidth={4} />
+      <path d="M25 20 L71 20 M25 46 L71 46 M25 75 L71 75" strokeWidth={THIN} />
+      <path d="M63 20 L70.5 12.5 L76 21 Z" fill="currentColor" strokeWidth={1} />
     </svg>
   );
 }
 
-// イラスト：絵の具をのせたパレットと筆。
+// イラスト：筆と、ひと筆の線。
 export function IllustrationIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>
+      <path d="M75 16 L52 45" strokeWidth={4.5} />
       <path
-        d="M48 16 C68 14 84 28 82 46 C81 58 72 60 64 58 C57 56 54 62 57 68 C60 76 54 82 44 81 C26 79 13 65 14 46 C15 29 29 17 48 16 Z"
-        fill={PAPER}
+        d="M45 45 Q55 47 54 56 Q49 68 24 74 Q29 55 45 45 Z"
+        fill="currentColor"
+        strokeWidth={1}
       />
-      <circle cx="29" cy="37" r="5.5" fill="oklch(0.78 0.13 25)" strokeWidth={2.4} />
-      <circle cx="47" cy="28" r="5.5" fill="oklch(0.82 0.09 220)" strokeWidth={2.4} />
-      <circle cx="65" cy="35" r="5.5" fill="oklch(0.9 0.12 90)" strokeWidth={2.4} />
-      <circle cx="24" cy="62" r="3.2" fill={CHEEK} stroke="none" />
-      <circle cx="46" cy="62" r="3.2" fill={CHEEK} stroke="none" />
-      <circle cx="29" cy="56" r="2.2" fill={LINE} stroke="none" />
-      <circle cx="41" cy="56" r="2.2" fill={LINE} stroke="none" />
-      <path d="M32 61 Q35 64.5 38 61" />
-      <path d="M72 72 L88 87" strokeWidth={4.5} />
-      <path d="M64 63 Q72 64 74 72 Q69 75 64 72 Q61 68 64 63 Z" fill="oklch(0.78 0.13 25)" strokeWidth={2.4} />
+      <path d="M22 84 Q44 88 70 79" strokeWidth={THIN} />
     </svg>
   );
 }
 
-// 小説：しおりを挟んだ本と、木陰の葉っぱ。
+// 小説：開いた本。背だけ太く、ページの線は細く。
+// 縦書きの行（縦線3本）も試したが、「川」や「!」に見えたので本にした。
 export function NovelIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>
-      <path
-        d="M24 20 Q48 16 68 19 Q71 48 69 78 Q46 82 25 79 Q21 50 24 20 Z"
-        fill="oklch(0.9 0.06 150)"
-      />
-      <path d="M33 19 Q31 50 34 79" />
-      <path d="M54 18 L54 35 L59.5 30 L65 35 L65 19" fill="oklch(0.78 0.13 25)" strokeWidth={2.4} />
-      <circle cx="41" cy="60" r="3.2" fill={CHEEK} stroke="none" />
-      <circle cx="62" cy="60" r="3.2" fill={CHEEK} stroke="none" />
-      <circle cx="45" cy="54" r="2.2" fill={LINE} stroke="none" />
-      <circle cx="58" cy="54" r="2.2" fill={LINE} stroke="none" />
-      <path d="M48.5 59 Q51.5 62.5 54.5 59" />
-      <path d="M75 68 Q78 54 90 50 Q90 64 75 68 Z" fill="oklch(0.85 0.1 140)" strokeWidth={2.4} />
-      <path d="M77 66 L85 56" strokeWidth={2} />
+      <path d="M48 27 L48 78" strokeWidth={THICK} />
+      <path d="M48 27 Q33 18 17 24 L17 72 Q33 67 48 78" strokeWidth={2.8} />
+      <path d="M48 27 Q63 18 79 24 L79 72 Q63 67 48 78" strokeWidth={2.8} />
     </svg>
   );
 }

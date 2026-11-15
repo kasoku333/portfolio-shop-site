@@ -63,16 +63,12 @@ export default function Home() {
                                focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                     aria-label={`${card.label}の作品を見る`}
                   >
-                    {/* 角の丸さを不揃いにして、手で塗ったような下地にする */}
                     <span
-                      className="flex h-20 w-20 sm:h-28 sm:w-28 items-center justify-center transition-transform duration-300 group-hover:scale-105 group-hover:-rotate-3"
-                      style={{
-                        backgroundColor: card.colorVar,
-                        borderRadius: "46% 54% 52% 48% / 55% 46% 54% 45%",
-                      }}
+                      className="flex h-20 w-20 sm:h-28 sm:w-28 items-center justify-center rounded-full text-foreground/80 transition-transform duration-300 group-hover:scale-105"
+                      style={{ backgroundColor: card.colorVar }}
                       aria-hidden="true"
                     >
-                      <Icon className="h-16 w-16 sm:h-24 sm:w-24" />
+                      <Icon className="h-12 w-12 sm:h-16 sm:w-16" />
                     </span>
 
                     <div className="sm:space-y-1">
