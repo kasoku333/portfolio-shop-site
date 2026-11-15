@@ -211,7 +211,7 @@ export default function Shop() {
               <img
                 src={selectedProduct.imageUrl}
                 alt={selectedProduct.title}
-                className="w-full rounded-lg object-contain bg-muted max-h-[55vh]"
+                className="w-full rounded-lg object-contain bg-muted max-h-[70vh]"
               />
             )}
             <div className="space-y-3">
