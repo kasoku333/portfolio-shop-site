@@ -198,7 +198,9 @@ export default function Shop() {
 
       {/* Product Detail Modal */}
       <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-        <DialogContent aria-describedby={undefined} className="max-w-2xl w-[calc(100vw-2rem)] max-h-[90vh] overflow-y-auto">
+        {/* ギャラリーの作品ウィンドウと同じ大きさに揃えている。
+            ui/dialog の既定が sm:max-w-lg なので、幅は sm: 付きで指定しないと効かない。 */}
+        <DialogContent aria-describedby={undefined} className="w-[calc(100vw-2rem)] sm:max-w-3xl max-h-[92vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-serif text-xl md:text-2xl">
               {selectedProduct?.title}
