@@ -4,7 +4,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Trash2, Edit2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Trash2, Edit2, ChevronLeft, ChevronRight } from "lucide-react";
 import ImageUploader from "./ImageUploader";
 
 interface Artwork {
@@ -21,6 +31,9 @@ interface ArtworkManagerProps {
   onAdd?: (artwork: Omit<Artwork, "id">) => void;
   onEdit?: (id: number, artwork: Partial<Artwork>) => void;
   onDelete?: (id: number) => void;
+  // 並べ替えた後の作品IDを、表示順に渡す
+  onReorder?: (ids: number[]) => void;
+  isReordering?: boolean;
 }
 
 export default function ArtworkManager({
@@ -28,9 +41,21 @@ export default function ArtworkManager({
   onAdd,
   onEdit,
   onDelete,
+  onReorder,
+  isReordering = false,
 }: ArtworkManagerProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Artwork | null>(null);
+
+  // index 番目の作品を、1つ前（-1）か1つ後ろ（+1）と入れ替える
+  const move = (index: number, direction: -1 | 1) => {
+    const target = index + direction;
+    if (target < 0 || target >= artworks.length) return;
+    const ids = artworks.map((a) => a.id);
+    [ids[index], ids[target]] = [ids[target], ids[index]];
+    onReorder?.(ids);
+  };
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -116,7 +141,7 @@ export default function ArtworkManager({
             <p className="text-muted-foreground mb-4">作品がまだ登録されていません</p>
           </div>
         ) : (
-          artworks.map((artwork) => (
+          artworks.map((artwork, index) => (
             <div
               key={artwork.id}
               className="group relative overflow-hidden rounded-lg border border-border bg-card"
@@ -144,6 +169,33 @@ export default function ArtworkManager({
                     {getCategoryLabel(artwork.category)}
                   </span>
                 </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => move(index, -1)}
+                    disabled={index === 0 || isReordering}
+                    aria-label={`「${artwork.title}」を1つ前へ`}
+                    className="flex-1 flex items-center justify-center gap-1"
+                  >
+                    <ChevronLeft className="w-3 h-3" />
+                    前へ
+                  </Button>
+                  <span className="text-xs text-muted-foreground tabular-nums">
+                    {index + 1}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => move(index, 1)}
+                    disabled={index === artworks.length - 1 || isReordering}
+                    aria-label={`「${artwork.title}」を1つ後ろへ`}
+                    className="flex-1 flex items-center justify-center gap-1"
+                  >
+                    後ろへ
+                    <ChevronRight className="w-3 h-3" />
+                  </Button>
+                </div>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
@@ -157,7 +209,7 @@ export default function ArtworkManager({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onDelete?.(artwork.id)}
+                    onClick={() => setDeleteTarget(artwork)}
                     className="flex-1 flex items-center justify-center gap-1 text-destructive hover:text-destructive"
                   >
                     <Trash2 className="w-3 h-3" />
@@ -292,6 +344,33 @@ export default function ArtworkManager({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* 削除の確認（押した瞬間に消えると取り返しがつかないため、一度たずねる） */}
+      <AlertDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>この作品を削除しますか？</AlertDialogTitle>
+            <AlertDialogDescription>
+              「{deleteTarget?.title}」を削除します。削除すると元に戻せません。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteTarget) onDelete?.(deleteTarget.id);
+                setDeleteTarget(null);
+              }}
+            >
+              削除する
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -8,6 +8,19 @@ import { toast } from "sonner";
 import { Save, User, Link as LinkIcon, MessageSquare, Sparkles, Plus, Trash2 } from "lucide-react";
 import ImageUploader from "./ImageUploader";
 
+interface SnsLink {
+  id: string;
+  label: string;
+  url: string;
+}
+
+// 「https://」を省いて貼られることが多いので補う
+function normalizeUrl(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 interface SkillItem {
   id: string;
   title: string;
@@ -35,6 +48,7 @@ export default function ProfileManager() {
     message: "",
   });
   const [skills, setSkills] = useState<SkillItem[]>([]);
+  const [snsLinks, setSnsLinks] = useState<SnsLink[]>([]);
 
   useEffect(() => {
     if (settings) {
@@ -47,6 +61,7 @@ export default function ProfileManager() {
         message: settings.message || "",
       });
       setSkills(settings.skills || []);
+      setSnsLinks(settings.snsLinks || []);
     }
   }, [settings]);
 
@@ -61,10 +76,33 @@ export default function ProfileManager() {
         return;
       }
     }
+    // 表示名もURLも空の行は、入力途中で残っただけなので保存しない
+    const links = snsLinks
+      .map((l) => ({ ...l, label: l.label.trim(), url: normalizeUrl(l.url) }))
+      .filter((l) => l.label || l.url);
+    for (const link of links) {
+      if (!link.label || !link.url) {
+        toast.error("追加したリンクは、表示名とURLの両方を入力してください");
+        return;
+      }
+    }
     updateSettings.mutate({
       ...form,
       skills,
+      snsLinks: links,
     });
+  };
+
+  const addSnsLink = () => {
+    setSnsLinks([...snsLinks, { id: crypto.randomUUID(), label: "", url: "" }]);
+  };
+
+  const updateSnsLink = (id: string, field: "label" | "url", value: string) => {
+    setSnsLinks(snsLinks.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
+  };
+
+  const removeSnsLink = (id: string) => {
+    setSnsLinks(snsLinks.filter((l) => l.id !== id));
   };
 
   const addSkill = () => {
@@ -151,6 +189,45 @@ export default function ProfileManager() {
               placeholder="https://www.pixiv.net/users/12345"
             />
           </div>
+
+          {/* 自由に足せるリンク */}
+          {snsLinks.map((link) => (
+            <div key={link.id} className="flex flex-col sm:flex-row gap-3 sm:items-end p-4 rounded-md border border-border bg-background">
+              <div className="space-y-1 sm:w-40">
+                <Label htmlFor={`sns-label-${link.id}`}>表示名</Label>
+                <Input
+                  id={`sns-label-${link.id}`}
+                  value={link.label}
+                  onChange={(e) => updateSnsLink(link.id, "label", e.target.value)}
+                  placeholder="例: BOOTH"
+                  maxLength={50}
+                />
+              </div>
+              <div className="space-y-1 flex-1">
+                <Label htmlFor={`sns-url-${link.id}`}>URL</Label>
+                <Input
+                  id={`sns-url-${link.id}`}
+                  value={link.url}
+                  onChange={(e) => updateSnsLink(link.id, "url", e.target.value)}
+                  placeholder="https://"
+                />
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => removeSnsLink(link.id)}
+                className="text-red-500 hover:text-red-700 hover:bg-red-50 self-end"
+                aria-label="このリンクを削除"
+                title="このリンクを削除"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+          <Button variant="outline" size="sm" onClick={addSnsLink} className="flex items-center gap-1">
+            <Plus className="w-4 h-4" />
+            リンクを追加
+          </Button>
         </div>
       </div>
 

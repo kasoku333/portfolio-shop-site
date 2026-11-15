@@ -53,6 +53,11 @@ export default function AdminDashboard() {
   const createArtwork = trpc.artworks.create.useMutation(notifySaved("作品を追加", refetchArtworks));
   const updateArtwork = trpc.artworks.update.useMutation(notifySaved("作品を更新", refetchArtworks));
   const deleteArtwork = trpc.artworks.delete.useMutation(notifySaved("作品を削除", refetchArtworks));
+  // 並べ替えは何度も続けて押すので、成功時は知らせず一覧だけ更新する
+  const reorderArtworks = trpc.artworks.reorder.useMutation({
+    onSuccess: () => refetchArtworks(),
+    onError: (error) => toast.error(`並び順を保存できませんでした: ${error.message}`),
+  });
 
   // tRPC: 注文データ取得
   // 管理者専用のAPIなので、ログインを確認できるまで呼ばない。
@@ -193,6 +198,9 @@ export default function AdminDashboard() {
           {/* Artworks Tab */}
           <TabsContent value="artworks" className="space-y-6">
             <h2 className="text-xl md:text-2xl font-serif font-bold text-foreground">作品管理</h2>
+            <p className="text-sm text-muted-foreground">
+              「前へ」「後ろへ」で並び順を変えられます。ギャラリーにもこの順で並びます。
+            </p>
             <ArtworkManager
               artworks={artworks}
               onAdd={(artwork) => {
@@ -217,6 +225,8 @@ export default function AdminDashboard() {
               onDelete={(id) => {
                 deleteArtwork.mutate({ id });
               }}
+              onReorder={(ids) => reorderArtworks.mutate({ ids })}
+              isReordering={reorderArtworks.isPending}
             />
           </TabsContent>
 

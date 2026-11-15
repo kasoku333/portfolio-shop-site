@@ -4,6 +4,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Trash2, Edit2 } from "lucide-react";
 import ImageUploader from "./ImageUploader";
 
@@ -50,6 +60,7 @@ export default function ProductManager({
 }: ProductManagerProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -191,7 +202,7 @@ export default function ProductManager({
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => onDelete?.(product.id)}
+                          onClick={() => setDeleteTarget(product)}
                           className="flex items-center gap-2 text-destructive hover:text-destructive"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -356,6 +367,33 @@ export default function ProductManager({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* 削除の確認（押した瞬間に消えると取り返しがつかないため、一度たずねる） */}
+      <AlertDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>この商品を削除しますか？</AlertDialogTitle>
+            <AlertDialogDescription>
+              「{deleteTarget?.title}」を削除します。削除すると元に戻せません。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-white hover:bg-destructive/90"
+              onClick={() => {
+                if (deleteTarget) onDelete?.(deleteTarget.id);
+                setDeleteTarget(null);
+              }}
+            >
+              削除する
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

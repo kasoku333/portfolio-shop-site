@@ -8,7 +8,7 @@ import { TRPCError } from "@trpc/server";
 import { uploadRouter } from "./upload";
 import { createCheckoutSession, isStripeConfigured } from "./stripe";
 import { sdk } from "./_core/sdk";
-import { getSiteSettings, saveSiteSettings } from "./siteSettings";
+import { getSiteSettings, saveSiteSettings, sortByArtworkOrder } from "./siteSettings";
 
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -69,10 +69,10 @@ export const appRouter = router({
       .input(z.object({ category: z.enum(['all', 'illustration', 'manga', 'novel']).default('all') }).optional())
       .query(async ({ input }) => {
         const category = input?.category || 'all';
-        if (category === 'all') {
-          return db.getAllArtworks();
-        }
-        return db.getArtworksByCategory(category);
+        const list = category === 'all'
+          ? await db.getAllArtworks()
+          : await db.getArtworksByCategory(category);
+        return sortByArtworkOrder(list, getSiteSettings().artworkOrder);
       }),
     
     getById: publicProcedure
@@ -117,6 +117,14 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         await db.deleteArtwork(input.id);
+        return { success: true };
+      }),
+
+    // 作品の並び順を保存する。ids は表示したい順に並べた作品ID。
+    reorder: adminProcedure
+      .input(z.object({ ids: z.array(z.number().int()).max(5000) }))
+      .mutation(({ input }) => {
+        saveSiteSettings({ artworkOrder: Array.from(new Set(input.ids)) });
         return { success: true };
       }),
   }),
@@ -271,6 +279,12 @@ export const appRouter = router({
         twitterUrl: z.string().optional(),
         pixivUrl: z.string().optional(),
         otherUrl: z.string().optional(),
+        // リンク先としてそのまま表示するので、http(s) 以外（javascript: など）は受け付けない
+        snsLinks: z.array(z.object({
+          id: z.string(),
+          label: z.string().min(1).max(50),
+          url: z.string().max(500).regex(/^https?:\/\//i, "URLは http:// か https:// で始めてください"),
+        })).max(20).optional(),
         message: z.string().optional(),
         skills: z.array(z.object({
           id: z.string(),

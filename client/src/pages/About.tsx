@@ -23,8 +23,9 @@ export default function About() {
   const otherUrl = settings?.otherUrl || "";
   const message = settings?.message || "";
   const skills = settings?.skills || [];
+  const snsLinks = settings?.snsLinks || [];
 
-  const hasSnsLinks = twitterUrl || pixivUrl || otherUrl;
+  const hasSnsLinks = twitterUrl || pixivUrl || otherUrl || snsLinks.length > 0;
 
   return (
     <Shell title="About">
@@ -46,26 +47,26 @@ export default function About() {
         <div className="container max-w-3xl">
           <div className="space-y-12">
             {/* Profile Section（スマホでは縦並び、PCでは横並び） */}
-            <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center md:items-start">
               <div
-                className="rounded-lg overflow-hidden border border-border"
+                className="w-32 h-32 shrink-0 rounded-full overflow-hidden border border-border"
                 style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.08)" }}
               >
                 {profileImageUrl ? (
                   <img
                     src={profileImageUrl}
                     alt={creatorName}
-                    className="aspect-square w-full object-cover"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="aspect-square bg-muted flex items-center justify-center">
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
                     <div className="text-center text-muted-foreground">
-                      <p className="text-sm">プロフィール画像</p>
+                      <p className="text-xs">プロフィール画像</p>
                     </div>
                   </div>
                 )}
               </div>
-              <div className="space-y-4">
+              <div className="space-y-4 flex-1 min-w-0 w-full">
                 <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">
                   {creatorName}
                 </h2>
@@ -103,6 +104,17 @@ export default function About() {
                         Webサイト
                       </a>
                     )}
+                    {snsLinks.map((link) => (
+                      <a
+                        key={link.id}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-muted-foreground hover:text-accent transition-colors underline underline-offset-4"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
                   </div>
                 )}
 
