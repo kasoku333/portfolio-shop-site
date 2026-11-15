@@ -16,30 +16,37 @@ const base = {
   "aria-hidden": true,
 } as const;
 
-// 漫画：コマ割り。
+// 漫画：斜めに割ったコマ。
+// まっすぐ十字に割ると漢字の「円」に見えたので、漫画らしく斜めの割り方にしている。
 export function MangaIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>
-      <path d="M25 20 L25 78" strokeWidth={THICK} />
-      <path d="M71 20 L71 78" strokeWidth={THICK} />
-      <path d="M52 20 L52 46" strokeWidth={4} />
-      <path d="M25 20 L71 20 M25 46 L71 46 M25 75 L71 75" strokeWidth={THIN} />
-      <path d="M63 20 L70.5 12.5 L76 21 Z" fill="currentColor" strokeWidth={1} />
+      <path d="M24 19 L24 78" strokeWidth={THICK} />
+      <path d="M72 19 L72 78" strokeWidth={THICK} />
+      <path d="M24 19 L72 19 M24 77 L72 77" strokeWidth={THIN} />
+      <path d="M24 54 L72 40" strokeWidth={2.6} />
+      <path d="M43 49 L40 77" strokeWidth={4} />
     </svg>
   );
 }
 
-// イラスト：筆と、ひと筆の線。
+// イラスト：筆と、ひと筆の払い。
+// 穂先は細い葉の形にし、下の線は明朝体の「払い」のように太さを変えている。
 export function IllustrationIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg {...base} {...props}>
-      <path d="M75 16 L52 45" strokeWidth={4.5} />
+      <path d="M77 13 L58 37" strokeWidth={5} />
+      <path d="M55 41 L51 46" strokeWidth={THIN} />
       <path
-        d="M45 45 Q55 47 54 56 Q49 68 24 74 Q29 55 45 45 Z"
+        d="M49 47 Q54 53 47 61 Q40 68 30 71 Q32 60 38 53 Q43 47 49 47 Z"
         fill="currentColor"
         strokeWidth={1}
       />
-      <path d="M22 84 Q44 88 70 79" strokeWidth={THIN} />
+      <path
+        d="M17 80 Q24 79 30 81 Q52 88 80 76 Q54 92 28 87 Q20 85 17 80 Z"
+        fill="currentColor"
+        strokeWidth={1}
+      />
     </svg>
   );
 }
