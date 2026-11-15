@@ -180,6 +180,7 @@ export default function HistoryManager() {
                     size="sm"
                     onClick={() => togglePublished(item.id)}
                     title={item.isPublished ? "非公開にする" : "公開する"}
+                    aria-label={item.isPublished ? "非公開にする" : "公開する"}
                   >
                     {item.isPublished ? (
                       <Eye className="w-4 h-4 text-green-600" />
@@ -187,7 +188,7 @@ export default function HistoryManager() {
                       <EyeOff className="w-4 h-4 text-muted-foreground" />
                     )}
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => openEditDialog(item)}>
+                  <Button variant="ghost" size="sm" onClick={() => openEditDialog(item)} aria-label="編集" title="編集">
                     <Pencil className="w-4 h-4" />
                   </Button>
                   <Button
@@ -195,6 +196,8 @@ export default function HistoryManager() {
                     size="sm"
                     onClick={() => handleDelete(item.id)}
                     className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                    aria-label="削除"
+                    title="削除"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -219,29 +222,29 @@ export default function HistoryManager() {
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent aria-describedby={undefined} className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{editingItem ? "履歴を編集" : "履歴を追加"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>年月 <span className="text-red-500">*</span></Label>
-                <Input
+                <Label htmlFor="history-date">年月 <span className="text-red-500">*</span></Label>
+                <Input id="history-date"
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   placeholder="2024年1月"
                 />
               </div>
               <div className="space-y-2">
-                <Label>種別</Label>
+                <Label htmlFor="history-category">種別</Label>
                 <Select
                   value={formData.category}
                   onValueChange={(val) =>
                     setFormData({ ...formData, category: val as HistoryItem["category"] })
                   }
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger id="history-category" className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -254,16 +257,16 @@ export default function HistoryManager() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>タイトル <span className="text-red-500">*</span></Label>
-              <Input
+              <Label htmlFor="history-title">タイトル <span className="text-red-500">*</span></Label>
+              <Input id="history-title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="活動のタイトル"
               />
             </div>
             <div className="space-y-2">
-              <Label>説明文</Label>
-              <Textarea
+              <Label htmlFor="history-description">説明文</Label>
+              <Textarea id="history-description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="活動の詳細を記入してください"
@@ -272,17 +275,17 @@ export default function HistoryManager() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>表示順</Label>
-                <Input
+                <Label htmlFor="history-sort-order">表示順</Label>
+                <Input id="history-sort-order"
                   type="number"
                   value={formData.sortOrder}
                   onChange={(e) => setFormData({ ...formData, sortOrder: parseInt(e.target.value) || 0 })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>公開状態</Label>
+                <Label htmlFor="history-published">公開状態</Label>
                 <div className="flex items-center gap-2 pt-1">
-                  <Switch
+                  <Switch id="history-published"
                     checked={formData.isPublished}
                     onCheckedChange={(checked) => setFormData({ ...formData, isPublished: checked })}
                   />

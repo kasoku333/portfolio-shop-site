@@ -138,19 +138,19 @@ export default function ProductManager({
           <table className="w-full">
             <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   商品名
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   種類
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   価格
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   在庫
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-right text-sm whitespace-nowrap font-semibold text-foreground">
                   操作
                 </th>
               </tr>
@@ -165,8 +165,8 @@ export default function ProductManager({
               ) : (
                 products.map((product) => (
                   <tr key={product.id} className="border-b border-border hover:bg-muted/50">
-                    <td className="px-6 py-4 text-sm text-foreground">{product.title}</td>
-                    <td className="px-6 py-4 text-sm">
+                    <td className="px-6 py-4 text-sm text-foreground min-w-[10rem]">{product.title}</td>
+                    <td className="px-6 py-4 text-sm whitespace-nowrap">
                       <span className="inline-block px-2 py-1 rounded bg-muted text-muted-foreground text-xs">
                         {product.productType === "digital" ? "デジタル" : "実物"}
                       </span>
@@ -209,7 +209,7 @@ export default function ProductManager({
 
       {/* Product Form Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-serif text-2xl">
               {editingId ? "商品を編集" : "新規商品を追加"}
@@ -219,10 +219,10 @@ export default function ProductManager({
           <div className="space-y-4">
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2" htmlFor="product-title">
                 商品名 *
               </label>
-              <Input
+              <Input id="product-title"
                 value={formData.title}
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
@@ -234,10 +234,10 @@ export default function ProductManager({
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2" htmlFor="product-description">
                 説明
               </label>
-              <Textarea
+              <Textarea id="product-description"
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
@@ -250,7 +250,7 @@ export default function ProductManager({
 
             {/* Product Type */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2" htmlFor="product-type">
                 商品種類 *
               </label>
               <Select
@@ -262,7 +262,7 @@ export default function ProductManager({
                   })
                 }
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger id="product-type" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -274,10 +274,10 @@ export default function ProductManager({
 
             {/* Price */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2" htmlFor="product-price">
                 価格（円） *
               </label>
-              <Input
+              <Input id="product-price"
                 type="number"
                 value={formData.price}
                 onChange={(e) =>
@@ -290,10 +290,10 @@ export default function ProductManager({
 
             {/* BOOTH URL */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2" htmlFor="product-booth-url">
                 BOOTH商品ページURL
               </label>
-              <Input
+              <Input id="product-booth-url"
                 type="url"
                 value={formData.boothUrl}
                 onChange={(e) =>
@@ -310,10 +310,10 @@ export default function ProductManager({
             {/* Stock (for physical products) */}
             {formData.productType === ("physical" as const) && (
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2" htmlFor="product-stock">
                   在庫数
                 </label>
-                <Input
+                <Input id="product-stock"
                   type="number"
                   value={formData.stock}
                   onChange={(e) =>

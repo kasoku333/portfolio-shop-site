@@ -11,8 +11,10 @@ import ProfileManager from "@/components/ProfileManager";
 import HistoryManager from "@/components/HistoryManager";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function AdminDashboard() {
+  usePageTitle("管理ダッシュボード");
   const navigate = useNavigate();
   const { data: authUser, isLoading: loading } = trpc.auth.me.useQuery(undefined, {
     retry: false,
@@ -84,9 +86,9 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground mb-6">
             このページは管理者のみがアクセスできます。
           </p>
-          <Link to="/login">
-            <Button>ログインページへ</Button>
-          </Link>
+          <Button asChild>
+            <Link to="/login">ログインページへ</Link>
+          </Button>
         </div>
       </div>
     );
@@ -109,12 +111,12 @@ export default function AdminDashboard() {
             </p>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
-            <Link to="/">
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm" className="flex items-center gap-2">
+              <Link to="/" aria-label="サイトに戻る">
                 <Home className="w-4 h-4" />
                 <span className="hidden sm:inline">サイトに戻る</span>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -123,6 +125,7 @@ export default function AdminDashboard() {
                 navigate("/");
               }}
               className="flex items-center gap-2"
+              aria-label="ログアウト"
             >
               <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">ログアウト</span>

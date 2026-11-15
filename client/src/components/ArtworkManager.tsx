@@ -136,9 +136,9 @@ export default function ArtworkManager({
                 )}
               </div>
               <div className="p-4">
-                <h4 className="font-serif font-semibold text-foreground mb-2 line-clamp-2">
+                <h3 className="font-serif font-semibold text-foreground mb-2 line-clamp-2">
                   {artwork.title}
-                </h4>
+                </h3>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
                     {getCategoryLabel(artwork.category)}
@@ -172,7 +172,7 @@ export default function ArtworkManager({
 
       {/* Artwork Form Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-serif text-2xl">
               {editingId ? "作品を編集" : "新規作品を追加"}
@@ -182,10 +182,10 @@ export default function ArtworkManager({
           <div className="space-y-4">
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2" htmlFor="artwork-title">
                 作品名 *
               </label>
-              <Input
+              <Input id="artwork-title"
                 value={formData.title}
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
@@ -197,7 +197,7 @@ export default function ArtworkManager({
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2" htmlFor="artwork-category">
                 カテゴリ *
               </label>
               <Select
@@ -209,7 +209,7 @@ export default function ArtworkManager({
                   })
                 }
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger id="artwork-category" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -222,10 +222,10 @@ export default function ArtworkManager({
 
             {/* Description（小説では前書き・キャプション扱い） */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2" htmlFor="artwork-description">
                 {formData.category === "novel" ? "前書き・キャプション" : "説明"}
               </label>
-              <Textarea
+              <Textarea id="artwork-description"
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
@@ -243,10 +243,10 @@ export default function ArtworkManager({
             {/* 小説本文（カテゴリが小説のときだけ表示） */}
             {formData.category === "novel" && (
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2" htmlFor="artwork-content">
                   本文 *
                 </label>
-                <Textarea
+                <Textarea id="artwork-content"
                   value={formData.content}
                   onChange={(e) =>
                     setFormData({ ...formData, content: e.target.value })

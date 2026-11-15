@@ -196,16 +196,18 @@ export default function ProfileManager() {
                 <span className="text-sm font-medium text-muted-foreground mt-2 min-w-[1.5rem]">{idx + 1}</span>
                 <div className="flex-1 space-y-3">
                   <div className="space-y-1">
-                    <Label>タイトル <span className="text-red-500">*</span></Label>
+                    <Label htmlFor={`skill-title-${skill.id}`}>タイトル <span className="text-red-500">*</span></Label>
                     <Input
+                      id={`skill-title-${skill.id}`}
                       value={skill.title}
                       onChange={(e) => updateSkill(skill.id, "title", e.target.value)}
                       placeholder="スキル名"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label>説明文</Label>
+                    <Label htmlFor={`skill-description-${skill.id}`}>説明文</Label>
                     <Input
+                      id={`skill-description-${skill.id}`}
                       value={skill.description}
                       onChange={(e) => updateSkill(skill.id, "description", e.target.value)}
                       placeholder="スキルの説明"
@@ -217,6 +219,8 @@ export default function ProfileManager() {
                   size="sm"
                   onClick={() => removeSkill(skill.id)}
                   className="text-red-500 hover:text-red-700 hover:bg-red-50 mt-2"
+                  aria-label="このスキルを削除"
+                  title="このスキルを削除"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

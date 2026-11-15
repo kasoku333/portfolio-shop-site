@@ -60,25 +60,25 @@ export default function OrderManager({ orders, onStatusChange }: OrderManagerPro
           <table className="w-full">
             <thead className="bg-muted border-b border-border">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   注文ID
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   顧客名
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   メール
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   金額
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   ステータス
                 </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-left text-sm whitespace-nowrap font-semibold text-foreground">
                   日時
                 </th>
-                <th className="px-6 py-3 text-right text-sm font-semibold text-foreground">
+                <th className="px-6 py-3 text-right text-sm whitespace-nowrap font-semibold text-foreground">
                   操作
                 </th>
               </tr>
@@ -136,7 +136,7 @@ export default function OrderManager({ orders, onStatusChange }: OrderManagerPro
 
       {/* Order Detail Dialog */}
       <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent aria-describedby={undefined} className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-serif text-2xl">
               注文詳細 #{selectedOrder?.id}
@@ -177,7 +177,7 @@ export default function OrderManager({ orders, onStatusChange }: OrderManagerPro
 
               {/* Status Change */}
               <div className="border-t border-border pt-4">
-                <label className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2" htmlFor="order-status">
                   ステータス変更
                 </label>
                 <div className="flex gap-2">
@@ -188,7 +188,7 @@ export default function OrderManager({ orders, onStatusChange }: OrderManagerPro
                       setSelectedOrder({ ...selectedOrder, status: value as Order["status"] });
                     }}
                   >
-                    <SelectTrigger className="flex-1">
+                    <SelectTrigger id="order-status" className="flex-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

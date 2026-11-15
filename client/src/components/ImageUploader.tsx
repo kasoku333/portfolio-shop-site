@@ -131,10 +131,19 @@ export default function ImageUploader({
     <div className="space-y-4">
       {/* Upload Area */}
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="画像をアップロード"
         onClick={handleClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleClick();
+          }
+        }}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
           isUploading
             ? "border-muted bg-muted/30"
             : uploadStatus === "success"
@@ -189,7 +198,7 @@ export default function ImageUploader({
           <div className="relative rounded-lg overflow-hidden border border-border">
             <img
               src={preview}
-              alt="Preview"
+              alt="アップロードした画像のプレビュー"
               className="w-full h-auto max-h-64 object-cover"
             />
             <Button
@@ -204,6 +213,8 @@ export default function ImageUploader({
                 }
               }}
               className="absolute top-2 right-2 bg-background/80 hover:bg-background"
+              aria-label="プレビューを消す"
+              title="プレビューを消す"
             >
               <X className="w-4 h-4" />
             </Button>
